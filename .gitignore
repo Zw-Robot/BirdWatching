@@ -1,5 +1,5 @@
 .DS_Store
-node_modules/
+front-admin/node_modules/
 dist/
 npm-debug.log*
 yarn-debug.log*
@@ -16,8 +16,7 @@ selenium-debug.log
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
-*.local
+*.sln*.local
 
 package-lock.json
 yarn.lock
