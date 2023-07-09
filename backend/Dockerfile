@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9.17
 MAINTAINER Robot
 
 RUN apt-get update -y && \
@@ -11,8 +11,10 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
 
 
-COPY . /
+COPY . /app
+
+EXPOSE 5500
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "app/app.py" ]
+CMD gunicorn -c gunicorn.conf apps:app
