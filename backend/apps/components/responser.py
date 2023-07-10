@@ -17,7 +17,7 @@ class Responser:
             wrapper['data'] = data
         if count is not None:
             wrapper['count'] = count
-        return Response(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper, status.HTTP_200_OK)
 
     @staticmethod
     def response_error(msg='server error', code=status.HTTP_500_INTERNAL_SERVER_ERROR):
@@ -31,7 +31,7 @@ class Responser:
             'code': code,
             'msg': msg
         }
-        return Response(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper, status.HTTP_200_OK)
 
     @staticmethod
     def response_page(data, count, page, page_size, msg='success', **kwargs):
@@ -55,7 +55,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return Response(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper, status.HTTP_200_OK)
 
     @staticmethod
     def response_page_with_total(data, total, count, page, page_size, msg='success', **kwargs):
@@ -81,7 +81,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return Response(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper, status.HTTP_200_OK)
 
 class FileResponder:
     """目前对文件下载了解不是很深入, 暂没有做过多的设计, 当前支持Excel格式文件的下载"""
