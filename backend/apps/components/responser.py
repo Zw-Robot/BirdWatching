@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from . import status
 class Responser:
     @staticmethod
@@ -83,19 +85,19 @@ class Responser:
             wrapper[k] = v
         return jsonify(wrapper, status.HTTP_200_OK)
 
-class FileResponder:
-    """目前对文件下载了解不是很深入, 暂没有做过多的设计, 当前支持Excel格式文件的下载"""
-
-    @classmethod
-    def response_success(cls, file_io):
-        from urllib.parse import quote
-        import os
-        file_name = os.path.relpath(file_io.name)
-        # file_name = quote(file_name)
-        if file_name.startswith('_'):
-            file_name = file_name[1:]
-        response = FileResponse(file_io)
-        response['Content-Type'] = 'tapplication/vnd.ms-excel'
-        response["Access-Control-Expose-Headers"] = "Content-disposition"
-        response['Content-Disposition'] = 'attachment;filename="%s"' % (file_name)
-        return response
+# class FileResponder:
+#     """目前对文件下载了解不是很深入, 暂没有做过多的设计, 当前支持Excel格式文件的下载"""
+#
+#     @classmethod
+#     def response_success(cls, file_io):
+#         from urllib.parse import quote
+#         import os
+#         file_name = os.path.relpath(file_io.name)
+#         # file_name = quote(file_name)
+#         if file_name.startswith('_'):
+#             file_name = file_name[1:]
+#         response = FileResponse(file_io)
+#         response['Content-Type'] = 'tapplication/vnd.ms-excel'
+#         response["Access-Control-Expose-Headers"] = "Content-disposition"
+#         response['Content-Disposition'] = 'attachment;filename="%s"' % (file_name)
+#         return response
