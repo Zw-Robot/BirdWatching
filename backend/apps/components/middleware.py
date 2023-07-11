@@ -1,7 +1,13 @@
-from flask import request
+import base64
+from datetime import datetime
+
+from flask import request, jsonify
 from functools import wraps
 
+from itsdangerous import Serializer
+
 from apps.components.common import returnData
+from apps.config.config import SECRET_KEY
 from apps.models import LoginSessionCache, Userdata
 
 # 登录验证
@@ -43,6 +49,45 @@ def SingAuth(func=None):
             return returnData(404, '请求方式不正确', '')
 
     return wrapper
+
+
+def login_required(*role):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kw):
+            try:
+                # 在请求头上拿到token
+                token = request.headers["Authorization"]
+                payload_base64 = base64.b64decode(token.encode('utf-8')).decode('utf-8')
+            except Exception as e:
+                # 没接收的到token,给前端抛出错误
+                return returnData(400, '参数缺失', 'Authorization')
+            s = Serializer(SECRET_KEY)
+            try:
+                payload = s.loads(payload_base64)
+
+                # 提取用户信息
+                user_id = payload['user_id']
+                username = payload['username']
+                user_role = payload['role']
+                expires = payload['exp']
+                if user_role:
+
+                    # 获取token中的权限列表如果在参数列表中则表示有权限，否则就表示没有权限
+                    result = True if user_role in role else False
+                    if not result:
+                        return returnData(400, "权限不够","")
+                if expires < datetime.utcnow().timestamp():
+                    # 令牌已过期
+
+                    return returnData(400, "登录已过期", "")
+
+            except Exception as e:
+                return returnData(500,"其他错误","")
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+
 
 # POST
 def requestPOST(func=None):

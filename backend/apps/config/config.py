@@ -14,6 +14,10 @@ SQLALCHEMY_DATABASE_URI = "{}+{}://{}:{}@{}:{}/{}?charset=utf8".format(DIALECT,D
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = True
 
+COOKIE_EXPIRATION = 30 * 24 * 3600  # 秒（到期浏览器自动删除）
+TOKEN_EXPIRATION = 30 * 24 * 3600  # 秒（到期报错SignatureExpired）
+SECRET_KEY = 'k#S6@1%8)a#D5WS01'
+
 
 # Flask Bcrypt Setting
 BCRYPT_LOG_ROUNDS = 1
