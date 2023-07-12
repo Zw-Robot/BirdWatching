@@ -2,13 +2,13 @@
 import base64
 from datetime import datetime, timedelta
 
-import sqlalchemy
+from sqlalchemy import Column, String, Integer, Enum, Date, DateTime, Boolean, ForeignKey
 from itsdangerous import Serializer
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from apps import db
-from apps.config.config import SECRET_KEY, COOKIE_EXPIRATION
+from apps.config.config import SECRET_KEY
 
 
 class LogonUser(db.Model):
@@ -16,20 +16,20 @@ class LogonUser(db.Model):
 
     __tablename__ = 'logon_user'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    hash_password = db.Column(db.String(120), nullable=False, comment='密码')
-    phone = db.Column(db.String(20), nullable=False, comment='手机号')
-    email = db.Column(db.String(20), nullable=True, comment='邮箱')
-    avatar = db.Column(db.String(100), nullable=True, comment='头像')
-    role = db.Column(db.Enum('spuadmin','admin','others'), default='others', nullable=False,
-                      comment='权限spuadmin-超级管理员，admin-管理员，others-其他')
-    depat_id = db.Column(db.Integer, default=0,nullable=False,comment="默认0用户无法登陆")
-    create_at = db.Column(db.Date, default=datetime.now)
-    update_at = db.Column(db.Date, default=datetime.now)
-    login_date = db.Column(db.Date, default=datetime.now,comment="最后登陆时间", nullable=False,
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    username = Column(String(80), unique=True, nullable=False)
+    hash_password = Column(String(120), nullable=False, comment='密码')
+    phone = Column(String(20), nullable=False, comment='手机号')
+    email = Column(String(20), nullable=True, comment='邮箱')
+    avatar = Column(String(100), nullable=True, comment='头像')
+    role = Column(Enum('spuadmin', 'admin', 'others'), default='others', nullable=False,
+                     comment='权限spuadmin-超级管理员，admin-管理员，others-其他')
+    depat_id = Column(Integer, default=0, nullable=False, comment="默认0用户无法登陆")
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    login_date = Column(Date, default=datetime.now, comment="最后登陆时间", nullable=False,
                            onupdate=func.now())
-    is_lock = db.Column(db.Boolean, default=False, nullable=False, comment='是否删除该用户')
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该用户')
 
     # 明文密码（只读）
     @property
@@ -72,18 +72,32 @@ class LogonUser(db.Model):
         token = payload_base64
         return token
 
+    def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depat_id=0):
+        self.username = username
+        self.hash_password = hash_password
+        self.phone = phone
+        self.email = email
+        self.avatar = avatar
+        self.role = role
+        self.depat_id = depat_id
+        self.is_lock = False
+        self.update()
+
     def update(self):
+        self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
 
 
 '''登录状态表'''
+
+
 class LoginSessionCache(db.Model):
     __tablename__ = 'login_session_cache'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    openid = db.Column(db.String(255))  # openid
-    session_key = db.Column(db.String(255))  # token
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    openid = Column(String(255))  # openid
+    session_key = Column(String(255))  # token
 
     # 定义对象
     def __init__(self, openid=None, session_key=None):
@@ -98,18 +112,20 @@ class LoginSessionCache(db.Model):
 
 
 '''基础用户数据表'''
+
+
 class Userdata(db.Model):
     __tablename__ = 'userdata'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    openid = db.Column(db.String(255))  # openid
-    username = db.Column(db.String(255))  # username
-    avatar = db.Column(db.String(255))  # avatarUrl
-    gender = db.Column(db.String(255))  # gender
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    openid = Column(String(255))  # openid
+    username = Column(String(255))  # username
+    avatar = Column(String(255))  # avatarUrl
+    gender = Column(String(255))  # gender
 
-    country = db.Column(db.String(255))  # country
-    province = db.Column(db.String(255))  # province
-    city = db.Column(db.String(255))  # city
+    country = Column(String(255))  # country
+    province = Column(String(255))  # province
+    city = Column(String(255))  # city
 
     # 定义对象
     def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None):
@@ -124,5 +140,204 @@ class Userdata(db.Model):
 
     # 提交数据函数
     def update(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+class BirdImageSound(db.Model):
+    """鸟类图片声音"""
+
+    __tablename__ = 'bird_image_sound'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    order_by = Column(String(40), nullable=False, comment='提供者')
+    path = Column(String(40), nullable=False, comment='存储路径')
+    label = Column(Enum("sound", "image"), nullable=False, comment='类型 图片或声音')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该目录')
+
+    def __init__(self, order_by, path, label, is_lock=False):
+        self.order_by = order_by
+        self.path = path
+        self.label = label
+        self.is_lock = is_lock
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+
+
+class BirdInventory(db.Model):
+    """鸟类名录"""
+
+    __tablename__ = 'bird_inventory'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    order_en = Column(String(40), nullable=False, comment='目英文')
+    order_cn = Column(String(40), nullable=False, comment='目中文')
+    family_en = Column(String(40), nullable=False, comment='科英文')
+    family_cn = Column(String(40), nullable=False, comment='科中文')
+    genus = Column(String(40), nullable=False, comment='属')
+    species = Column(String(40), nullable=False, comment='种')
+    latin_name = Column(String(40), nullable=False, comment='拉丁名')
+    describe = Column(String(200), nullable=True, comment='描述')
+    habitat = Column(String(200), nullable=True, comment='生境')
+    behavior = Column(String(200), nullable=True, comment='习性')
+    bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息id 逗号隔开添加')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
+
+    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name, describe=None,
+                 habitat=None, behavior=None, bird_info=None):
+        self.order_en = order_en
+        self.order_cn = order_cn
+        self.family_en = family_en
+        self.family_cn = family_cn
+        self.genus = genus
+        self.species = species
+        self.latin_name = latin_name
+        self.describe = describe
+        self.habitat = habitat
+        self.behavior = behavior
+        self.bird_info = bird_info
+        self.is_lock = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+
+class BirdRecords(db.Model):
+    """鸟类记录"""
+
+    __tablename__ = 'bird_records'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, nullable=False, comment='记录用户id')
+    bird_id = Column(Integer, ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
+    record_time = Column(Date, nullable=False, comment='时间')
+    record_location = Column(String(200), nullable=False, comment='地点')
+    record_describe = Column(String(200), nullable=True, comment='描述')
+    bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该记录')
+
+    def __init__(self, user_id, bird_id, record_time, record_location, record_describe=None, bird_info=None):
+        self.user_id = user_id
+        self.bird_id = bird_id
+        self.record_time = record_time
+        self.record_location = record_location
+        self.record_describe = record_describe
+        self.bird_info = bird_info
+        self.is_lock = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+
+class BirdSurvey(db.Model):
+    """鸟类调查"""
+
+    __tablename__ = 'bird_survey'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, nullable=False, comment='调查人id')
+    survey_name = Column(String(40), nullable=False, comment='调查名称')
+    survey_desc = Column(String(200), nullable=True, comment='调查描述')
+    survey_time = Column(Date, nullable=False, comment='调查时间')
+    survey_location = Column(String(200), nullable=False, comment='调查地点')
+    describe = Column(String(200), nullable=False, comment='描述')
+    habitat = Column(String(200), nullable=False, comment='生境')
+    behavior = Column(String(200), nullable=False, comment='习性')
+    bird_info = Column(String(200), nullable=False, comment='鸟类声音图像信息')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除调查')
+
+    def __init__(self, user_id, survey_name, survey_desc=None, survey_time=None, survey_location=None, describe=None,
+                 habitat=None, behavior=None, bird_info=None):
+        self.user_id = user_id
+        self.survey_name = survey_name
+        self.survey_desc = survey_desc
+        self.survey_time = survey_time
+        self.survey_location = survey_location
+        self.describe = describe
+        self.habitat = habitat
+        self.behavior = behavior
+        self.bird_info = bird_info
+        self.is_lock = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+
+class BirdMatch(db.Model):
+    """鸟类比赛"""
+
+    __tablename__ = "bird_match"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    match_create = Column(String(200), nullable=False, comment='举办人/单位')
+    match_name = Column(String(60), nullable=False, comment='比赛名称')
+    match_desc = Column(String(200), nullable=True, comment='比赛描述')
+    match_location = Column(String(200), nullable=False, comment='比赛地点')
+    referee = Column(String(200), nullable=False, comment='裁判信息 逗号隔开添加')
+    start_time = Column(Date, nullable=False, comment='开始时间')
+    end_time = Column(Date, nullable=False, comment='结束时间')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束')
+
+    def __init__(self, match_create, match_name, match_desc, match_location, referee, start_time, end_time):
+        self.match_create = match_create
+        self.match_name = match_name
+        self.match_desc = match_desc
+        self.match_location = match_location
+        self.referee = referee
+        self.start_time = start_time
+        self.end_time = end_time
+        self.is_lock = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+
+class MatchGroup(db.Model):
+    """比赛小组"""
+
+    __tablename__ = "bird_group"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    match_id = Column(Integer,ForeignKey("bird_match.id"), nullable=False, comment="比赛id")
+    group_name = Column(String(60), unique=True, nullable=False, comment='小组名称')
+    group_desc = Column(String(200), nullable=True, comment='小组描述')
+    group_user = Column(String(200), nullable=False, comment='小组成员 逗号隔开添加')
+    rank = Column(Integer,nullable=True,comment='小组排名')
+    create_at = Column(DateTime, default=datetime.utcnow)
+    update_at = Column(DateTime, default=datetime.utcnow)
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束小组')
+
+    def __init__(self, match_id, group_name, group_desc, group_user):
+        self.match_id = match_id
+        self.group_name = group_name
+        self.group_desc = group_desc
+        self.group_user = group_user
+        self.rank = None
+        self.is_lock = False
+
+    def update(self):
+        self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
