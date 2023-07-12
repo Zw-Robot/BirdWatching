@@ -22,14 +22,14 @@ class LogonUser(db.Model):
     phone = db.Column(db.String(20), nullable=False, comment='手机号')
     email = db.Column(db.String(20), nullable=True, comment='邮箱')
     avatar = db.Column(db.String(100), nullable=True, comment='头像')
-    role = db.Column(db.Enum('spuadmin','admin','others'), server_default='others', nullable=False,
+    role = db.Column(db.Enum('spuadmin','admin','others'), default='others', nullable=False,
                       comment='权限spuadmin-超级管理员，admin-管理员，others-其他')
-    depat_id = db.Column(db.Integer, server_default='0',nullable=False,comment="默认0用户无法登陆")
+    depat_id = db.Column(db.Integer, default=0,nullable=False,comment="默认0用户无法登陆")
     create_at = db.Column(db.Date, default=datetime.now)
     update_at = db.Column(db.Date, default=datetime.now)
-    login_date = db.Column(db.TIMESTAMP, comment="最后登陆时间", nullable=False,
+    login_date = db.Column(db.Date, default=datetime.now,comment="最后登陆时间", nullable=False,
                            onupdate=func.now())
-    is_lock = db.Column(db.Boolean, server_default=sqlalchemy.text("false"), nullable=False, comment='是否删除该用户')
+    is_lock = db.Column(db.Boolean, default=False, nullable=False, comment='是否删除该用户')
 
     # 明文密码（只读）
     @property
@@ -71,6 +71,10 @@ class LogonUser(db.Model):
         # 生成令牌
         token = payload_base64
         return token
+
+    def update(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 '''登录状态表'''
