@@ -34,7 +34,7 @@ def login(request):
         z_token = LogonUser.create_token(1,"username","admin")
     # #
     else:
-        return Responser.response_error('E0001','密码错误')
+        return Responser.response_error(code='E0001',msg='密码错误')
     data = {
         "auth":z_token
     }
