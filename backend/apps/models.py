@@ -2,6 +2,7 @@
 import base64
 from datetime import datetime, timedelta
 
+import sqlalchemy
 from itsdangerous import Serializer
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,14 +22,15 @@ class LogonUser(db.Model):
     phone = db.Column(db.String(20), nullable=False, comment='手机号')
     email = db.Column(db.String(20), nullable=True, comment='邮箱')
     avatar = db.Column(db.String(100), nullable=True, comment='头像')
-    role = db.Column(db.Enum('spuadmin','admin','others'), server_default='2', nullable=False,
-                      comment='权限0-超级管理员，1-管理员，2-其他无权限')
+    role = db.Column(db.Enum('spuadmin','admin','others'), server_default='others', nullable=False,
+                      comment='权限spuadmin-超级管理员，admin-管理员，others-其他')
     depat_id = db.Column(db.Integer, server_default='0',nullable=False,comment="默认0用户无法登陆")
-    is_lock = db.Column(db.Boolean, server_default='false', nullable=False, comment='是否删除该用户')
     create_at = db.Column(db.Date, default=datetime.now)
     update_at = db.Column(db.Date, default=datetime.now)
     login_date = db.Column(db.TIMESTAMP, comment="最后登陆时间", nullable=False,
                            onupdate=func.now())
+    is_lock = db.Column(db.Boolean, server_default=sqlalchemy.text("false"), nullable=False, comment='是否删除该用户')
+
     # 明文密码（只读）
     @property
     def password(self):
