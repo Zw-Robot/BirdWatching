@@ -1,10 +1,9 @@
-from flask import jsonify
-
 from apps.auth import service
+from .models import LogonUser
 from ..auth import auth
 from apps.components.common import returnData
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
-from ..models import LogonUser
+from ..components.responser import Responser
 
 '''登录接口'''
 
@@ -19,24 +18,41 @@ def login(request):
 
 
 @auth.route('/login', methods=['GET'])
-def login():
+@requestGET
+def login(request):
     # TODO:完成网页端用户的登陆操作
     '''
     接受参数并校验参数，返回token
     :return:
     # '''
     # 生成token
-    # z_token = LogonUser.create_token(1,"username","admin")
+    username = request.json.get("username")
+    password = request.json.get("password")
+    user = LogonUser.query.filter_by(username=username).first()
+    print(user.check_password(password))
+    if user.check_password(password):
+        z_token = LogonUser.create_token(1,"username","admin")
     # #
-    # return z_token
-    pass
+    else:
+        return Responser.response_error('E0001','密码错误')
+    data = {
+        "auth":z_token
+    }
+    return Responser.response_success(data=data,msg='success')
 
 @auth.route('/create_user', methods=['POST'])
-@login_required('admin')
+# @login_required('admin')
 @requestPOST
 def create_user(request):
     # TODO:完成网页端用户创建接口
-    pass
+    username = request.json.get("username")
+    password = request.json.get("password")
+    user = LogonUser()
+    user.username = username
+    user.password = password
+    user.phone ='111'
+    user.update()
+    return Responser.response_success(data={},msg="")
 
 @auth.route('/update_user', methods=['GET'])
 @requestGET
