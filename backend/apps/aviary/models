@@ -1,0 +1,27 @@
+class BirdInventory(db.Model):
+    """鸟类名录"""
+
+    __tablename__ = 'brid_inventory'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    order_en = db.Column(db.String(40), nullable=False, comment='目英文')
+    order_cn = db.Column(db.String(40), nullable=False, comment='目中文')
+    family_en = db.Column(db.String(40), nullable=False, comment='科英文')
+    family_cn = db.Column(db.String(40), nullable=False, comment='科中文')
+    genus = db.Column(db.String(40), nullable=False, comment='属')
+    species = db.Column(db.String(40), nullable=False, comment='种')
+    latin_name = db.Column(db.String(40), nullable=False, comment='拉丁名')
+    describe = db.Column(db.String(200), nullable=True, comment='描述')
+    habitat = db.Column(db.String(200), nullable=True, comment='生境')
+    behavior = db.Column(db.String(200), nullable=True, comment='习性')
+
+
+class BirdInventoryImage(db.Model):
+    """鸟类图片"""
+
+    __tablename__ = 'brid_inventory_images'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    bird_id = db.Column(db.Integer, db.ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
+    order_by = db.Column(db.String(40), nullable=False, comment='提供者')
+    path = db.Column(db.String(40), nullable=False, comment='图片路径')
