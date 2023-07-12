@@ -1,5 +1,5 @@
 from apps.auth import service
-from .models import LogonUser
+from ..models import LogonUser
 from ..auth import auth
 from apps.components.common import returnData
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
