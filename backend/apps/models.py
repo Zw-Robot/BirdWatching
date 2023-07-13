@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime, timedelta
 
-from sqlalchemy import Column, String, Integer, Enum, Date, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey
 from itsdangerous import Serializer
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,13 +22,13 @@ class LogonUser(db.Model):
     phone = Column(String(20), nullable=False, comment='手机号')
     email = Column(String(20), nullable=True, comment='邮箱')
     avatar = Column(String(100), nullable=True, comment='头像')
-    role = Column(Enum('spuadmin', 'admin', 'others'), default='others', nullable=False,
-                     comment='权限spuadmin-超级管理员，admin-管理员，others-其他')
-    depat_id = Column(Integer, default=0, nullable=False, comment="默认0用户无法登陆")
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
-    login_date = Column(Date, default=datetime.now, comment="最后登陆时间", nullable=False,
-                           onupdate=func.now())
+    role = Column(Enum('sysadmin', 'admin', 'others'), default='others', nullable=False,
+                  comment='权限sysadmin-超级管理员，admin-管理员，others-其他')
+    depart = Column(Integer, default=0, nullable=False, comment="默认0--unowned")
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    login_date = Column(DateTime, default=datetime.now, comment="最后登陆时间", nullable=False,
+                        onupdate=func.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该用户')
 
     # 明文密码（只读）
@@ -61,25 +61,23 @@ class LogonUser(db.Model):
             'user_id': user_id,
             'username': user_name,
             'role': role,
-            'exp': expires.timestamp()  # 将过期时间转换为时间戳
+            'exp': expires.timestamp()
         }
         payload_str = s.dumps(payload)
 
-        # 使用 base64 编码负载字符串
-        payload_base64 = base64.b64encode(payload_str.encode('utf-8')).decode('utf-8')
 
-        # 生成令牌
+        payload_base64 = base64.b64encode(payload_str.encode('utf-8')).decode('utf-8')
         token = payload_base64
         return token
 
-    def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depat_id=0):
+    def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depart=0):
         self.username = username
         self.hash_password = hash_password
         self.phone = phone
         self.email = email
         self.avatar = avatar
         self.role = role
-        self.depat_id = depat_id
+        self.depart = depart
         self.is_lock = False
         self.update()
 
@@ -98,7 +96,7 @@ class LoginSessionCache(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     openid = Column(String(255))  # openid
     session_key = Column(String(255))  # token
-
+    update_at = Column(DateTime,default=datetime.now())
     # 定义对象
     def __init__(self, openid=None, session_key=None):
         self.openid = openid
@@ -107,6 +105,7 @@ class LoginSessionCache(db.Model):
 
     # 提交数据函数
     def update(self):
+        self.update_at=datetime.now()
         db.session.add(self)
         db.session.commit()
 
@@ -122,10 +121,10 @@ class Userdata(db.Model):
     username = Column(String(255))  # username
     avatar = Column(String(255))  # avatarUrl
     gender = Column(String(255))  # gender
-
     country = Column(String(255))  # country
     province = Column(String(255))  # province
     city = Column(String(255))  # city
+    update_at = Column(DateTime, default=datetime.now())
 
     # 定义对象
     def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None):
@@ -140,6 +139,7 @@ class Userdata(db.Model):
 
     # 提交数据函数
     def update(self):
+        self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
 
@@ -153,8 +153,8 @@ class BirdImageSound(db.Model):
     order_by = Column(String(40), nullable=False, comment='提供者')
     path = Column(String(40), nullable=False, comment='存储路径')
     label = Column(Enum("sound", "image"), nullable=False, comment='类型 图片或声音')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该目录')
 
     def __init__(self, order_by, path, label, is_lock=False):
@@ -167,7 +167,6 @@ class BirdImageSound(db.Model):
         self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
-
 
 
 class BirdInventory(db.Model):
@@ -187,8 +186,9 @@ class BirdInventory(db.Model):
     habitat = Column(String(200), nullable=True, comment='生境')
     behavior = Column(String(200), nullable=True, comment='习性')
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息id 逗号隔开添加')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    is_check = Column(Boolean,default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
 
     def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name, describe=None,
@@ -220,12 +220,13 @@ class BirdRecords(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False, comment='记录用户id')
     bird_id = Column(Integer, ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
-    record_time = Column(Date, nullable=False, comment='时间')
+    record_time = Column(DateTime, nullable=False, comment='时间')
     record_location = Column(String(200), nullable=False, comment='地点')
     record_describe = Column(String(200), nullable=True, comment='描述')
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该记录')
 
     def __init__(self, user_id, bird_id, record_time, record_location, record_describe=None, bird_info=None):
@@ -252,14 +253,15 @@ class BirdSurvey(db.Model):
     user_id = Column(Integer, nullable=False, comment='调查人id')
     survey_name = Column(String(40), nullable=False, comment='调查名称')
     survey_desc = Column(String(200), nullable=True, comment='调查描述')
-    survey_time = Column(Date, nullable=False, comment='调查时间')
+    survey_time = Column(DateTime, nullable=False, comment='调查时间')
     survey_location = Column(String(200), nullable=False, comment='调查地点')
     describe = Column(String(200), nullable=False, comment='描述')
     habitat = Column(String(200), nullable=False, comment='生境')
     behavior = Column(String(200), nullable=False, comment='习性')
-    bird_info = Column(String(200), nullable=False, comment='鸟类声音图像信息')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
+    bird_info = Column(String(200), nullable=False, comment='鸟类声音图像信息,逗号分割')
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除调查')
 
     def __init__(self, user_id, survey_name, survey_desc=None, survey_time=None, survey_location=None, describe=None,
@@ -292,11 +294,12 @@ class BirdMatch(db.Model):
     match_desc = Column(String(200), nullable=True, comment='比赛描述')
     match_location = Column(String(200), nullable=False, comment='比赛地点')
     referee = Column(String(200), nullable=False, comment='裁判信息 逗号隔开添加')
-    start_time = Column(Date, nullable=False, comment='开始时间')
-    end_time = Column(Date, nullable=False, comment='结束时间')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
-    is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束')
+    match_image = Column(String(200), nullable=True, comment='比赛banner图片')
+    start_time = Column(DateTime, nullable=False, comment='开始时间')
+    end_time = Column(DateTime, nullable=False, comment='结束时间')
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除')
 
     def __init__(self, match_create, match_name, match_desc, match_location, referee, start_time, end_time):
         self.match_create = match_create
@@ -320,13 +323,13 @@ class MatchGroup(db.Model):
     __tablename__ = "bird_group"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    match_id = Column(Integer,ForeignKey("bird_match.id"), nullable=False, comment="比赛id")
+    match_id = Column(Integer, ForeignKey("bird_match.id"), nullable=False, comment="比赛id")
     group_name = Column(String(60), unique=True, nullable=False, comment='小组名称')
     group_desc = Column(String(200), nullable=True, comment='小组描述')
     group_user = Column(String(200), nullable=False, comment='小组成员 逗号隔开添加')
-    rank = Column(Integer,nullable=True,comment='小组排名')
-    create_at = Column(DateTime, default=datetime.utcnow)
-    update_at = Column(DateTime, default=datetime.utcnow)
+    rank = Column(Integer, nullable=True, comment='小组排名')
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束小组')
 
     def __init__(self, match_id, group_name, group_desc, group_user):
