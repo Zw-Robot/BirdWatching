@@ -32,16 +32,16 @@ class LogonUser(db.Model):
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该用户')
 
 
-def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depart=0):
-    self.username = username
-    self.hash_password = hash_password
-    self.phone = phone
-    self.email = email
-    self.avatar = avatar
-    self.role = role
-    self.depart = depart
-    self.is_lock = False
-    self.update()
+    def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depart=0):
+        self.username = username
+        self.hash_password = hash_password
+        self.phone = phone
+        self.email = email
+        self.avatar = avatar
+        self.role = role
+        self.depart = depart
+        self.is_lock = False
+        self.update()
 
     # 明文密码（只读）
     @property

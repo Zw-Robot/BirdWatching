@@ -104,7 +104,7 @@ class FileResponser:
         if not path and not image:
             savepath = '/robot/birdwatching/var/images/default.png'
         else:
-            savepath = '/robot/birdwatching/var/images/{}/{}'.format(path, filename)
+            savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
 
         if image:
             image.save(savepath)
@@ -115,7 +115,7 @@ class FileResponser:
         if not path:
             savepath = '/robot/birdwatching/var/images/default.png'
         else:
-            savepath = '/robot/birdwatching/var/images/{}/{}'.format(path, filename)
+            savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
         image_data ={
             "file_name":filename,
             "url":savepath

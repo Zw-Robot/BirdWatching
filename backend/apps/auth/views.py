@@ -1,4 +1,5 @@
 from apps.auth import service,auth
+from apps.components.common import required_attrs_validator
 from apps.models import LogonUser
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
 from apps.components.responser import Responser, FileResponser
@@ -10,7 +11,7 @@ from apps.components.responser import Responser, FileResponser
 @SingAuth
 def login(request):
     code, msg, json = service.login(request)
-    if code ==200:
+    if code == 200:
         return Responser.response_success(data=json,msg=msg)
     else:
         return Responser.response_error(msg=msg)
@@ -31,7 +32,7 @@ def login(request):
     if lost_attrs:
         return Responser.response_error('参数缺失')
     user = LogonUser.query.filter_by(username=username,is_lock=False).first()
-    if user.check_password(password):
+    if not user.check_password(password):
         z_token = LogonUser.create_token(user.id, "username", user.role)
     else:
         return Responser.response_error('用户名或密码错误！')
@@ -71,12 +72,12 @@ def create_user(request):
     )
 
     user.update()
-    return Responser.response_success(msg="修改成功")
+    return Responser.response_success(msg="创建成功")
 
 
 @auth.route('/update_user', methods=['POST'])
 @requestPOST
-@login_required('sysadmin', 'admin', 'others')
+@login_required(['sysadmin', 'admin', 'others'])
 def update_user(request):
     # 完成网页端用户更新信息接口
     userid = request.json.get("userid")
@@ -113,7 +114,7 @@ def update_user(request):
 
 @auth.route('/delete_user', methods=['GET'])
 @requestGET
-@login_required('sysadmin','admin')
+@login_required(['sysadmin','admin'])
 def delete_user(request):
     #完成网页端用户删除接口
     userid = request.json.get("id")
@@ -127,7 +128,7 @@ def delete_user(request):
 
 @auth.route('/get_all_users', methods=["GET"])
 @requestGET
-@login_required('sysadmin','admin')
+@login_required(['sysadmin','admin'])
 def get_all_users():
     # 获取所有用户信息
     users = LogonUser.query.filter_by().all()
@@ -154,7 +155,7 @@ def get_all_users():
 
 @auth.route('/get_simple_users', methods=["GET"])
 @requestGET
-@login_required('sysadmin', 'admin', 'others')
+@login_required(['sysadmin', 'admin', 'others'])
 def get_simple_users(request):
     # 获取单个用户信息
     userid = request.json.get("id")
