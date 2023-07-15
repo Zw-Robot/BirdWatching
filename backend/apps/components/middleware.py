@@ -6,7 +6,7 @@ from functools import wraps
 
 from itsdangerous import Serializer
 
-from apps.components.common import returnData
+from apps.components.responser import Responser
 from apps.config.config import SECRET_KEY
 from apps.models import LoginSessionCache, Userdata
 
@@ -23,11 +23,11 @@ def SingAuth(func=None):
 
             '''判断是否存在None的jsonkey'''
             if openid == None or session_key == None:
-                return returnData(400, '参数缺失', '')
+                return Responser.response_error( '参数缺失', 400)
 
             '''判断两个key的值是否为空'''
             if openid == '' or session_key == '':
-                return returnData(400, '参数缺失', '')
+                return Responser.response_error( '参数缺失', 400)
 
             else:
 
@@ -39,14 +39,14 @@ def SingAuth(func=None):
                         return func(request, *args, **kwargs)
 
                     else:
-                        return returnData(403, '未授权', '')
+                        return Responser.response_error('未授权', 403)
 
                 else:
-                    return returnData(401, '未登录', '')
+                    return Responser.response_error('未登录',401)
 
         else:
             '''禁止get请求'''
-            return returnData(404, '请求方式不正确', '')
+            return Responser.response_error( '请求方式不正确',404)
 
     return wrapper
 
@@ -61,7 +61,7 @@ def login_required(*role):
                 payload_base64 = base64.b64decode(token.encode('utf-8')).decode('utf-8')
             except Exception as e:
                 # 没接收的到token,给前端抛出错误
-                return returnData(400, '参数缺失', 'Authorization')
+                return Responser.response_error('参数缺失',401)
             s = Serializer(SECRET_KEY)
             try:
                 payload = s.loads(payload_base64)
@@ -71,19 +71,20 @@ def login_required(*role):
                 username = payload['username']
                 user_role = payload['role']
                 expires = payload['exp']
+                if expires < datetime.utcnow().timestamp():
+                    # 令牌已过期
+
+                    return Responser.response_error("登录已过期",400)
                 if user_role:
 
                     # 获取token中的权限列表如果在参数列表中则表示有权限，否则就表示没有权限
                     result = True if user_role in role else False
                     if not result:
-                        return returnData(400, "权限不够","")
-                if expires < datetime.utcnow().timestamp():
-                    # 令牌已过期
+                        return Responser.response_error("权限不够",400)
 
-                    return returnData(400, "登录已过期", "")
 
             except Exception as e:
-                return returnData(500,"其他错误","")
+                return Responser.response_error("其他错误",500)
             return func(*args, **kw)
         return wrapper
     return decorator
@@ -96,7 +97,7 @@ def requestPOST(func=None):
         if request.method == 'POST':
             return func(request, *args, **kwargs)
         else:
-            return returnData(404, '请求方式不正确', '')
+            return Responser.response_error('请求方式错误', 404)
     return wrapper
 
 # GET
@@ -106,5 +107,5 @@ def requestGET(func=None):
         if request.method == 'GET':
             return func(request, *args, **kwargs)
         else:
-            return returnData(404, '该接口不支持POST方式请求', '')
+            return Responser.response_error('请求方式错误', 404)
     return wrapper

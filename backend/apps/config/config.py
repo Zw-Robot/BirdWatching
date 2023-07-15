@@ -4,8 +4,8 @@
 DIALECT = 'mysql'
 DRIVER = 'pymysql'
 USERNAME = 'root'
-PASSWORD = 'L*d1s@s%6H94iu'
-HOST = '49.232.226.159'
+PASSWORD = 'toor'
+HOST = '127.0.0.1'
 PORT = '3306'
 DATABASE = 'birdwatching'
 

@@ -1,9 +1,7 @@
-from apps.auth import service
+from apps.auth import service,auth
 from apps.models import LogonUser
-from ..auth import auth
-from apps.components.common import returnData, required_attrs_validator
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
-from ..components.responser import Responser, FileResponser
+from apps.components.responser import Responser, FileResponser
 
 '''登录接口'''
 
@@ -12,7 +10,10 @@ from ..components.responser import Responser, FileResponser
 @SingAuth
 def login(request):
     code, msg, json = service.login(request)
-    return returnData(code, msg, json)
+    if code ==200:
+        return Responser.response_success(data=json,msg=msg)
+    else:
+        return Responser.response_error(msg=msg)
 
 
 @auth.route('/login', methods=['GET'])

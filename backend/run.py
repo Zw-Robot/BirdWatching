@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from apps import app, blueprint
 
 if __name__ == '__main__':

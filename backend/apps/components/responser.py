@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, make_response
 
 from . import status
 class Responser:
@@ -85,19 +85,39 @@ class Responser:
             wrapper[k] = v
         return jsonify(wrapper, status.HTTP_200_OK)
 
-# class FileResponder:
-#     """目前对文件下载了解不是很深入, 暂没有做过多的设计, 当前支持Excel格式文件的下载"""
-#
-#     @classmethod
-#     def response_success(cls, file_io):
-#         from urllib.parse import quote
-#         import os
-#         file_name = os.path.relpath(file_io.name)
-#         # file_name = quote(file_name)
-#         if file_name.startswith('_'):
-#             file_name = file_name[1:]
-#         response = FileResponse(file_io)
-#         response['Content-Type'] = 'tapplication/vnd.ms-excel'
-#         response["Access-Control-Expose-Headers"] = "Content-disposition"
-#         response['Content-Disposition'] = 'attachment;filename="%s"' % (file_name)
-#         return response
+class FileResponser:
+
+    @staticmethod
+    def response_success(file_io):
+        import os
+        file_name = os.path.relpath(file_io.name)
+        if file_name.startswith('_'):
+            file_name = file_name[1:]
+        response = make_response(file_io)
+        response.headers['Content-Type'] = 'application/vnd.ms-excel'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-disposition'
+        response.headers['Content-Disposition'] = 'attachment;filename="%s"' % (file_name)
+        return response
+
+    @staticmethod
+    def image_save(image=None, path=None, filename=None):
+        if not path and not image:
+            savepath = '/robot/birdwatching/var/images/default.png'
+        else:
+            savepath = '/robot/birdwatching/var/images/{}/{}'.format(path, filename)
+
+        if image:
+            image.save(savepath)
+        return savepath
+
+    @staticmethod
+    def get_image(path,filename):
+        if not path:
+            savepath = '/robot/birdwatching/var/images/default.png'
+        else:
+            savepath = '/robot/birdwatching/var/images/{}/{}'.format(path, filename)
+        image_data ={
+            "file_name":filename,
+            "url":savepath
+        }
+        return image_data
