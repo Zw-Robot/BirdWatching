@@ -1,3 +1,5 @@
+import os
+
 from flask import jsonify, make_response
 
 from . import status
@@ -104,6 +106,8 @@ class FileResponser:
         if not path and not image:
             savepath = '/robot/birdwatching/var/images/default.png'
         else:
+            if not os.path.exists('/robot/birdwatching/var/images/{}'.format(path)):
+                os.makedirs('/robot/birdwatching/var/images/{}'.format(path))
             savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
 
         if image:
@@ -121,3 +125,24 @@ class FileResponser:
             "url":savepath
         }
         return image_data
+
+    @staticmethod
+    def audio_save(audio=None, path=None, filename=None):
+        if not os.path.exists('/robot/birdwatching/var/audio/{}'.format(path)):
+            os.makedirs('/robot/birdwatching/var/audio/{}'.format(path))
+        savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+
+        if audio:
+            with open(savepath, 'wb') as f:
+                f.write(audio)
+        return savepath
+
+    @staticmethod
+    def get_audio(path, filename):
+        savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+
+        audio_data = {
+            "file_name": filename,
+            "audio_url": savepath
+        }
+        return audio_data
