@@ -283,7 +283,7 @@ def update_bird_survey(request):
     behavior = request.json.get("behavior", "")
     bird_infos = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([bird_survey_id,user_id])
+    lost_attrs = required_attrs_validator([bird_survey_id, user_id])
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
@@ -413,6 +413,10 @@ def create_bird_record(request):
     bird_id = request.json.get("bird_id")
     record_time = request.json.get("record_time")
     record_location = request.json.get("record_location")
+    longitude = request.json.get("longitude")
+    latitude = request.json.get("latitude")
+    weather = request.json.get("weather")
+    temperature = request.json.get("temperature")
     record_describe = request.json.get("record_describe")
     bird_infos = request.json.get("bird_info", [])
 
@@ -444,6 +448,10 @@ def create_bird_record(request):
         record_time=record_time,
         record_location=record_location,
         record_describe=record_describe,
+        longitude=longitude,
+        latitude=latitude,
+        weather=weather,
+        temperature=temperature,
         bird_info=','.join(map(str, infos_id))
     )
     bird_record.update()
@@ -459,6 +467,10 @@ def update_bird_record(request):
     user_id = request.json.get("user_id")
     bird_id = request.json.get("bird_id")
     record_time = request.json.get("record_time", "")
+    longitude = request.json.get("longitude", "")
+    latitude = request.json.get("latitude", "")
+    weather = request.json.get("weather", "")
+    temperature = request.json.get("temperature", "")
     record_location = request.json.get("record_location", "")
     record_describe = request.json.get("record_describe", "")
     bird_infos = request.json.get("bird_info", [])
@@ -495,6 +507,10 @@ def update_bird_record(request):
     bird_record.record_time = record_time if record_time else bird_record.record_time
     bird_record.record_location = record_location if record_location else bird_record.record_location
     bird_record.record_describe = record_describe if record_describe else bird_record.record_describe
+    bird_record.longitude = longitude if longitude else bird_record.longitude
+    bird_record.latitude = latitude if latitude else bird_record.latitude
+    bird_record.weather = weather if weather else bird_record.weather
+    bird_record.temperature = temperature if temperature else bird_record.temperature
     bird_record.bird_info = ','.join(map(str, infos_id)) if infos_id else bird_record.bird_info
     bird_record.update()
     return Responser.response_success(msg="修改鸟类记录成功")
@@ -523,13 +539,13 @@ def get_all_bird_records(request):
     # 鸟类记录获取所有接口
     bird_records = BirdRecords.query.filter_by(is_lock=False).all()
     bird_record_list = []
-    for record in bird_records:
+    for bird_record in bird_records:
         files = []
-        infos = record.bird_info.split(',') if record.bird_info else []
+        infos = bird_record.bird_info.split(',') if bird_record.bird_info else []
         for info in infos:
             temp = BirdInfos.query.get(info)
             files.append(FileResponser.get_path(temp.path if temp.path else "", temp.label))
-    for bird_record in bird_records:
+
         bird_record_dict = {
             'bird_record_id': bird_record.id,
             'user_id': bird_record.user_id,
@@ -537,6 +553,10 @@ def get_all_bird_records(request):
             'record_time': bird_record.record_time,
             'record_location': bird_record.record_location,
             'record_describe': bird_record.record_describe,
+            "longitude": bird_record.longitude,
+            "latitude": bird_record.latitude,
+            "weather": bird_record.weather,
+            "temperature": bird_record.temperature,
             'bird_info': files,
             'create_at': bird_record.create_at,
             'update_at': bird_record.update_at,
@@ -566,6 +586,10 @@ def get_bird_record(request):
         'record_time': bird_record.record_time,
         'record_location': bird_record.record_location,
         'record_describe': bird_record.record_describe,
+        "longitude": bird_record.longitude,
+        "latitude": bird_record.latitude,
+        "weather": bird_record.weather,
+        "temperature": bird_record.temperature,
         'bird_info': infos,
         'create_at': bird_record.create_at,
         'update_at': bird_record.update_at,

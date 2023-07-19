@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime, timedelta
 
-from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey, Float
 from itsdangerous import Serializer
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -223,6 +223,10 @@ class BirdRecords(db.Model):
     bird_id = Column(Integer, ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
     record_time = Column(DateTime, nullable=False, comment='时间')
     record_location = Column(String(200), nullable=False, comment='地点')
+    longitude = Column(Float,nullable=False,comment="经度")
+    latitude = Column(Float,nullable=False,comment="经度")
+    weather = Column(String(40),nullable=False,comment="天气")
+    temperature = Column(Float,nullable=False,comment="气温")
     record_describe = Column(String(200), nullable=True, comment='描述')
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
@@ -230,13 +234,17 @@ class BirdRecords(db.Model):
     is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该记录')
 
-    def __init__(self, user_id, bird_id, record_time, record_location, record_describe=None, bird_info=None):
+    def __init__(self, user_id, bird_id, record_time, record_location, longitude,latitude,weather,temperature,record_describe=None, bird_info=None,):
         self.user_id = user_id
         self.bird_id = bird_id
         self.record_time = record_time
         self.record_location = record_location
         self.record_describe = record_describe
         self.bird_info = bird_info
+        self.longitude = longitude
+        self.latitude = latitude
+        self.weather = weather
+        self.temperature = temperature
         self.is_lock = False
 
     def update(self):

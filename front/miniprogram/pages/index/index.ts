@@ -38,6 +38,25 @@ Page({
       }
     })
   },
+  getOpenId(){
+wx.login({
+  success (res) {
+    console.log(res)
+    if (res.code) {
+      //发起网络请求
+      wx.request({
+        method:'POST',
+        url: 'http://192.168.10.6:5500/auth/sgin/',
+        data: { 
+          code: res.code
+        }
+      })
+    } else {
+      console.log('登录失败！' + res.errMsg)
+    }
+  }
+})
+  },
   getUserInfo(e: any) {
     // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
     console.log(e)
