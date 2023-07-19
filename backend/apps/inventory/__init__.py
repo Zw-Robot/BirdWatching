@@ -6,3 +6,6 @@
 @Time:2023-07-15:10:58
 --------------------------------------------
 """
+from flask import Blueprint
+inventory = Blueprint('inventory', __name__)
+from ..inventory import views
