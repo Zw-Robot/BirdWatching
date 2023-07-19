@@ -103,46 +103,58 @@ class FileResponser:
 
     @staticmethod
     def image_save(image=None, path=None, filename=None):
-        if not path and not image:
-            savepath = '/robot/birdwatching/var/images/default.png'
+        if not path or not image:
+            return ""
         else:
             if not os.path.exists('/robot/birdwatching/var/images/{}'.format(path)):
                 os.makedirs('/robot/birdwatching/var/images/{}'.format(path))
             savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
 
         if image:
-            image.save(savepath)
+            try:
+                image.save(savepath)
+            except:
+                savepath=""
         return savepath
-
-    @staticmethod
-    def get_image(path,filename):
-        if not path:
-            savepath = '/robot/birdwatching/var/images/default.png'
-        else:
-            savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
-        image_data ={
-            "file_name":filename,
-            "url":savepath
-        }
-        return image_data
 
     @staticmethod
     def audio_save(audio=None, path=None, filename=None):
+        if not path or not audio:
+            return ""
         if not os.path.exists('/robot/birdwatching/var/audio/{}'.format(path)):
             os.makedirs('/robot/birdwatching/var/audio/{}'.format(path))
-        savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
-
+        savepath = ""
         if audio:
-            with open(savepath, 'wb') as f:
-                f.write(audio)
+            savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+            try:
+                with open(savepath, 'wb') as f:
+                    f.write(audio)
+            except:
+                savepath =""
+        return savepath
+
+
+    @staticmethod
+    def video_save(video=None, path=None, filename=None):
+        if not path or not video:
+            return ""
+        if not os.path.exists('/robot/birdwatching/var/video/{}'.format(path)):
+            os.makedirs('/robot/birdwatching/var/video/{}'.format(path))
+        savepath = ""
+        if video:
+            savepath = '/robot/birdwatching/var/audio/{}/{}.mp4'.format(path, filename)
+            try:
+                with open(savepath, 'wb') as f:
+                    f.write(video)
+            except:
+                savepath = ""
         return savepath
 
     @staticmethod
-    def get_audio(path, filename):
-        savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+    def get_path(path, label):
 
         audio_data = {
-            "file_name": filename,
-            "audio_url": savepath
+            "label": label,
+            "audio_url": path
         }
         return audio_data

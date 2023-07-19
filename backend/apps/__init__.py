@@ -5,6 +5,7 @@ from flask import Flask  # flask
 from flask_sqlalchemy import SQLAlchemy  # sql
 
 app = Flask(__name__)
+app.debug = True
 
 # 引入全局配置
 app.config.from_object(config)

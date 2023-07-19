@@ -145,15 +145,15 @@ class Userdata(db.Model):
         db.session.commit()
 
 
-class BirdImageSound(db.Model):
+class BirdInfos(db.Model):
     """鸟类图片声音"""
 
     __tablename__ = 'bird_image_sound'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     order_by = Column(String(40), nullable=False, comment='提供者')
-    path = Column(String(40), nullable=False, comment='存储路径')
-    label = Column(Enum("sound", "image"), nullable=False, comment='类型 图片或声音')
+    path = Column(String(100), nullable=False, comment='存储路径')
+    label = Column(String(40), nullable=False, comment='类型 图片或声音')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该目录')
