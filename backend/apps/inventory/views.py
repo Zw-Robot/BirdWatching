@@ -8,6 +8,7 @@
 """
 import uuid
 from datetime import datetime
+from math import ceil
 
 from apps.components.common import required_attrs_validator
 from apps.inventory import inventory
@@ -135,7 +136,7 @@ def update_bird(request):
 
 @inventory.route('/delete_bird', methods=['GET'])
 @requestGET
-@login_required(['sysadmin', 'admin'])
+# @login_required(['sysadmin', 'admin'])
 def delete_bird(request):
     # 鸟类记录删除接口
     bird_id = request.json.get("bird_id")
@@ -154,7 +155,14 @@ def delete_bird(request):
 # @login_required(['sysadmin', 'admin'])
 def get_all_birds(request):
     # 鸟类名录查询所有接口
-    birds = BirdInventory.query.filter_by(is_lock=False).all()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+    bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
+
+    total_pages = ceil(bird_inventory_query.count() / per_page)
+
+    birds = bird_inventory_query.paginate(page=page, per_page=per_page)
+
     bird_list = []
     for bird in birds:
         files = []
@@ -180,7 +188,7 @@ def get_all_birds(request):
             'is_lock': bird.is_lock
         }
         bird_list.append(bird_dict)
-    return Responser.response_success(data=bird_list)
+    return Responser.response_page(data=bird_list,count=total_pages,page=page,page_size=per_page)
 
 
 @inventory.route('/get_bird', methods=["GET"])
@@ -344,7 +352,14 @@ def delete_bird_survey(request):
 # @login_required(['sysadmin', 'admin'])
 def get_all_bird_surveys(request):
     # 鸟类调查查询所有接口
-    bird_surveys = BirdSurvey.query.filter_by(is_lock=False).all()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+    bird_surveys_query = BirdSurvey.query.filter_by(is_lock=False)
+
+    total_pages = ceil(bird_surveys_query.count() / per_page)
+
+    bird_surveys = bird_surveys_query.paginate(page=page, per_page=per_page)
+
     bird_survey_list = []
 
     def process_bird_survey(bird_survey):
@@ -370,7 +385,7 @@ def get_all_bird_surveys(request):
         }
 
     bird_survey_list = [process_bird_survey(bird_survey) for bird_survey in bird_surveys]
-    return Responser.response_success(data=bird_survey_list)
+    return Responser.response_page(data=bird_survey_list,count=total_pages,page=page,page_size=per_page)
 
 
 @inventory.route('/get_bird_survey', methods=["GET"])
@@ -537,7 +552,15 @@ def delete_bird_record(request):
 # @login_required(['sysadmin', 'admin'])
 def get_all_bird_records(request):
     # 鸟类记录获取所有接口
-    bird_records = BirdRecords.query.filter_by(is_lock=False).all()
+
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+    bird_records_query = BirdRecords.query.filter_by(is_lock=False)
+
+    total_pages = ceil(bird_records_query.count() / per_page)
+
+    bird_records = bird_records_query.paginate(page=page, per_page=per_page)
+
     bird_record_list = []
     for bird_record in bird_records:
         files = []
@@ -563,7 +586,7 @@ def get_all_bird_records(request):
             'is_lock': bird_record.is_lock
         }
         bird_record_list.append(bird_record_dict)
-    return Responser.response_success(data=bird_record_list)
+    return Responser.response_page(data=bird_record_list,count=total_pages,page=page,page_size=per_page)
 
 
 @inventory.route('/get_bird_record', methods=["GET"])
