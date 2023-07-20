@@ -142,7 +142,7 @@ class FileResponser:
             os.makedirs('/robot/birdwatching/var/video/{}'.format(path))
         savepath = ""
         if video:
-            savepath = '/robot/birdwatching/var/audio/{}/{}.mp4'.format(path, filename)
+            savepath = '/robot/birdwatching/var/video/{}/{}.mp4'.format(path, filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(video)
