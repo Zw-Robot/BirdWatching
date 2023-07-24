@@ -1,5 +1,5 @@
 from apps import db
-from apps.sdk.wechat import WXSDK_jscode2session, WXSDK_userinfo
+from apps.sdk.wechat import WXSDK_jscode2session
 
 from apps.models import LoginSessionCache, Userdata
 
@@ -40,10 +40,11 @@ def login(request):
             '''获取用户的openid 和 session_key'''
             #获取用户openid和session_key
             wechet_data = WXSDK_jscode2session(request.json['code'])
+            print(wechet_data)
             openid, session_key = wechet_data['openid'], wechet_data['session_key']
-
+            print(openid,session_key)
             #获取用户信息
-            wechet_userdata = WXSDK_userinfo(openid, session_key)
+            # wechet_userdata = WXSDK_userinfo(openid, session_key)
 
             '''登录逻辑(更新和新建)'''
             if LoginSessionCache.query.filter_by(openid=openid).first():
@@ -51,14 +52,14 @@ def login(request):
                 '''存在就更新session_key'''
                 db.session.query(LoginSessionCache).filter(LoginSessionCache.openid == openid).update({LoginSessionCache.session_key: session_key})
                 '''更新用户数据'''
-                db.session.query(Userdata).filter(Userdata.openid == openid).update({
-                    Userdata.username: wechet_userdata['nickName'],
-                    Userdata.avatar: wechet_userdata['avatarUrl'],
-                    Userdata.gender: wechet_userdata['gender'],
-                    Userdata.country: wechet_userdata['country'],
-                    Userdata.province: wechet_userdata['province'],
-                    Userdata.city: wechet_userdata['city']
-                })
+                # db.session.query(Userdata).filter(Userdata.openid == openid).update({
+                #     Userdata.username: wechet_userdata['nickName'],
+                #     Userdata.avatar: wechet_userdata['avatarUrl'],
+                #     Userdata.gender: wechet_userdata['gender'],
+                #     Userdata.country: wechet_userdata['country'],
+                #     Userdata.province: wechet_userdata['province'],
+                #     Userdata.city: wechet_userdata['city']
+                # })
 
                 return 200, '成功', {"openid": openid,"session_key":session_key}
 
@@ -66,13 +67,13 @@ def login(request):
                 '''不存在就创建登录记录写入id和sessionkey'''
                 LoginSessionCache(openid , session_key)
                 '''创建用户关联数据表'''
-                Userdata(openid=openid,
-                         username=wechet_userdata['nickName'],
-                         avatar=wechet_userdata['avatarUrl'],
-                         gender=wechet_userdata['gender'],
-                         country=wechet_userdata['country'],
-                         province=wechet_userdata['province'],
-                         city=wechet_userdata['city'])
+                # Userdata(openid=openid,
+                #          username=wechet_userdata['nickName'],
+                #          avatar=wechet_userdata['avatarUrl'],
+                #          gender=wechet_userdata['gender'],
+                #          country=wechet_userdata['country'],
+                #          province=wechet_userdata['province'],
+                #          city=wechet_userdata['city'])
 
                 return 200, '成功', {"openid": openid,"session_key":session_key}
 

@@ -8,8 +8,9 @@ from apps.components.responser import Responser, FileResponser
 
 
 @auth.route('/sgin', methods=["GET", "POST"], endpoint='auth_login')
-@SingAuth
-def login(request):
+@requestPOST
+# @SingAuth
+def auth_login(request):
     code, msg, json = service.login(request)
     if code == 200:
         return Responser.response_success(data=json,msg=msg)
