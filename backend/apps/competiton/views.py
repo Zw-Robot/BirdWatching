@@ -6,6 +6,8 @@
 @Time:2023-07-17:22:32
 --------------------------------------------
 """
+import math
+
 from flask import request
 
 from apps.competiton import competition
@@ -98,13 +100,19 @@ def delete_match(request):
 
 @competition.route('/get_all_matches', methods=["GET"])
 @requestGET
-@login_required(['sysadmin', 'admin','other'])
+@login_required(['sysadmin', 'admin', 'other'])
 def get_all_matches(request):
-    # 查询所有未删除的比赛信息
-    bird_matches = BirdMatch.query.filter_by(is_lock=False).all()
-    match_list = []
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
 
-    for bird_match in bird_matches:
+    bird_matches_query = BirdMatch.query.filter_by(is_lock=False)
+
+    total_pages = math.ceil(bird_matches_query.count() / per_page)
+
+    bird_matches_paginated = bird_matches_query.paginate(page=page, per_page=per_page, error_out=False)
+
+    match_list = []
+    for bird_match in bird_matches_paginated.items:
         match_dict = {
             'match_id': bird_match.id,
             'match_create': bird_match.match_create,
@@ -120,4 +128,11 @@ def get_all_matches(request):
         }
         match_list.append(match_dict)
 
-    return Responser.response_success(data=match_list)
+    pagination_data = {
+        'current_page': bird_matches_paginated.page,
+        'total_pages': total_pages,
+        'total_items': bird_matches_paginated.total,
+        'per_page': per_page
+    }
+
+    return Responser.response_success(data=match_list, pagination=pagination_data)
