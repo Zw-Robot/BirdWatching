@@ -196,7 +196,7 @@ class BirdInventory(db.Model):
     is_check = Column(Boolean,default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
 
-    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name, describe=None,
+    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name,geotype,seasonal,IUCN,level,describe=None,
                  habitat=None, behavior=None, bird_info=None):
         self.order_en = order_en
         self.order_cn = order_cn
@@ -205,6 +205,10 @@ class BirdInventory(db.Model):
         self.genus = genus
         self.species = species
         self.latin_name = latin_name
+        self.geotype = geotype
+        self.seasonal = seasonal
+        self.IUCN = IUCN
+        self.level = level
         self.describe = describe
         self.habitat = habitat
         self.behavior = behavior
