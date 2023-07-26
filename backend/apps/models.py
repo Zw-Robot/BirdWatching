@@ -2,7 +2,7 @@
 import base64
 from datetime import datetime, timedelta
 
-from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey, Float
 from itsdangerous import Serializer
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -145,15 +145,15 @@ class Userdata(db.Model):
         db.session.commit()
 
 
-class BirdImageSound(db.Model):
+class BirdInfos(db.Model):
     """鸟类图片声音"""
 
     __tablename__ = 'bird_image_sound'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     order_by = Column(String(40), nullable=False, comment='提供者')
-    path = Column(String(40), nullable=False, comment='存储路径')
-    label = Column(Enum("sound", "image"), nullable=False, comment='类型 图片或声音')
+    path = Column(String(100), nullable=False, comment='存储路径')
+    label = Column(String(40), nullable=False, comment='类型 图片或声音')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该目录')
@@ -183,6 +183,10 @@ class BirdInventory(db.Model):
     genus = Column(String(40), nullable=False, comment='属')
     species = Column(String(40), nullable=False, comment='种')
     latin_name = Column(String(40), nullable=False, comment='拉丁名')
+    geotype = Column(String(40),nullable=True, comment='地理型')
+    seasonal = Column(String(200),nullable=True,comment='季节型 逗号分割')
+    IUCN = Column(String(40),nullable=True,comment='濒危等级')
+    level = Column(String(100),nullable=True,comment='保护等级')
     describe = Column(String(200), nullable=True, comment='描述')
     habitat = Column(String(200), nullable=True, comment='生境')
     behavior = Column(String(200), nullable=True, comment='习性')
@@ -192,7 +196,7 @@ class BirdInventory(db.Model):
     is_check = Column(Boolean,default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
 
-    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name, describe=None,
+    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name,geotype,seasonal,IUCN,level,describe=None,
                  habitat=None, behavior=None, bird_info=None):
         self.order_en = order_en
         self.order_cn = order_cn
@@ -201,6 +205,10 @@ class BirdInventory(db.Model):
         self.genus = genus
         self.species = species
         self.latin_name = latin_name
+        self.geotype = geotype
+        self.seasonal = seasonal
+        self.IUCN = IUCN
+        self.level = level
         self.describe = describe
         self.habitat = habitat
         self.behavior = behavior
@@ -223,6 +231,10 @@ class BirdRecords(db.Model):
     bird_id = Column(Integer, ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
     record_time = Column(DateTime, nullable=False, comment='时间')
     record_location = Column(String(200), nullable=False, comment='地点')
+    longitude = Column(Float,nullable=False,comment="经度")
+    latitude = Column(Float,nullable=False,comment="经度")
+    weather = Column(String(40),nullable=False,comment="天气")
+    temperature = Column(Float,nullable=False,comment="气温")
     record_describe = Column(String(200), nullable=True, comment='描述')
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
@@ -230,13 +242,17 @@ class BirdRecords(db.Model):
     is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该记录')
 
-    def __init__(self, user_id, bird_id, record_time, record_location, record_describe=None, bird_info=None):
+    def __init__(self, user_id, bird_id, record_time, record_location, longitude,latitude,weather,temperature,record_describe=None, bird_info=None,):
         self.user_id = user_id
         self.bird_id = bird_id
         self.record_time = record_time
         self.record_location = record_location
         self.record_describe = record_describe
         self.bird_info = bird_info
+        self.longitude = longitude
+        self.latitude = latitude
+        self.weather = weather
+        self.temperature = temperature
         self.is_lock = False
 
     def update(self):

@@ -8,7 +8,7 @@
 """
 from flask import Blueprint, request
 from apps.components.common import required_attrs_validator
-from apps.models import BirdInventory, BirdImageSound, BirdSurvey, BirdRecords
+from apps.models import BirdInventory, BirdInfos, BirdSurvey, BirdRecords
 from apps.components.middleware import requestPOST, login_required, requestGET
 from apps.components.responser import Responser
 
@@ -18,7 +18,7 @@ inventory = Blueprint('inventory', __name__)
 @requestPOST
 @login_required(['sysadmin'])
 def create_bird(request):
-    # 鸟类调查创建接口
+    # 鸟类名录创建接口
     order_en = request.json.get("order_en")
     order_cn = request.json.get("order_cn")
     family_en = request.json.get("family_en")
@@ -26,6 +26,10 @@ def create_bird(request):
     genus = request.json.get("genus")
     species = request.json.get("species")
     latin_name = request.json.get("latin_name")
+    geotype = request.json.get("geotype")  # 添加地理型字段
+    seasonal = request.json.get("seasonal")  # 添加季节型字段
+    IUCN = request.json.get("IUCN")  # 添加濒危等级字段
+    level = request.json.get("level")  # 添加保护等级字段
     describe = request.json.get("describe")
     habitat = request.json.get("habitat")
     behavior = request.json.get("behavior")
@@ -37,7 +41,7 @@ def create_bird(request):
 
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -51,6 +55,10 @@ def create_bird(request):
         genus=genus,
         species=species,
         latin_name=latin_name,
+        geotype=geotype,
+        seasonal=seasonal,
+        IUCN=IUCN,
+        level=level,
         describe=describe,
         habitat=habitat,
         behavior=behavior,
@@ -61,9 +69,9 @@ def create_bird(request):
 
 @inventory.route('/update_bird', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin','others'])
+@login_required(['sysadmin', 'admin', 'others'])
 def update_bird(request):
-    # 鸟类记录更新接口
+    # 鸟类名录更新接口
     bird_id = request.json.get("bird_id")
     order_en = request.json.get("order_en")
     order_cn = request.json.get("order_cn")
@@ -72,6 +80,10 @@ def update_bird(request):
     genus = request.json.get("genus")
     species = request.json.get("species")
     latin_name = request.json.get("latin_name")
+    geotype = request.json.get("geotype")  # 添加地理型字段
+    seasonal = request.json.get("seasonal")  # 添加季节型字段
+    IUCN = request.json.get("IUCN")  # 添加濒危等级字段
+    level = request.json.get("level")  # 添加保护等级字段
     describe = request.json.get("describe")
     habitat = request.json.get("habitat")
     behavior = request.json.get("behavior")
@@ -85,7 +97,7 @@ def update_bird(request):
         return Responser.response_error('缺少参数')
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -97,6 +109,10 @@ def update_bird(request):
     bird.genus = genus
     bird.species = species
     bird.latin_name = latin_name
+    bird.geotype = geotype
+    bird.seasonal = seasonal
+    bird.IUCN = IUCN
+    bird.level = level
     bird.describe = describe
     bird.habitat = habitat
     bird.behavior = behavior
@@ -104,11 +120,11 @@ def update_bird(request):
     bird.update()
     return Responser.response_success(msg="修改成功")
 
-@inventory.route('/delete_bird', methods=['GET'])
-@requestGET
-@login_required(['sysadmin','admin'])
+@inventory.route('/delete_bird', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin'])
 def delete_bird(request):
-    # 鸟类记录删除接口
+    # 鸟类名录删除接口
     bird_id = request.json.get("bird_id")
 
     bird = BirdInventory.query.get(bird_id)
@@ -124,7 +140,20 @@ def delete_bird(request):
 @login_required(['sysadmin', 'admin'])
 def get_all_birds():
     # 鸟类名录查询所有接口
-    birds = BirdInventory.query.filter_by().all()
+    query = BirdInventory.query
+
+    # 添加模糊查询条件，根据目、科、种来匹配
+    order_en = request.args.get("order_en")
+    family_en = request.args.get("family_en")
+    species = request.args.get("species")
+    if order_en:
+        query = query.filter(BirdInventory.order_en.ilike(f'%{order_en}%'))
+    if family_en:
+        query = query.filter(BirdInventory.family_en.ilike(f'%{family_en}%'))
+    if species:
+        query = query.filter(BirdInventory.species.ilike(f'%{species}%'))
+
+    birds = query.all()
     bird_list = []
     for bird in birds:
         bird_dict = {
@@ -136,6 +165,10 @@ def get_all_birds():
             'genus': bird.genus,
             'species': bird.species,
             'latin_name': bird.latin_name,
+            'geotype': bird.geotype,
+            'seasonal': bird.seasonal,
+            'IUCN': bird.IUCN,
+            'level': bird.level,
             'describe': bird.describe,
             'habitat': bird.habitat,
             'behavior': bird.behavior,
@@ -149,7 +182,7 @@ def get_all_birds():
 
 @inventory.route('/get_bird', methods=["GET"])
 @requestGET
-@login_required(['sysadmin', 'admin','others'])
+@login_required(['sysadmin', 'admin', 'others'])
 def get_bird(request):
     # 鸟类名录查询单个接口
     bird_id = request.json.get("bird_id")
@@ -165,6 +198,10 @@ def get_bird(request):
         'genus': bird.genus,
         'species': bird.species,
         'latin_name': bird.latin_name,
+        'geotype': bird.geotype,
+        'seasonal': bird.seasonal,
+        'IUCN': bird.IUCN,
+        'level': bird.level,
         'describe': bird.describe,
         'habitat': bird.habitat,
         'behavior': bird.behavior,
@@ -195,7 +232,7 @@ def create_bird_survey(request):
 
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -242,7 +279,7 @@ def update_bird_survey(request):
 
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -325,25 +362,31 @@ def get_bird_survey(request):
     }
     return Responser.response_success(data=bird_survey_dict)
 
+# ...
+
 @inventory.route('/create_bird_record', methods=['POST'])
 @requestPOST
 @login_required(['sysadmin'])
 def create_bird_record(request):
-    #鸟类记录创建接口
+    # 鸟类记录创建接口
     user_id = request.user_id
     bird_id = request.json.get("bird_id")
     record_time = request.json.get("record_time")
     record_location = request.json.get("record_location")
+    longitude = request.json.get("longitude")
+    latitude = request.json.get("latitude")
+    weather = request.json.get("weather")
+    temperature = request.json.get("temperature")
     record_describe = request.json.get("record_describe")
     bird_info_ids = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
+    lost_attrs = required_attrs_validator([bird_id, record_time, record_location, longitude, latitude, weather, temperature])
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -354,22 +397,31 @@ def create_bird_record(request):
         bird_id=bird_id,
         record_time=record_time,
         record_location=record_location,
+        longitude=longitude,
+        latitude=latitude,
+        weather=weather,
+        temperature=temperature,
         record_describe=record_describe,
         bird_info=','.join(map(str, bird_info_ids))
     )
     bird_record.update()
     return Responser.response_success(msg="创建鸟类记录成功")
 
+
 @inventory.route('/update_bird_record', methods=['POST'])
 @requestPOST
 @login_required(['sysadmin', 'admin', 'others'])
 def update_bird_record(request):
-    #鸟类记录更新接口
+    # 鸟类记录更新接口
     bird_record_id = request.json.get("bird_record_id")
     user_id = request.user_id
     bird_id = request.json.get("bird_id")
     record_time = request.json.get("record_time")
     record_location = request.json.get("record_location")
+    longitude = request.json.get("longitude")
+    latitude = request.json.get("latitude")
+    weather = request.json.get("weather")
+    temperature = request.json.get("temperature")
     record_describe = request.json.get("record_describe")
     bird_info_ids = request.json.get("bird_info", [])
 
@@ -379,13 +431,13 @@ def update_bird_record(request):
     if bird_record.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类记录')
 
-    lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
+    lost_attrs = required_attrs_validator([bird_id, record_time, record_location, longitude, latitude, weather, temperature])
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
     invalid_bird_info_ids = []
     for bird_info_id in bird_info_ids:
-        bird_info = BirdImageSound.query.get(bird_info_id)
+        bird_info = bird_info.query.get(bird_info_id)
         if bird_info is None:
             invalid_bird_info_ids.append(bird_info_id)
     if invalid_bird_info_ids:
@@ -394,16 +446,21 @@ def update_bird_record(request):
     bird_record.bird_id = bird_id
     bird_record.record_time = record_time
     bird_record.record_location = record_location
+    bird_record.longitude = longitude
+    bird_record.latitude = latitude
+    bird_record.weather = weather
+    bird_record.temperature = temperature
     bird_record.record_describe = record_describe
     bird_record.bird_info = ','.join(map(str, bird_info_ids))
     bird_record.update()
     return Responser.response_success(msg="修改鸟类记录成功")
 
+
 @inventory.route('/delete_bird_record', methods=['GET'])
 @requestGET
 @login_required(['sysadmin','admin'])
 def delete_bird_record(request):
-    #鸟类记录删除接口
+    # 鸟类记录删除接口
     bird_record_id = request.json.get("bird_record_id")
 
     bird_record = BirdRecords.query.get(bird_record_id)
@@ -414,11 +471,12 @@ def delete_bird_record(request):
     bird_record.update()
     return Responser.response_success("删除鸟类记录成功")
 
+
 @inventory.route('/get_all_bird_records', methods=["GET"])
 @requestGET
 @login_required(['sysadmin', 'admin'])
 def get_all_bird_records(request):
-    #鸟类记录获取所有接口
+    # 鸟类记录获取所有接口
     bird_records = BirdRecords.query.filter_by().all()
     bird_record_list = []
     for bird_record in bird_records:
@@ -428,6 +486,10 @@ def get_all_bird_records(request):
             'bird_id': bird_record.bird_id,
             'record_time': bird_record.record_time,
             'record_location': bird_record.record_location,
+            'longitude': bird_record.longitude,
+            'latitude': bird_record.latitude,
+            'weather': bird_record.weather,
+            'temperature': bird_record.temperature,
             'record_describe': bird_record.record_describe,
             'bird_info': bird_record.bird_info.split(',') if bird_record.bird_info else [],
             'create_at': bird_record.create_at,
@@ -437,11 +499,12 @@ def get_all_bird_records(request):
         bird_record_list.append(bird_record_dict)
     return Responser.response_success(data=bird_record_list)
 
+
 @inventory.route('/get_bird_record', methods=["GET"])
 @requestGET
 @login_required(['sysadmin', 'admin', 'others'])
 def get_bird_record(request):
-    #鸟类记录获取单个接口
+    # 鸟类记录获取单个接口
     bird_record_id = request.json.get("bird_record_id")
     bird_record = BirdRecords.query.get(bird_record_id)
     if bird_record is None:
@@ -452,9 +515,15 @@ def get_bird_record(request):
         'bird_id': bird_record.bird_id,
         'record_time': bird_record.record_time,
         'record_location': bird_record.record_location,
+        'longitude': bird_record.longitude,
+        'latitude': bird_record.latitude,
+        'weather': bird_record.weather,
+        'temperature': bird_record.temperature,
         'record_describe': bird_record.record_describe,
         'bird_info': bird_record.bird_info.split(',') if bird_record.bird_info else [],
         'create_at': bird_record.create_at,
         'update_at': bird_record.update_at,
     }
     return Responser.response_success(data=bird_record_dict)
+
+# ...
