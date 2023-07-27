@@ -21,7 +21,7 @@ class Responser:
             wrapper['data'] = data
         if count is not None:
             wrapper['count'] = count
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_error(msg='server error', code=status.HTTP_500_INTERNAL_SERVER_ERROR):
@@ -35,7 +35,7 @@ class Responser:
             'code': code,
             'msg': msg
         }
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_page(data, count, page, page_size, msg='success', **kwargs):
@@ -59,7 +59,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_page_with_total(data, total, count, page, page_size, msg='success', **kwargs):
@@ -85,7 +85,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
 class FileResponser:
 

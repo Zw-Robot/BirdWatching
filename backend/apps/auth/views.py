@@ -1,6 +1,6 @@
 from apps.auth import service,auth
 from apps.components.common import required_attrs_validator
-from apps.models import LogonUser
+from apps.models import LogonUser, Userdata, LoginSessionCache
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
 from apps.components.responser import Responser, FileResponser
 
@@ -17,6 +17,24 @@ def auth_login(request):
     else:
         return Responser.response_error(msg=msg)
 
+
+@auth.route('/info', methods=["GET", "POST"], endpoint='info')
+@requestPOST
+@SingAuth
+def get_info(request):
+    params = request.json()
+    openid = params.get("openid")  # openid
+    log = LoginSessionCache.query.filter_by(openid=openid).first()
+    if not log:
+        return Responser.response_error(msg="未登录")
+    username = params.get("username")  # username
+    avatar = params.get("avatar")  # avatarUrl
+    gender = params.get("gender")   # gender
+    country = params.get("country")  # country
+    province = params.get("province")   # province
+    city = params.get("city") # city
+    Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
+    return Responser.response_success(data={},msg="success")
 
 @auth.route('/login', methods=['GET'])
 @requestGET
