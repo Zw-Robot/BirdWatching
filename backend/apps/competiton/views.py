@@ -9,11 +9,14 @@
 import math
 
 from flask import request
+from login import generate_password_hash
+from sqlalchemy.exc import SQLAlchemyError
 
 from apps.competiton import competition
 from apps.components.middleware import requestPOST, login_required, requestGET
 from apps.components.responser import Responser
-from apps.models import BirdMatch
+from apps.models import BirdMatch, MatchGroup
+
 
 @competition.route('/create_match', methods=['POST'])
 @requestPOST
@@ -136,3 +139,105 @@ def get_all_matches(request):
     }
 
     return Responser.response_success(data=match_list, pagination=pagination_data)
+
+
+@competition.route('/create_group', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin'])
+def create_group(request, db_session=None):
+    # 比赛小组创建接口
+    match_id = request.json.get("match_id")
+    group_name = request.json.get("group_name")
+    group_desc = request.json.get("group_desc")
+    group_user = request.json.get("group_user")
+    password = request.json.get("password")
+    hashed_password = generate_password_hash(password)
+
+    group = MatchGroup(match_id=match_id, group_name=group_name, group_desc=group_desc, group_user=group_user, password=hashed_password)
+    try:
+        db_session.add(group)
+        db_session.commit()
+        return Responser.response_success(msg="小组创建成功"), 201
+    except SQLAlchemyError as e:
+        db_session.rollback()
+        return Responser.response_error(str(e)), 500
+
+@competition.route('/update_group', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin', 'other'])
+def update_group(request, db_session=None):
+    # 比赛小组更新接口
+    group_id = request.json.get("group_id")
+    group_name = request.json.get("group_name")
+    group_desc = request.json.get("group_desc")
+    group_user = request.json.get("group_user")
+
+    group = MatchGroup.query.get(group_id)
+    if group is None:
+        return Responser.response_error('找不到指定的小组信息'), 404
+
+    group.group_name = group_name
+    group.group_desc = group_desc
+    group.group_user = group_user
+
+    try:
+        db_session.commit()
+        return Responser.response_success(msg="小组信息更新成功"), 200
+    except SQLAlchemyError as e:
+        db_session.rollback()
+        return Responser.response_error(str(e)), 500
+
+@competition.route('/delete_group', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin'])
+def delete_group(request, db_session=None):
+    # 比赛小组删除接口
+    group_id = request.json.get("group_id")
+
+    group = MatchGroup.query.get(group_id)
+    if group is None:
+        return Responser.response_error('找不到指定的小组信息'), 404
+
+    try:
+        db_session.delete(group)
+        db_session.commit()
+        return Responser.response_success(msg="小组删除成功"), 200
+    except SQLAlchemyError as e:
+        db_session.rollback()
+        return Responser.response_error(str(e)), 500
+
+@competition.route('/get_all_groups', methods=["GET"])
+@requestGET
+@login_required(['sysadmin', 'admin', 'other'])
+def get_all_groups(request):
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+
+    groups_query = MatchGroup.query
+
+    total_pages = math.ceil(groups_query.count() / per_page)
+
+    groups_paginated = groups_query.paginate(page=page, per_page=per_page, error_out=False)
+
+    group_list = []
+    for group in groups_paginated.items:
+        group_dict = {
+            'group_id': group.id,
+            'match_id': group.match_id,
+            'group_name': group.group_name,
+            'group_desc': group.group_desc,
+            'group_user': group.group_user,
+            'rank': group.rank,
+            'create_at': group.create_at,
+            'update_at': group.update_at
+        }
+        group_list.append(group_dict)
+
+    pagination_data = {
+        'current_page': groups_paginated.page,
+        'total_pages': total_pages,
+        'total_items': groups_paginated.total,
+        'per_page': per_page
+    }
+
+    return Responser.response_success(data=group_list, pagination=pagination_data)
