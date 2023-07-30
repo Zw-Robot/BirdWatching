@@ -30,6 +30,10 @@ def create_bird(request):
     genus = request.json.get("genus")
     species = request.json.get("species")
     latin_name = request.json.get("latin_name")
+    geotype = request.json.get("geotype")
+    seasonal = request.json.get("seasonal")
+    IUCN = request.json.get("IUCN")
+    level = request.json.get("level")
     describe = request.json.get("describe")
     habitat = request.json.get("habitat")
     behavior = request.json.get("behavior")
@@ -65,6 +69,10 @@ def create_bird(request):
         genus=genus,
         species=species,
         latin_name=latin_name,
+        geotype = geotype,
+        seasonal = seasonal,
+        IUCN = IUCN,
+        level = level,
         describe=describe,
         habitat=habitat,
         behavior=behavior,
@@ -88,6 +96,10 @@ def update_bird(request):
     genus = request.json.get("genus", "")
     species = request.json.get("species", "")
     latin_name = request.json.get("latin_name", "")
+    geotype = request.json.get("geotype","")
+    seasonal = request.json.get("seasonal","")
+    IUCN = request.json.get("IUCN","")
+    level = request.json.get("level","")
     describe = request.json.get("describe", "")
     habitat = request.json.get("habitat", "")
     behavior = request.json.get("behavior", "")
@@ -125,6 +137,10 @@ def update_bird(request):
     bird.genus = genus if genus else bird.genus
     bird.species = species if species else bird.species
     bird.latin_name = latin_name if latin_name else bird.latin_name
+    bird.geotype = geotype if geotype else bird.geotype
+    bird.seasonal = seasonal if seasonal else bird.seasonal
+    bird.IUCN = IUCN if IUCN else bird.IUCN
+    bird.level = level if level else bird.level
     bird.describe = describe if describe else bird.describe
     bird.habitat = habitat if habitat else bird.habitat
     bird.behavior = behavior if behavior else bird.behavior
