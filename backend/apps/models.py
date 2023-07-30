@@ -34,7 +34,7 @@ class LogonUser(db.Model):
 
     def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depart=0):
         self.username = username
-        self.hash_password = hash_password
+        self.password = hash_password
         self.phone = phone
         self.email = email
         self.avatar = avatar
@@ -318,11 +318,12 @@ class BirdMatch(db.Model):
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除')
 
-    def __init__(self, match_create, match_name, match_desc, match_location, referee, start_time, end_time):
+    def __init__(self, match_create, match_name, match_desc, match_location,match_image, referee, start_time, end_time):
         self.match_create = match_create
         self.match_name = match_name
         self.match_desc = match_desc
-        self.match_location = match_location
+        self.match_location = match_location,
+        self.match_image = match_image,
         self.referee = referee
         self.start_time = start_time
         self.end_time = end_time
@@ -342,6 +343,7 @@ class MatchGroup(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     match_id = Column(Integer, ForeignKey("bird_match.id"), nullable=False, comment="比赛id")
     group_name = Column(String(60), unique=True, nullable=False, comment='小组名称')
+    hash_password = Column(String(120), nullable=False, comment='密码')
     group_desc = Column(String(200), nullable=True, comment='小组描述')
     group_user = Column(String(200), nullable=False, comment='小组成员 逗号隔开添加')
     rank = Column(Integer, nullable=True, comment='小组排名')
@@ -349,13 +351,28 @@ class MatchGroup(db.Model):
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束小组')
 
-    def __init__(self, match_id, group_name, group_desc, group_user):
+    def __init__(self, match_id, group_name, hash_password ,group_desc, group_user):
         self.match_id = match_id
         self.group_name = group_name
+        self.password = hash_password
         self.group_desc = group_desc
         self.group_user = group_user
         self.rank = None
         self.is_lock = False
+
+    # 明文密码（只读）
+    @property
+    def password(self):
+        raise AttributeError('不可读')
+
+    # 写入密码，同时计算hash值，保存到模型中
+    @password.setter
+    def password(self, value):
+        self.hash_password = generate_password_hash(value)
+
+    # 检查密码是否正确
+    def check_password(self, password):
+        return check_password_hash(self.hash_password, password)
 
     def update(self):
         self.update_at = datetime.now()

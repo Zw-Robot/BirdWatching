@@ -63,7 +63,7 @@ def login(request):
 
 @auth.route('/create_user', methods=['POST'])
 @requestPOST
-@login_required('sysadmin')
+# @login_required('sysadmin')
 def create_user(request):
     # 完成网页端用户创建接口
     username = request.json.get("username")
