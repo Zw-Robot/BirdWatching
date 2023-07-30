@@ -44,13 +44,19 @@ wx.login({
     console.log(res)
     if (res.code) {
       //发起网络请求
-      // wx.request({
-      //   method:'POST',
-      //   url: 'https://birdwatching.top/api/auth/sgin',
-      //   data: { 
-      //     "code": res.code
-      //   }
-      // })
+      wx.request({
+        method:'POST',
+        url: 'http://127.0.0.1:5500/test/test',
+        data: { 
+          "code": res.code
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success(res){
+          console.log(res.data)
+        }
+      })
     } else {
       console.log('登录失败！' + res.errMsg)
     }
