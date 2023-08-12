@@ -6,13 +6,55 @@
 @Time:2023-07-15:10:59
 --------------------------------------------
 """
-from flask import Blueprint, request
+from flask import Blueprint, request, Flask, make_response
+from flask_sqlalchemy import SQLAlchemy
+
 from apps.components.common import required_attrs_validator
 from apps.models import BirdInventory, BirdInfos, BirdSurvey, BirdRecords
 from apps.components.middleware import requestPOST, login_required, requestGET
-from apps.components.responser import Responser
+from apps.components.responser import Responser, FileResponser
 
 inventory = Blueprint('inventory', __name__)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bird_inventory.db'
+db = SQLAlchemy(app)
+
+# ...（定义BirdInventory等数据模型）
+
+# ...（定义Responser和FileResponser类）
+
+@app.route('/upload_bird_info', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin', 'others'])
+def upload_bird_info(request):
+    image_file = request.files.get('image')
+    if image_file:
+        # 保存上传的图像文件
+        image_path = FileResponser.image_save(image=image_file, path='bird_info', filename=datetime.now().strftime('%Y%m%d%H%M%S'))
+        # 返回图像保存的路径
+        return Responser.response_success(data={'image_url': image_path})
+    else:
+        return Responser.response_error('No image uploaded.')
+
+@app.route('/download_bird_info/<filename>', methods=['GET'])
+@requestGET
+@login_required(['sysadmin', 'admin', 'others'])
+def download_bird_info(request, filename):
+    # 构建文件路径
+    file_path = '/robot/birdwatching/var/images/bird_info/{}.png'.format(filename)
+    try:
+        with open(file_path, 'rb') as file:
+            response = make_response(file.read())
+            response.headers['Content-Type'] = 'image/png'
+            response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+            return response
+    except FileNotFoundError:
+        return Responser.response_error('File not found.')
+
+# ...（其他接口）
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 @inventory.route('/create_bird', methods=['POST'])
 @requestPOST
