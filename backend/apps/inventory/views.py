@@ -21,9 +21,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bird_inventory.db'
 db = SQLAlchemy(app)
 
-# ...（定义BirdInventory等数据模型）
-
-# ...（定义Responser和FileResponser类）
 
 @app.route('/upload_bird_info', methods=['POST'])
 @requestPOST
@@ -31,9 +28,7 @@ db = SQLAlchemy(app)
 def upload_bird_info(request):
     image_file = request.files.get('image')
     if image_file:
-        # 保存上传的图像文件
         image_path = FileResponser.image_save(image=image_file, path='bird_info', filename=datetime.now().strftime('%Y%m%d%H%M%S'))
-        # 返回图像保存的路径
         return Responser.response_success(data={'image_url': image_path})
     else:
         return Responser.response_error('No image uploaded.')
@@ -42,7 +37,6 @@ def upload_bird_info(request):
 @requestGET
 @login_required(['sysadmin', 'admin', 'others'])
 def download_bird_info(request, filename):
-    # 构建文件路径
     file_path = '/robot/birdwatching/var/images/bird_info/{}.png'.format(filename)
     try:
         with open(file_path, 'rb') as file:
@@ -53,7 +47,6 @@ def download_bird_info(request, filename):
     except FileNotFoundError:
         return Responser.response_error('File not found.')
 
-# ...（其他接口）
 
 if __name__ == '__main__':
     app.run(debug=True)
