@@ -1,0 +1,38 @@
+<!--pages/storehouse/storehouse.wxml-->
+<!-- 搜索栏区域 -->
+<view class="searchbox">
+<input placeholder="鸟类搜索" bindinput="getInput" value="{{val}}"/>
+<icon type="search" wx:if="{{isSearch}}"/>
+<icon type="clear" wx:if="{{isClear}}"  bindtap="clearTap"/>
+</view>
+
+<!-- 目录区域 -->
+<view class="cates">
+<!-- 鸟库列表 -->
+<view class="cates_container">
+  <!-- 左侧鸟库列表开始 -->
+  <scroll-view scroll-y class="left_menu">
+    <view class="productType" wx:for="{{leftMenuList}}" wx:key="id">
+      <view>
+        <text class="header">{{item.name}}</text>
+      </view>
+      <view class="list">
+        <navigator wx:for="{{item.twodata}}" wx:for-item="twodata" wx:key="id" class="list-item" url="/pages/birdmessage/birdmessage?title={{twodata.name}}&id={{item.id}}">
+          <text class="birdName">{{twodata.name}}</text>
+          <text class="lading">{{twodata.lading}}<text class="english">{{twodata.english}}</text></text>
+          <text class="subject">{{twodata.subject}}</text>
+        </navigator>
+      </view>
+    </view>
+  </scroll-view>
+  <!-- 左侧鸟库列表结束 -->
+  
+  <!-- 右侧菜单开始 -->
+  <scroll-view scroll-y class="right_menu">
+    <view wx:for="{{rightMenuList}}" wx:for-item="info" data-item="{{info.id}}" wx:key="index" bindtap="SyntheSize" class='menu_item {{activeItem == info.id ? "active" : ""}}'>
+      {{info.name}}
+    </view>
+  </scroll-view>
+  <!-- 右侧菜单结束 -->
+  </view>
+</view>

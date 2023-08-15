@@ -1,0 +1,16 @@
+/* pages/find/find.wxss */
+page{
+  background-color: #F5FFFA;
+}
+swiper{
+  height: 950rpx;
+}
+swiper .picture{
+  display: flex;
+  align-items: center;
+   justify-content: center;
+}
+swiper swiper-item image{
+  width: 600rpx;
+  height: 500rpx;
+}

@@ -1,0 +1,128 @@
+<view class="addBox"> 
+  <view class="addPicture">
+  <navigator url="../../pages/addbird/addbird" class="addPictureitem">
+    <image src="/pages/images/添加.png" mode=""/>
+  </navigator>
+  <text class="addBird">添加鸟种</text>
+  </view>
+  <scroll-view scroll-x style='display: flex;white-space:nowrap;' class=''>
+  <view class="getmessage">
+    <view wx:for="{{checkedList}}" wx:key="index" data-index="{{index}}" class="checkitem" bindtap="deletebird">
+    <text class="item-text">{{item}}</text>
+      <image src="/pages/images/3.0-删除.png" style="position: absolute;margin:-10rpx 100rpx;width: 40rpx;height: 40rpx;" mode=""/>
+    </view>
+  </view>
+</scroll-view>
+</view>
+
+<!-- 灰色部分 -->
+<scroll-view scroll-x class="hd">
+  <view class="flex-container">
+    <view wx:for="{{navList}}" wx:key="index" class="checkitem">
+      <view class="hd-item {{nav_type==index && 'active'}}" catchtap="changeType" data-index="{{index}}">{{item}}</view>
+    </view>
+  </view>
+</scroll-view>
+
+<view class="waitBox">
+<!-- 选择日期 -->
+  <picker mode="date" header-text="选择日期"  value="{{date}}" bindchange="bindDateChange">
+    <view class="pickerBox">
+      <text class="mainName">日期 *</text>
+      <text class="result">{{date}}</text>
+    </view>
+  </picker>
+  <!--选择时间 -->
+  <picker mode="time" header-text="选择时间"  value="{{time}}" bindchange="bindTimeChange">
+    <view class="pickerBox">
+      <text class="mainName">时间 *</text>
+      <text class="result">{{time}}</text>
+    </view>
+  </picker>
+<!-- 选择地点 -->
+<view class="numberBox"  bindtap="ChoosePoint">
+      <text class="mainName">地点 *</text>
+      <text class="result">{{address}} </text>
+</view>
+<!-- 数量 -->
+<view class="numberBox">
+      <text class="mainName">数量 *</text>
+      <view class="numberBox-item">
+      <button class="buttoniconone" size="mini" bindtap="subtract">-</button>
+      <text class="numbertext">{{count}}</text>
+      <button class="buttonicontwo" size="mini" bindtap="addNumber">+</button>
+      </view>
+</view>
+<!-- 人数 -->
+<view class="numberBox">
+      <text class="mainName">人数 *</text>
+      <view class="numberBox-item">
+      <button class="buttoniconone" size="mini" bindtap="subtractnumber">-</button>
+      <text class="numbertext">{{num}}</text>
+      <button class="buttonicontwo" size="mini" bindtap="add">+</button>
+      </view>
+</view>
+
+<view>
+  <text class="picture">照片</text>
+  <my-image></my-image>
+    <!-- 上传视频 -->
+    <view class="birdvideo">
+    <!-- 上传 S -->
+<view class="img-list">
+    <!-- 上传列表 -->
+    <view class="upload-video">
+      <block wx:if="{{src != ''}}">
+      <text class="picture">视频</text>
+        <view class="videobox">
+        <image class="icon-deletes" src="../../pages/images/拍照.png" bindtap="deleteVideo"></image>
+        </view>
+        <!-- 视频窗口 -->
+        <video src="{{src}}" class="img-li"></video>
+      </block>
+    </view>
+    <block wx:for="{{imgList}}" wx:key="index">
+    </block>
+    
+    <!-- 视频 S -->
+    <view class="img-li" wx:if="{{src == ''}}" bindtap="chooseVideo">
+      <text class="picturevideo">视频</text>
+    <view class="videoboxitem">
+      <image class="icon-deletes" src="../../pages/images/拍照.png" ></image>
+    </view>
+    </view>
+    <!-- 视频 E -->
+  </view>
+  <!-- 上传 E -->
+  </view>
+  <!-- 录音 -->
+<view class="musicBox">
+  <text class="picture">录音</text>
+  <view class="listen">
+  </view>
+  <view class="startend">
+    <button bindtouchstart="startClick" class="rectangle">开始录音</button>
+    <button bindtouchend="stopClick" class="rectangle" >结束录音</button>
+    <button bindtap="playClick"  class="rectangle">播放录音</button>
+
+  </view>
+</view>
+
+</view>
+<!-- 备注 -->
+<view class="beizhu">
+  <view class="beizhuname">备注*</view>
+  <textarea value="" class="beizhu-item"/>
+</view>
+
+<!-- 提交按钮 -->
+<view class="bottom-btn">
+  <van-button 
+  round 
+  type="default" 
+  color="#1296db"
+  bindtap='jumpToDetail'
+  >提交
+  </van-button>
+</view>
+</view>

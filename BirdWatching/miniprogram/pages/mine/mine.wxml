@@ -1,0 +1,29 @@
+<!--pages/mine/mine.wxml-->
+<view class="main">
+<!-- 用户信息 -->
+<view class="user-info">
+<image class="avatar" src="/pages/images/head.png" mode=""/>
+<view class="info"></view>
+<text class="name">用户名</text>
+<view class="rightBox">
+<navigator url="../../pages/information Center/information Center">
+  <image src="../../pages/images/3.1铃铛.png" class="righto" mode=""/>
+</navigator>
+<navigator url="../../pages/more/more">
+  <image src="../../pages/images/三行.png" class="rightt" mode=""/>
+</navigator>
+</view>
+</view>
+</view>
+
+<!--  -->
+<view class="hd {{isFixed && 'fixed'}}" id="nav">
+  <block wx:for="{{navList}}" wx:key="navList">
+    <view class="hd-item {{nav_type==index && 'active'}}"  catchtap="changeType" data-index="{{index}}">{{item}}</view>
+  </block>
+</view>
+<view class="content {{isFixed && 'pt'}}" id="content">
+<block wx:for="{{nav_type==0?20:nav_type==1?0:40}}" wx:key="list">
+  <view>{{index+1}}</view>
+</block>
+</view>

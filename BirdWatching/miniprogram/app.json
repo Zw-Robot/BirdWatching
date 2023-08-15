@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/find/find",
+    "pages/storehouse/storehouse",
+    "pages/addbird/addbird",
+    "pages/mine/mine",
+    "pages/add/add",
+    "pages/attendRace/attendRace",
+    "pages/addright/addright",
+    "pages/birdmessage/birdmessage",
+    "pages/information Center/information Center",
+    "pages/more/more"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于获取获取定位"
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "list": [{
+      "pagePath": "pages/home/home",
+      "text": "首页",
+      "iconPath": "pages/images/bird.png",
+      "selectedIconPath": "pages/images/bird-chose.png"
+    },
+    {
+      "pagePath": "pages/find/find",
+      "text": "发现",
+      "iconPath": "pages/images/find.png",
+      "selectedIconPath": "pages/images/find-chose.png"
+    },
+    {
+      "pagePath": "pages/storehouse/storehouse",
+      "text": "鸟库",
+      "iconPath": "pages/images/book.png",
+      "selectedIconPath": "pages/images/book-chose.png"
+    },
+    {
+      "pagePath": "pages/mine/mine",
+      "text": "我的",
+      "iconPath": "pages/images/mine.png",
+      "selectedIconPath": "pages/images/mine-chose.png"
+    }
+  ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "plugins": {
+    "citySelector": {
+      "version": "1.0.2",
+      "provider": "wx63ffb7b7894e99ae"
+    },
+    "chooseLocation": {
+      "version": "1.0.10",
+      "provider": "wx76a9a06e5b4e693e"
+    }
+  }
+}
