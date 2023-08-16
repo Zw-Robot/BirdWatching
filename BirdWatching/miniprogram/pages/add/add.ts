@@ -227,7 +227,17 @@ playClick() {
   audio.src = this.data.file.tempFilePath;
   audio.autoplay = true;
   console.log('播放录音');
-  
+},
+
+  //备注
+searchInput:function(e:any){
+
+  this.setData({
+    text: e.detail.value,
+  })
+  checkapp.globalData.messageList[this.data.nav_type].text = this.data.text
+  console.log(checkapp.globalData.messageList);
+
 },
 
     //上传录音
@@ -303,7 +313,7 @@ getValue(e:any) {
   })
 },
 
-//删除照片
+//删除
 deletebird(e:any) {
   // 获取图片索引
   var navList = this.data.navList;
@@ -340,9 +350,11 @@ deletebird(e:any) {
         latitude: loc.latitude,
         longitude: loc.longitude,
       });
+      checkapp.globalData.messageList[this.data.nav_type].Address = this.data.address
+      checkapp.globalData.messageList[this.data.nav_type].latitude = this.data.latitude
+      checkapp.globalData.messageList[this.data.nav_type].longitude = this.data.longitude
     }
     catch{
-      console.log("null");
       this.setData({
         address: "",
         latitude: 0.0,
@@ -369,7 +381,7 @@ deletebird(e:any) {
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-
+    chooseLocation.setLocation(null);
   },
 
   /**

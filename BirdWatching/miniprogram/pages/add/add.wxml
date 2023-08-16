@@ -112,7 +112,7 @@
 <!-- 备注 -->
 <view class="beizhu">
   <view class="beizhuname">备注*</view>
-  <textarea value="" class="beizhu-item"/>
+  <textarea value="{{text}}" class="beizhu-item" bindinput ="searchInput" ></textarea>
 </view>
 
 <!-- 提交按钮 -->
