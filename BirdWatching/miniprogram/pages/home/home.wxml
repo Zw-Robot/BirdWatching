@@ -1,0 +1,29 @@
+<!-- 轮播图区域 -->
+<view class="imageBox">
+  <view class="swiperBox">
+    <swiper indicator-dots circular autoplay="true">
+  <swiper-item>
+    <image src="/pages/images/find-chose.png" mode=""/>
+  </swiper-item>
+  <swiper-item >
+    <image src="/pages/images/find-chose.png" mode=""/>
+  </swiper-item>
+</swiper>
+  </view>
+<view class="times">
+  <text>{{time}}</text>
+</view>
+</view>
+
+<!-- 添加记录区域 -->
+<view class="addBox">
+  <navigator url="/pages/add/add" class="add"> 
+  <image src="/pages/images/addmessage.png" mode=""/>
+  <text class="mainmessage">添加记录</text>
+  <text class="message">记录精彩瞬间，助力鸟类保护</text>
+  </navigator>
+  <navigator url="/pages/addright/addright" class="add-right">
+  <text class="niaoleidiaocha">鸟类调查</text>
+  <text class="messageitem">成为调查员，发现新物种</text>
+  </navigator>
+</view>

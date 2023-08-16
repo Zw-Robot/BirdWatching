@@ -105,6 +105,7 @@ def delete_match(request):
 @requestGET
 @login_required(['sysadmin', 'admin', 'other'])
 def get_all_matches(request):
+    #获取鸟类所有比赛
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
 

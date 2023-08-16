@@ -1,0 +1,62 @@
+{
+  "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
+  "projectname": "BirdWatching",
+  "setting": {
+    "compileHotReLoad": true
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "我的界面",
+          "pathName": "pages/mine/mine",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "发现",
+          "pathName": "pages/find/find",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "鸟类比赛界面",
+          "pathName": "pages/attendRace/attendRace",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "新增记录界面",
+          "pathName": "pages/add/add",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "信息",
+          "pathName": "pages/birdmessage/birdmessage",
+          "query": "title=%E6%A0%97%E6%A0%91%E9%B8%AD1&id=1",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "addright",
+          "pathName": "pages/addright/addright",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/attendRace/attendRace",
+          "query": "参加比赛",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

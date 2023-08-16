@@ -1,0 +1,19 @@
+<!--pages/birdmessage/birdmessage.wxml-->
+<view class="box">
+  <view class="message-item">
+    <text class="maintitle">{{query.title}}</text>
+    <text class="mainitem">{{query.lading}}/{{query.english}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">生境</text>
+    <text class="item">{{shengjin}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">习性</text>
+    <text class="item">{{xixing}}</text>
+  </view>
+  <view class="message-item"> 
+    <text class="title">分布</text>
+    <text class="item">{{fenbu}}</text>
+  </view>
+</view>

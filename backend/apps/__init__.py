@@ -1,3 +1,4 @@
+from flask_cors import CORS
 from flask_migrate import Migrate
 
 from apps.config import config
@@ -5,6 +6,7 @@ from flask import Flask  # flask
 from flask_sqlalchemy import SQLAlchemy  # sql
 
 app = Flask(__name__)
+CORS(app)
 
 # 引入全局配置
 app.config.from_object(config)

@@ -1,0 +1,111 @@
+/* pages/mine/mine.wxss */
+.main{
+  width: 100%;
+}
+
+/* 用户信息 */
+.user-info{
+  width: 100%;
+  height: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 32rpx;
+  margin-bottom: 20rpx;
+  background:#dcdcdc;
+}
+.user-info .avatar{
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50%;
+  background-color: #dcdcdc;
+}
+.user-info .info{
+  height: 85rpx;
+  padding-left: 30rpx;
+}
+.user-info .info .name{
+  display: inline-block;
+  font-size:38rpx;
+}
+.rightBox{
+  position: absolute;
+  right: 0%;
+  top: 0%;
+  margin-top: 20rpx;
+}
+.righto{
+  width: 50rpx;
+  height: 50rpx;
+  margin-right: 20rpx;
+}
+.rightt{
+  width: 45rpx;
+  height: 45rpx;
+  margin-top: 10rpx;
+  margin-right: 5rpx;
+}
+
+/*  */
+.hd{
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  display: flex;
+  background: #fff;
+  box-shadow: 0 5rpx 5rpx #ccc;
+  position: relative;
+}
+.hd-item{
+  flex: 1;
+  text-align: center;
+  font-weight:500;
+  color: #333;
+  font-size: 28rpx;
+  position: relative;
+}
+.hd-item::after{
+  content:'';
+  position: absolute;
+  width: 0%;
+  height: 6rpx;
+  background: linear-gradient(to right,#b3b3b3,#363636);
+  border-radius: 3rpx;
+  left:50%;
+  transform:translate(-50%);
+  bottom: 4rpx;
+  /* 添加过渡效果 */
+  transition: 0.3s width linear;
+}
+/* 激活选中样式 */
+.hd-item.active{
+  font-size: 30rpx;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color:transparent;
+  background-image: linear-gradient(to right,#b3b3b3,#363636);
+  transform: 0.3s all linear;
+  transition-delay:0.1s;
+}
+.hd-item.active::after{
+  width: 40rpx;
+}
+.content view{ 
+  background: #fff;
+  height: 50rpx;
+  line-height: 50rpx;
+  border-bottom: 1rpx solid #eaeef1;
+  padding: 20rpx;
+  color: #999;
+  text-align: center;
+}
+.content .pt{
+  padding-top: 88rpx;
+}
+
+.fixed{
+  position: fixed;
+  left:0;
+  top:0;
+  z-index:1;
+}

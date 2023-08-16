@@ -1,6 +1,6 @@
 from apps.auth import service,auth
 from apps.components.common import required_attrs_validator
-from apps.models import LogonUser
+from apps.models import LogonUser, Userdata, LoginSessionCache
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
 from apps.components.responser import Responser, FileResponser
 
@@ -8,14 +8,33 @@ from apps.components.responser import Responser, FileResponser
 
 
 @auth.route('/sgin', methods=["GET", "POST"], endpoint='auth_login')
-@SingAuth
-def login(request):
+@requestPOST
+# @SingAuth
+def auth_login(request):
     code, msg, json = service.login(request)
     if code == 200:
         return Responser.response_success(data=json,msg=msg)
     else:
         return Responser.response_error(msg=msg)
 
+
+@auth.route('/info', methods=["GET", "POST"], endpoint='info')
+@requestPOST
+@SingAuth
+def get_info(request):
+    params = request.json()
+    openid = params.get("openid")  # openid
+    log = LoginSessionCache.query.filter_by(openid=openid).first()
+    if not log:
+        return Responser.response_error(msg="未登录")
+    username = params.get("username")  # username
+    avatar = params.get("avatar")  # avatarUrl
+    gender = params.get("gender")   # gender
+    country = params.get("country")  # country
+    province = params.get("province")   # province
+    city = params.get("city") # city
+    Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
+    return Responser.response_success(data={},msg="success")
 
 @auth.route('/login', methods=['GET'])
 @requestGET
@@ -44,7 +63,7 @@ def login(request):
 
 @auth.route('/create_user', methods=['POST'])
 @requestPOST
-@login_required('sysadmin')
+# @login_required('sysadmin')
 def create_user(request):
     # 完成网页端用户创建接口
     username = request.json.get("username")

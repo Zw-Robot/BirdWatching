@@ -1,3 +1,5 @@
+import os
+
 from flask import jsonify, make_response
 
 from . import status
@@ -19,7 +21,7 @@ class Responser:
             wrapper['data'] = data
         if count is not None:
             wrapper['count'] = count
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_error(msg='server error', code=status.HTTP_500_INTERNAL_SERVER_ERROR):
@@ -33,7 +35,7 @@ class Responser:
             'code': code,
             'msg': msg
         }
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_page(data, count, page, page_size, msg='success', **kwargs):
@@ -57,7 +59,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
     @staticmethod
     def response_page_with_total(data, total, count, page, page_size, msg='success', **kwargs):
@@ -83,7 +85,7 @@ class Responser:
         }
         for k, v in kwargs.items():
             wrapper[k] = v
-        return jsonify(wrapper, status.HTTP_200_OK)
+        return jsonify(wrapper)
 
 class FileResponser:
 
@@ -101,23 +103,58 @@ class FileResponser:
 
     @staticmethod
     def image_save(image=None, path=None, filename=None):
-        if not path and not image:
-            savepath = '/robot/birdwatching/var/images/default.png'
+        if not path or not image:
+            return ""
         else:
+            if not os.path.exists('/robot/birdwatching/var/images/{}'.format(path)):
+                os.makedirs('/robot/birdwatching/var/images/{}'.format(path))
             savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
 
         if image:
-            image.save(savepath)
+            try:
+                image.save(savepath)
+            except:
+                savepath=""
         return savepath
 
     @staticmethod
-    def get_image(path,filename):
-        if not path:
-            savepath = '/robot/birdwatching/var/images/default.png'
-        else:
-            savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
-        image_data ={
-            "file_name":filename,
-            "url":savepath
+    def audio_save(audio=None, path=None, filename=None):
+        if not path or not audio:
+            return ""
+        if not os.path.exists('/robot/birdwatching/var/audio/{}'.format(path)):
+            os.makedirs('/robot/birdwatching/var/audio/{}'.format(path))
+        savepath = ""
+        if audio:
+            savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+            try:
+                with open(savepath, 'wb') as f:
+                    f.write(audio)
+            except:
+                savepath =""
+        return savepath
+
+
+    @staticmethod
+    def video_save(video=None, path=None, filename=None):
+        if not path or not video:
+            return ""
+        if not os.path.exists('/robot/birdwatching/var/video/{}'.format(path)):
+            os.makedirs('/robot/birdwatching/var/video/{}'.format(path))
+        savepath = ""
+        if video:
+            savepath = '/robot/birdwatching/var/video/{}/{}.mp4'.format(path, filename)
+            try:
+                with open(savepath, 'wb') as f:
+                    f.write(video)
+            except:
+                savepath = ""
+        return savepath
+
+    @staticmethod
+    def get_path(path, label):
+
+        audio_data = {
+            "label": label,
+            "audio_url": path
         }
-        return image_data
+        return audio_data

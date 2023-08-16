@@ -1,0 +1,8 @@
+<!--pages/more/more.wxml-->
+<view>
+<view>识鸟记录</view>
+<view>感谢</view>
+<view>关于微信小程序</view>
+<view>用户反馈</view>
+<view>账号管理</view>
+</view>

@@ -1,0 +1,71 @@
+<!-- 白色区域 -->
+<view class="Box">
+  <!-- 轮播图区域 -->
+  <view class="swiperBox">
+  <swiper indicator-dots circular autoplay="true">
+    <swiper-item>
+      <image src="/pages/images/find-chose.png" mode=""/>
+    </swiper-item>
+    <swiper-item >
+      <image src="/pages/images/find-chose.png" mode=""/>
+    </swiper-item>
+  </swiper>
+  </view>
+  <!-- 简介区域 -->
+  <view class="messageBox">
+    <text class="mainName">比赛名称</text>
+    <text class="jubandanwei">举办单位：xxx</text>
+    <view class="jieshaoBox">
+       <text>比赛介绍</text>
+       <text>该比赛由xx创办，评委3名</text>
+    </view>
+  </view>
+</view>
+
+<!-- 灰色区域 -->
+<view class="waitBox">
+<view class="graytop">
+  <!-- 选择时间 -->
+<picker mode="date" header-text="选择时间"  value="{{date}}" bindchange="bindDateChange">
+  <view class="pickerBox">
+    <text class="mainName">时间 *</text>
+    <text class="result">{{date}}</text>
+  </view>
+</picker>
+<!-- 选择地点 -->
+<picker mode="region" bindchange="getUserProvince">
+    <view class="pickerBox">
+      <text class="mainName">地点 *</text>
+      <text class="result" wx:for="{{region}}">{{item}} </text>
+    </view>
+</picker>
+</view>
+
+<view class="graybotton">
+  <!-- 创建小组 -->
+  <view class="left">
+    <button class="edit" bindtap="modalinput">
+     <text>创建小组</text>
+   </button>
+   <modal hidden="{{hiddenmodalput}}" title="创建小组" 
+   			confirm-text="创建" cancel-text="取消" bindcancel="modalinput" 
+   			bindconfirm="confirm">
+     <textarea placeholder="请输入创建小组名称" class="creatmessage"></textarea>
+     <textarea placeholder="请输入小组密码" class="creatmessage"></textarea>
+   </modal>
+  </view>
+  <!-- 创建小组结束 -->
+  <!-- 加入小组 -->
+  <view class="right">
+    <button class="right" bindtap="modalinputright">
+     <text>加入小组</text>
+   </button>
+   <modal hidden="{{hiddenmodalputright}}" title="加入小组" 
+   			confirm-text="加入" cancel-text="取消" bindcancel="modalinputright" 
+   			bindconfirm="confirmright">
+     <textarea placeholder="请输入加入小组名称" class="rightmessage"></textarea>
+     <textarea placeholder="请输入小组密码" class="rightmessage"></textarea>
+   </modal>
+  </view>
+</view>
+</view>

@@ -1,0 +1,78 @@
+<view class="addBox"> 
+  <view class="addPicture">
+    <text class="bird">鸟种</text>
+  <navigator url="../../pages/addbird/addbird" class="addPictureitem">
+    <image src="/pages/images/添加.png" mode=""/>
+  </navigator>
+  <text class="addBird">添加鸟种</text>
+  </view>
+  <view class="getmessage">
+    <view wx:for="{{checkedList}}" wx:key="index" class="checkitem">{{item}}</view>
+  </view>
+</view>
+
+<!-- 灰色部分 -->
+<view class="waitBox">
+<button>hello</button>
+  <view class="hd {{isFixed && 'fixed'}}" id="nav">
+  <block wx:for="{{navList}}" wx:key="index">
+    <view class="hd-item {{nav_type==index && 'active'}}"  catchtap="changeType" data-index="{{index}}">{{item}}</view>
+  </block>
+</view>
+
+<!-- 选择时间 -->
+<picker mode="date" header-text="选择时间"  value="{{date}}" bindchange="bindDateChange">
+  <view class="pickerBox">
+    <text class="mainName">时间 *</text>
+    <text class="result">{{date}}</text>
+  </view>
+</picker>
+<!-- 选择地点 -->
+<picker mode="region" bindchange="getUserProvince">
+    <view class="pickerBox">
+      <text class="mainName">地点 *</text>
+      <text class="result" wx:for="{{region}}">{{item}} </text>
+    </view>
+</picker>
+<!-- 数量 -->
+<view class="numberBox">
+      <text class="mainName">数量 *</text>
+      <view class="numberBox-item">
+      <button class="buttoniconone" size="mini" bindtap="subtract">-</button>
+      <text class="numbertext">{{Number}}</text>
+      <button class="buttonicontwo" size="mini" bindtap="addNumber">+</button>
+      </view>
+</view>
+<!-- 人数 -->
+<view class="numberBox">
+      <text class="mainName">人数 *</text>
+      <view class="numberBox-item">
+      <button class="buttoniconone" size="mini" bindtap="subtractnumber">-</button>
+      <text class="numbertext">{{number}}</text>
+      <button class="buttonicontwo" size="mini" bindtap="add">+</button>
+      </view>
+</view>
+
+<text class="picture">照片</text>
+  <my-image></my-image>
+<!-- <view class="addPicture">
+  <image src="/pages/images/拍照.png" mode=""/>
+</view> -->
+
+<!-- 备注 -->
+<view class="beizhu">
+  <view class="beizhuname">备注*</view>
+  <textarea value="" class="beizhu-item"/>
+</view>
+
+<!-- 提交按钮 -->
+<view class="bottom-btn">
+  <van-button 
+  round 
+  type="default" 
+  color="#1296db"
+  bindtap='jumpToDetail'
+  >提交
+  </van-button>
+</view>
+</view>
