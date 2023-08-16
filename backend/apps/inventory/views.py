@@ -250,7 +250,7 @@ def get_bird(request):
 
 @inventory.route('/create_bird_survey', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin'])
+# @login_required(['sysadmin'])
 def create_bird_survey(request):
     # 鸟类调查创建接口
     user_id = request.user_id
@@ -445,7 +445,7 @@ def get_bird_survey(request):
 
 @inventory.route('/create_bird_record', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin'])
+# @login_required(['sysadmin'])
 def create_bird_record(request):
     # 鸟类记录创建接口
     user_id = request.user_id
@@ -499,7 +499,7 @@ def create_bird_record(request):
 
 @inventory.route('/update_bird_record', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin', 'others'])
+# @login_required(['sysadmin', 'admin', 'others'])
 def update_bird_record(request):
     # 鸟类记录更新接口
     bird_record_id = request.json.get("bird_record_id")
