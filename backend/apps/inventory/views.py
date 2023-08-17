@@ -187,8 +187,14 @@ def get_all_orders(request):
 @requestGET
 def wx_get_all_birds(request):
     keyword = request.args.get("keyword","")
-    print(keyword)
-    if keyword:
+    order = request.args.get("order","")
+    if order:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
+            or_(
+                BirdInventory.order_cn.like(f"%{order}%")
+            )
+        )
+    elif keyword:
         bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
             or_(
                 BirdInventory.family_cn.like(f"%{keyword}%"),
