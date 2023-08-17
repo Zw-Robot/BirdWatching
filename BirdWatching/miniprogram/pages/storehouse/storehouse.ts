@@ -1,6 +1,6 @@
 // pages/storehouse/storehouse.ts
 
-import { get_all_birds } from "../../components/interface";
+import { get_all_birds, get_all_orders, wx_get_all_birds } from "../../components/interface";
 
 Page({
 
@@ -138,17 +138,20 @@ clearTap:function(){
 },
 
 getAllBirds:function(){
-  var data = {
-    page:2,
-    per_page:30
-  }
-  get_all_birds(data).then(res=>{
-    this.data.leftMenuList = []
-    for(const bird of res){
-      
+  wx_get_all_birds().then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+    console.log(res);
+    
+  })
+},
 
-      this.data.leftMenuList.push(bird)
-    }
+getOrder:function(){
+  get_all_orders().then(res=>{
+    this.setData({
+      rightMenuList:res
+    })
   })
 },
 
@@ -157,7 +160,8 @@ getAllBirds:function(){
    */
   onLoad() {
     // this.getcates();
-    this.getAllBirds()
+    this.getAllBirds();
+    this.getOrder()
   },
 
   //获取边侧栏数据

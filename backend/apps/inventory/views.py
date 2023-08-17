@@ -10,6 +10,8 @@ import uuid
 from datetime import datetime
 from math import ceil
 
+from sqlalchemy import or_
+
 from apps.components.common import required_attrs_validator
 from apps.inventory import inventory
 from apps.models import BirdInventory, BirdSurvey, BirdRecords, BirdInfos
@@ -184,7 +186,22 @@ def get_all_orders(request):
 @inventory.route('/wx_get_all_birds', methods=["GET"])
 @requestGET
 def wx_get_all_birds(request):
-    bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
+    keyword = request.args.get("keyword","")
+    print(keyword)
+    if keyword:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
+            or_(
+                BirdInventory.family_cn.like(f"%{keyword}%"),
+                BirdInventory.genus.like(f"%{keyword}%"),
+                BirdInventory.order_cn.like(f"%{keyword}%"),
+                BirdInventory.seasonal.like(f"%{keyword}%"),
+                BirdInventory.species.like(f"%{keyword}%"),
+                BirdInventory.IUCN.like(f"%{keyword}%"),
+                BirdInventory.level.like(f"%{keyword}%")
+            )
+        )
+    else:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
     result = []
     bird_dic = {}
     for bird in bird_inventory_query:

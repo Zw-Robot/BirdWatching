@@ -16,6 +16,14 @@ export async function get_all_birds(params: any) {
   const res = await request.get("/inventory/get_all_birds", params);
   return res.data;
 }
+export async function get_all_orders(params: any={}) {
+  const res = await request.get("/inventory/get_all_orders", params);
+  return res.data;
+}
+export async function wx_get_all_birds(params: any = {}) {
+  const res = await request.get("/inventory/wx_get_all_birds", params);
+  return res.data;
+}
 export async function get_bird(params: any) {
   const res = await request.get("/inventory/get_bird", params);
   return res.data;

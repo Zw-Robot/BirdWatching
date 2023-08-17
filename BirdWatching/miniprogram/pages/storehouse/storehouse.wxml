@@ -12,15 +12,15 @@
 <view class="cates_container">
   <!-- 左侧鸟库列表开始 -->
   <scroll-view scroll-y class="left_menu">
-    <view class="productType" wx:for="{{leftMenuList}}" wx:key="id">
+    <view class="productType" wx:for="{{leftMenuList}}" wx:key="index">
       <view>
         <text class="header">{{item.name}}</text>
       </view>
       <view class="list">
-        <navigator wx:for="{{item.twodata}}" wx:for-item="twodata" wx:key="id" class="list-item" url="/pages/birdmessage/birdmessage?title={{twodata.name}}&id={{item.id}}">
-          <text class="birdName">{{twodata.name}}</text>
-          <text class="lading">{{twodata.lading}}<text class="english">{{twodata.english}}</text></text>
-          <text class="subject">{{twodata.subject}}</text>
+        <navigator wx:for="{{item.twdata}}" wx:for-item="twodata" wx:key="index" class="list-item" url="/pages/birdmessage/birdmessage?title={{twodata.species}}&id={{twodata.id}}">
+          <text class="birdName">{{twodata.species}}</text>
+          <text class="lading">{{twodata.latin_name}}<text class="english">{{twodata.genus}}</text></text>
+          <text class="subject">{{twodata.family_cn}}</text>
         </navigator>
       </view>
     </view>

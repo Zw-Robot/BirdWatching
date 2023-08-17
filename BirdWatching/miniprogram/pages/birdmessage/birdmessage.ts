@@ -1,3 +1,5 @@
+import { get_bird } from "../../components/interface"
+
 // pages/birdmessage/birdmessage.ts
 Page({
 
@@ -6,19 +8,32 @@ Page({
    */
   data: {
     query:{},
+    id:"-1",
     //生境等描述
-    shengjin:'无',
-    xixing:'无',
-    fenbu:'无',
+    birdInfo:{}
   },
 
+  getBirdInfo:function(id:string){
+    var data = {
+      bird_id:id
+    }
+    get_bird(data).then(res=>{
+      console.log(res);
+
+      this.setData({
+        birdInfo:res
+      })
+    })
+  },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad:function(options) {
+  onLoad:function(options) {    
     this.setData({
       query:options,
+      id:options.id
     })
+    this.getBirdInfo(this.data.id)
   },
 
   /**

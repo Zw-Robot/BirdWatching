@@ -1,19 +1,31 @@
 <!--pages/birdmessage/birdmessage.wxml-->
 <view class="box">
   <view class="message-item">
-    <text class="maintitle">{{query.title}}</text>
-    <text class="mainitem">{{query.lading}}/{{query.english}}</text>
+    <text class="maintitle">{{birdInfo.species}}</text>
+    <text class="mainitem">{{birdInfo.latin_name}} / {{birdInfo.IUCN}}</text>
   </view>
   <view class="message-item">
-    <text class="title">生境</text>
-    <text class="item">{{shengjin}}</text>
+    <text class="title">科</text>
+    <text class="item">{{birdInfo.family_cn}} / {{birdInfo.family_en}}</text>
   </view>
   <view class="message-item">
-    <text class="title">习性</text>
-    <text class="item">{{xixing}}</text>
+    <text class="title">目</text>
+    <text class="item">{{birdInfo.order_cn}} / {{birdInfo.order_en}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">种类</text>
+    <text class="item">{{birdInfo.seasonal}}</text>
   </view>
   <view class="message-item"> 
     <text class="title">分布</text>
-    <text class="item">{{fenbu}}</text>
+    <text class="item">{{birdInfo.geotype}}</text>
+  </view>
+  <view class="message-item"> 
+    <text class="title">保护等级</text>
+    <text class="item">{{birdInfo.level}}</text>
+  </view>
+  <view class="message-item"> 
+    <text class="title">习性</text>
+    <text class="item">{{birdInfo.habit}} / {{birdInfo.behavior}}</text>
   </view>
 </view>
