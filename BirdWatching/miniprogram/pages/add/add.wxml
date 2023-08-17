@@ -1,3 +1,4 @@
+<view>111</view>
 <view class="addBox"> 
   <view class="addPicture">
   <navigator url="../../pages/addbird/addbird" class="addPictureitem">
