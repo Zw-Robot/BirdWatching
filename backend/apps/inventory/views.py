@@ -8,7 +8,7 @@
 """
 from datetime import datetime
 
-from flask import Blueprint, request, Flask, make_response
+from flask import Blueprint, request, Flask, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 from apps.components.common import required_attrs_validator
@@ -22,34 +22,83 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bird_inventory.db'
 db = SQLAlchemy(app)
 
 
-@app.route('/upload_bird_info', methods=['POST'])
+@inventory.route('/import_bird_inventory', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin', 'others'])
-def upload_bird_info(request):
-    image_file = request.files.get('image')
-    if image_file:
-        image_path = FileResponser.image_save(image=image_file, path='bird_info', filename=datetime.now().strftime('%Y%m%d%H%M%S'))
-        return Responser.response_success(data={'image_url': image_path})
-    else:
-        return Responser.response_error('No image uploaded.')
-
-@app.route('/download_bird_info/<filename>', methods=['GET'])
-@requestGET
-@login_required(['sysadmin', 'admin', 'others'])
-def download_bird_info(request, filename):
-    file_path = '/robot/birdwatching/var/images/bird_info/{}.png'.format(filename)
+@login_required(['sysadmin'])
+def import_bird_inventory():
     try:
-        with open(file_path, 'rb') as file:
-            response = make_response(file.read())
-            response.headers['Content-Type'] = 'image/png'
-            response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
-            return response
-    except FileNotFoundError:
-        return Responser.response_error('File not found.')
+        data = request.json
+        order_en = data.get("order_en")
+        order_cn = data.get("order_cn")
+        family_en = data.get("family_en")
+        family_cn = data.get("family_cn")
+        genus = data.get("genus")
+        species = data.get("species")
+        latin_name = data.get("latin_name")
+        geotype = data.get("geotype")
+        seasonal = data.get("seasonal")
+        IUCN = data.get("IUCN")
+        level = data.get("level")
+        describe = data.get("describe")
+        habitat = data.get("habitat")
+        behavior = data.get("behavior")
+        bird_info_ids = data.get("bird_info", [])
 
+        bird = BirdInventory(
+            order_en=order_en,
+            order_cn=order_cn,
+            family_en=family_en,
+            family_cn=family_cn,
+            genus=genus,
+            species=species,
+            latin_name=latin_name,
+            geotype=geotype,
+            seasonal=seasonal,
+            IUCN=IUCN,
+            level=level,
+            describe=describe,
+            habitat=habitat,
+            behavior=behavior,
+            bird_info=','.join(map(str, bird_info_ids))
+        )
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        db.session.add(bird)
+        db.session.commit()
+
+        return jsonify({"message": "成功导入鸟库信息。"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+    @inventory.route('/export_bird_records', methods=['GET'])
+    @requestPOST
+    @login_required(['sysadmin'])
+    def export_bird_records():
+        try:
+            bird_records = BirdRecords.query.all()
+
+            records_data = []
+            for record in bird_records:
+                record_data = {
+                    "user_id": record.user_id,
+                    "bird_id": record.bird_id,
+                    "record_time": record.record_time,
+                    "record_location": record.record_location,
+                    "longitude": record.longitude,
+                    "latitude": record.latitude,
+                    "weather": record.weather,
+                    "temperature": record.temperature,
+                    "record_describe": record.record_describe,
+                    "bird_info": record.bird_info,
+                }
+                records_data.append(record_data)
+
+            return jsonify({"bird_records": records_data}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
 
 @inventory.route('/create_bird', methods=['POST'])
 @requestPOST
