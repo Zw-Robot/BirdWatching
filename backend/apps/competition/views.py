@@ -88,7 +88,7 @@ def update_match(request):
 # @login_required(['sysadmin', 'admin'])
 def delete_match(request):
     # 鸟类比赛删除接口
-    match_id = request.json.get("match_id")
+    match_id = int(request.args.get("match_id"))
 
     bird_match = BirdMatch.query.get(match_id)
     if bird_match is None:

@@ -1,22 +1,22 @@
 import { request } from "./request"
 
-export async function apione(params: any) {
+export async function create_bird(params: any) {
   const res = await request.post("/inventory/create_bird", params);
   return res.data;
 }
-export async function apitwo(params: any) {
+export async function update_bird(params: any) {
   const res = await request.post("/inventory/update_bird", params);
   return res.data;
 }
-export async function apithree(params: any) {
+export async function delete_bird(params: any) {
   const res = await request.get("/inventory/delete_bird", params);
   return res.data;
 }
-export async function apifour(params: any) {
+export async function get_all_birds(params: any) {
   const res = await request.get("/inventory/get_all_birds", params);
   return res.data;
 }
-export async function apifive(params: any) {
+export async function get_bird(params: any) {
   const res = await request.get("/inventory/get_bird", params);
   return res.data;
 }

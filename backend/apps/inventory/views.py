@@ -155,7 +155,7 @@ def update_bird(request):
 # @login_required(['sysadmin', 'admin'])
 def delete_bird(request):
     # 鸟类记录删除接口
-    bird_id = request.json.get("bird_id")
+    bird_id = int(request.args.get("bird_id"))
 
     bird = BirdInventory.query.get(bird_id)
     if bird is None:
@@ -165,6 +165,60 @@ def delete_bird(request):
     bird.update()
     return Responser.response_success("删除成功")
 
+
+@inventory.route('/get_all_orders', methods=["GET"])
+@requestGET
+def get_all_orders(request):
+    bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
+    result = []
+    for bird in bird_inventory_query:
+        if bird.order_cn[0] in [item['name'] for item in result]:
+            continue
+        tmp = {
+            "id":len(result),
+            "name":bird.order_cn[0]
+        }
+        result.append(tmp)
+    return Responser.response_success(data=result)
+
+@inventory.route('/wx_get_all_birds', methods=["GET"])
+@requestGET
+def wx_get_all_birds(request):
+    bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
+    result = []
+    bird_dic = {}
+    for bird in bird_inventory_query:
+        bird_name = bird.order_cn+' '+bird.order_en
+        bird_info = {
+            "id":bird.id,
+            'order_en': bird.order_en,
+            'order_cn': bird.order_cn,
+            'family_en': bird.family_en,
+            'family_cn': bird.family_cn,
+            'genus': bird.genus,
+            'species': bird.species,
+            'latin_name': bird.latin_name,
+            "geotype" : bird.geotype,
+            "seasonal" : bird.seasonal,
+            "IUCN" : bird.IUCN,
+            "level" : bird.level,
+            'describe': bird.describe,
+            'habitat': bird.habitat,
+            'behavior': bird.behavior,
+            'create_at': bird.create_at,
+            'update_at': bird.update_at,
+            'is_lock': bird.is_lock
+        }
+        bird_dic[bird_name] = bird_dic.get(bird_name,[])
+        bird_dic[bird_name].append(bird_info)
+    for index, (key, val) in enumerate(bird_dic.items()):
+        tmp_dic = {
+            "id": index,
+            "name": key,
+            "twdata": val
+        }
+        result.append(tmp_dic)
+    return Responser.response_success(data=result)
 
 @inventory.route('/get_all_birds', methods=["GET"])
 @requestGET
@@ -216,8 +270,8 @@ def get_all_birds(request):
 # @login_required(['sysadmin', 'admin','others'])
 def get_bird(request):
     # 鸟类名录查询单个接口
-    bird_id = request.json.get("bird_id")
-    bird = BirdInventory.query.get(bird_id)
+    bird_id = int(request.args.get('bird_id'))
+    bird = BirdInventory.query.filter_by(id=bird_id).first()
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
     files = []
@@ -301,7 +355,7 @@ def create_bird_survey(request):
 
 @inventory.route('/update_bird_survey', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin', 'others'])
+# @login_required(['sysadmin', 'admin', 'others'])
 def update_bird_survey(request):
     # 鸟类调查更新接口
     bird_survey_id = request.json.get("bird_survey_id")
@@ -360,7 +414,7 @@ def update_bird_survey(request):
 # @login_required(['sysadmin', 'admin'])
 def delete_bird_survey(request):
     # 鸟类调查删除接口
-    bird_survey_id = request.json.get("bird_survey_id")
+    bird_survey_id = int(request.args.get("bird_survey_id"))
 
     bird_survey = BirdSurvey.query.get(bird_survey_id)
     if bird_survey is None:
@@ -417,7 +471,7 @@ def get_all_bird_surveys(request):
 # @login_required(['sysadmin', 'admin', 'others'])
 def get_bird_survey(request):
     # 鸟类调查查询单个接口
-    bird_survey_id = request.json.get("bird_survey_id")
+    bird_survey_id = int(request.args.get("bird_survey_id"))
     bird_survey = BirdSurvey.query.get(bird_survey_id)
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
@@ -560,7 +614,7 @@ def update_bird_record(request):
 # @login_required(['sysadmin', 'admin'])
 def delete_bird_record(request):
     # 鸟类记录删除接口
-    bird_record_id = request.json.get("bird_record_id")
+    bird_record_id = int(request.args.get("bird_record_id"))
 
     bird_record = BirdRecords.query.get(bird_record_id)
     if bird_record is None:
@@ -617,7 +671,7 @@ def get_all_bird_records(request):
 @requestGET
 def get_bird_record(request):
     # 鸟类记录获取单个接口
-    bird_record_id = request.json.get("bird_record_id")
+    bird_record_id = int(request.args.get("bird_record_id"))
     bird_record = BirdRecords.query.get(bird_record_id)
     if bird_record is None:
         return Responser.response_error('找不到指定的鸟类记录')

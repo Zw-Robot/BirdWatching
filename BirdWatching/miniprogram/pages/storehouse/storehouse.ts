@@ -1,5 +1,7 @@
 // pages/storehouse/storehouse.ts
 
+import { get_all_birds } from "../../components/interface";
+
 Page({
 
   /**
@@ -108,6 +110,7 @@ SyntheSize: function (e:any) {
   })
 },
 
+
 // 搜索栏区域
 getInput:function(e:any){
   this.setData({
@@ -134,11 +137,27 @@ clearTap:function(){
   })
 },
 
+getAllBirds:function(){
+  var data = {
+    page:2,
+    per_page:30
+  }
+  get_all_birds(data).then(res=>{
+    this.data.leftMenuList = []
+    for(const bird of res){
+      
+
+      this.data.leftMenuList.push(bird)
+    }
+  })
+},
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
     // this.getcates();
+    this.getAllBirds()
   },
 
   //获取边侧栏数据
