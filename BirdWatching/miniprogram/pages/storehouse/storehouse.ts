@@ -103,10 +103,13 @@ cates:[],
 //选中
 SyntheSize: function (e:any) {
   let id = e.currentTarget.dataset.item;
-  let leftMenuList=this.data.cates[id];
   this.setData({
     activeItem: id,
-    leftMenuList,
+  })
+  wx_get_all_birds({order:this.data.rightMenuList[id].name}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
   })
 },
 
@@ -127,6 +130,11 @@ getInput:function(e:any){
       isClear:false,
     })
   }
+  wx_get_all_birds({keyword:this.data.val}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
 },
 
 clearTap:function(){
@@ -163,21 +171,6 @@ getOrder:function(){
     this.getAllBirds();
     this.getOrder()
   },
-
-  //获取边侧栏数据
-  // async getcates(){
-  //   const result=await requestUtil({
-  //     url:'',
-  //     method:'GET'
-  //   })
-  //   this.cates=result.message;
-  //   let rightMenuList=this.cates.map(v=>v.name);//获取边侧栏数据
-  //   let leftMenuList=this.cates[0].smallTypeList;//获取鸟库每个分类
-  //   this.setData({
-  //     leftMenuList
-  //     rightMenuList
-  //   })
-  // },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

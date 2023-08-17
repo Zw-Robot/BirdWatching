@@ -19,7 +19,7 @@
       <view class="list">
         <navigator wx:for="{{item.twdata}}" wx:for-item="twodata" wx:key="index" class="list-item" url="/pages/birdmessage/birdmessage?title={{twodata.species}}&id={{twodata.id}}">
           <text class="birdName">{{twodata.species}}</text>
-          <text class="lading">{{twodata.latin_name}}<text class="english">{{twodata.genus}}</text></text>
+          <text class="lading">{{twodata.latin_name}}</text>
           <text class="subject">{{twodata.family_cn}}</text>
         </navigator>
       </view>
