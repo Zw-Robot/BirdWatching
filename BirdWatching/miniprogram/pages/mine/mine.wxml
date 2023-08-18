@@ -1,10 +1,27 @@
 <!--pages/mine/mine.wxml-->
 <view class="main">
 <!-- 用户信息 -->
-<view class="user-info">
-<image class="avatar" src="/pages/images/head.png" mode=""/>
-<view class="info"></view>
-<text class="name">用户名</text>
+<view class="container">
+  <view class="userinfo">
+    <block wx:if="{{canIUseOpenData}}">
+      <view class="userinfo-avatar" bindtap="bindViewTap">
+        <open-data type="userAvatarUrl"></open-data>
+      </view>
+      <open-data type="userNickName"></open-data>
+    </block>
+    <block wx:elif="{{!hasUserInfo}}">
+      <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
+      <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
+      <view wx:else> 请使用1.4.4及以上版本基础库 </view>
+    </block>
+    <block wx:else>
+      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+    </block>
+  </view>
+</view>
+
+<!--  -->
 <view class="rightBox">
 <navigator url="../../pages/information Center/information Center">
   <image src="../../pages/images/3.1铃铛.png" class="righto" mode=""/>
@@ -12,7 +29,6 @@
 <navigator url="../../pages/more/more">
   <image src="../../pages/images/三行.png" class="rightt" mode=""/>
 </navigator>
-</view>
 </view>
 </view>
 
