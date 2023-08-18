@@ -15,7 +15,7 @@ let day = currentDate.getDate().toString().padStart(2, '0');
 
 let currentDateString = year + '-' + month + '-' + day;
 
-
+import { get_all_birds, get_all_orders, wx_get_all_birds } from "../../components/interface";
 
 Page({
 
@@ -119,10 +119,13 @@ cates:[],
 //选中
 SyntheSize: function (e:any) {
   let id = e.currentTarget.dataset.item;
-  let leftMenuList=this.cates[id];
   this.setData({
     activeItem: id,
-    leftMenuList,
+  })
+  wx_get_all_birds({order:this.data.rightMenuList[id].name}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
   })
 },
 
@@ -142,6 +145,19 @@ getInput:function(e:any){
       isClear:false,
     })
   }
+  wx_get_all_birds({keyword:this.data.val}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
+},
+
+searchTap:function(){
+  wx_get_all_birds().then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
 },
 
 clearTap:function(){
@@ -150,6 +166,12 @@ clearTap:function(){
     isSearch:true,
     isClear:false,
   })
+  wx_get_all_birds({}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
+
 },
 
 // 复选框的选中事件
@@ -170,27 +192,31 @@ HandelItemChange(e:any){
   
 },
 
+getAllBirds:function(){
+  wx_get_all_birds().then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+    console.log(res);
+    
+  })
+},
+
+getOrder:function(){
+  get_all_orders().then(res=>{
+    this.setData({
+      rightMenuList:res
+    })
+  })
+},
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    // this.getcates();
+    this.getAllBirds();
+    this.getOrder()
   },
-
-  //获取边侧栏数据
-  // async getcates(){
-  //   const result=await requestUtil({
-  //     url:'',
-  //     method:'GET'
-  //   })
-  //   this.cates=result.message;
-  //   let rightMenuList=this.cates.map(v=>v.name);//获取边侧栏数据
-  //   let leftMenuList=this.cates[0].smallTypeList;//获取鸟库每个分类
-  //   this.setData({
-  //     leftMenuList
-  //     rightMenuList
-  //   })
-  // },
 
   /**
    * 生命周期函数--监听页面初次渲染完成

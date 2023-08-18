@@ -2,7 +2,7 @@
 <!-- 搜索栏区域 -->
 <view class="searchbox">
 <input placeholder="鸟类搜索" bindinput="getInput" value="{{val}}"/>
-<icon type="search" wx:if="{{isSearch}}"/>
+<icon type="search" wx:if="{{isSearch}}" bindtap="searchTap"/>
 <icon type="clear" wx:if="{{isClear}}"  bindtap="clearTap"/>
 </view>
 

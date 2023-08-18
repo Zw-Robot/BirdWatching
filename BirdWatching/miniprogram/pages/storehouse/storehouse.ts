@@ -137,12 +137,26 @@ getInput:function(e:any){
   })
 },
 
+searchTap:function(){
+  wx_get_all_birds({}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
+},
+
 clearTap:function(){
   this.setData({
     val:'',
     isSearch:true,
     isClear:false,
   })
+  wx_get_all_birds({}).then(res=>{
+    this.setData({
+      leftMenuList:res
+    })
+  })
+
 },
 
 getAllBirds:function(){

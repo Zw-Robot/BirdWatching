@@ -1,4 +1,5 @@
 // pages/mine/mine.ts
+import {get_all_bird_records} from '../../components/interface'
 Page({
 
   /**
@@ -25,11 +26,21 @@ Page({
     }
   },
 
+  getAllBirdRecords:function(){
+    var date={
+      page: 1,
+      per_page: 20,
+    }
+    get_all_bird_records(date).then(res=>{
+      console.log(res);
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    this.getAllBirdRecords()
   },
 
   /**
