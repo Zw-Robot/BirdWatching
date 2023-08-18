@@ -2,11 +2,9 @@
 <!-- 搜索栏区域 -->
 <view class="searchbox">
 <input placeholder="鸟类搜索" bindinput="getInput" value="{{val}}"/>
-<icon type="search" wx:if="{{isSearch}}"/>
+<icon type="search" wx:if="{{isSearch}}" bindtap="searchTap"/>
 <icon type="clear" wx:if="{{isClear}}"  bindtap="clearTap"/>
 </view>
-
-<view>{{checkedList}}</view>
 
 <!-- 目录区域 -->
 <view class="cates">
@@ -18,27 +16,25 @@
     <view 
     class="productType" 
     wx:for="{{leftMenuList}}" 
-    wx:key="id">
+    wx:key="index">
       <!-- 大类标题 -->
       <view>
         <text class="header">{{item.name}}</text>
       </view>
       <view class="list">
-      <!-- 多选 -->
-      <!-- <checkbox-group bindchange="HandelItemChange"> -->
-        <checkbox 
-        value="{{twodata.value}}" 
-        wx:for="{{item.twodata}}" 
-        wx:key="id" 
+        <checkbox  
+        wx:for="{{item.twdata}}" 
+        wx:key="index" 
         wx:for-item="twodata"
+        value="{{twodata.species}}"
       >
       <navigator
       class="list-item"  
-      url="/pages/birdmessage/birdmessage?title={{twodata.name}}&id={{item.id}}"
+      url="/pages/birdmessage/birdmessage?title={{twodata.species}}&id={{twodata.id}}"
       > 
-          <text class="birdName">{{twodata.nameitem}}</text>
-          <text class="lading">{{twodata.lading}}<text class="english">{{twodata.english}}</text></text>
-          <text class="subject">{{twodata.subject}}</text>
+          <text class="birdName">{{twodata.species}}</text>
+          <text class="lading">{{twodata.latin_name}}</text>
+          <text class="subject">{{twodata.family_cn}}</text>
         </navigator>
       </checkbox>
       <!-- </checkbox-group> -->

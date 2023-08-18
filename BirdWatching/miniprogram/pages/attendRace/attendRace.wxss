@@ -62,25 +62,25 @@
   display: flex;
   flex-direction: column;
 }
+.word{
+  margin-top: 20rpx;
+  margin-left: 40rpx;
+  font-size: 35rpx;
+}
 .graybotton{
   display: flex;
 }
-/* 选择时间 */
-.pickerBox{
-  display: flex;
-  justify-content: space-between;
-  width: 650rpx;
-  height: 40rpx;
-  margin-top: 20rpx;
-  border-bottom: solid #c4c4c4 1rpx;
-  padding-bottom: 35rpx;
+.graybotton .left{
+  margin-left: 100rpx;
+  margin-right: 80rpx;
+}
+.graybotton .right{
+  margin-right: 40rpx;
+}
+.graybotton .leave{
   margin-left: 40rpx;
-  margin-right: 60rpx;
 }
-.pickerBox .mainName{
-  color: #363533;
-  font-weight: bolder;
-}
+
 .buttoniconone{
   margin-right: 90rpx;
   border-radius: 40%;

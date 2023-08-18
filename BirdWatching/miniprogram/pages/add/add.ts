@@ -1,5 +1,6 @@
 // pages/add/add.ts
 import { appname, poskey } from "../../components/config";
+import { create_bird_survey } from "../../components/interface";
 const checkapp=getApp()
 const recorder = wx.getRecorderManager();
 let currentDate = new Date();
@@ -75,6 +76,10 @@ Page({
 
   //提交按钮
   jumpToDetail() {
+    create_bird_survey({parmas:this.data.messageList}).then(res=>{
+      console.log(res);
+      
+    })
     wx.showModal({
         title: '提示',
         content: '是否确认提交',
