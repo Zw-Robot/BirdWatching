@@ -739,6 +739,14 @@ def get_bird_record(request):
     }
     return Responser.response_success(data=bird_record_dict)
 
+@inventory.route('/wx_get_record',methdos=["GET"])
+@requestGET
+def wx_get_record(request):
+    userid = int(request.args.get("userid"))
+    bird_records = BirdRecords.query.filter_by(user_id=userid).all()
+    bird_records_dict = [record.serialize() for record in bird_records]
+    return Responser.response_success(data=bird_records_dict)
+
 
 @inventory.route('/get_file/<filename>',methods=["GET"])
 @requestGET
