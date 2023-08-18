@@ -9,13 +9,6 @@
     "miniprogram": {
       "list": [
         {
-          "name": "我的界面",
-          "pathName": "pages/mine/mine",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "发现",
           "pathName": "pages/find/find",
           "query": "",
@@ -37,13 +30,6 @@
           "scene": null
         },
         {
-          "name": "信息",
-          "pathName": "pages/birdmessage/birdmessage",
-          "query": "title=%E6%A0%97%E6%A0%91%E9%B8%AD1&id=1",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
           "name": "addright",
           "pathName": "pages/addright/addright",
           "query": "",
@@ -54,6 +40,13 @@
           "name": "",
           "pathName": "pages/attendRace/attendRace",
           "query": "参加比赛",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/more/more",
+          "query": "",
           "launchMode": "default",
           "scene": null
         }

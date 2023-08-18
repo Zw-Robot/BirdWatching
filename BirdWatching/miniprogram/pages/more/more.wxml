@@ -1,8 +1,23 @@
 <!--pages/more/more.wxml-->
 <view>
-<view>识鸟记录</view>
-<view>感谢</view>
-<view>关于微信小程序</view>
-<view>用户反馈</view>
-<view>账号管理</view>
+<navigator class="one">
+  <text>识鸟记录</text>
+  <image src="../../pages/images/更多.png" mode=""/>
+</navigator>
+<navigator class="one">
+  <text>感谢</text>
+  <image src="../../pages/images/更多.png" mode=""/>
+</navigator>
+<navigator class="one">
+  <text>关于微信小程序吧</text>
+  <image src="../../pages/images/更多.png" mode=""/>
+</navigator>
+<navigator class="one">
+  <text>用户反馈</text>
+  <image src="../../pages/images/更多.png" mode=""/>
+</navigator>
+<navigator class="one">
+  <text>账号管理</text>
+  <image src="../../pages/images/更多.png" mode=""/>
+</navigator>
 </view>
