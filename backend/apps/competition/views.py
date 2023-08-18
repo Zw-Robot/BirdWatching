@@ -213,6 +213,8 @@ def add_group(request):
         return Responser.response_error('找不到指定的小组信息')
     if not group.check_password(password):
         return Responser.response_error('密码错误')
+    if group_name in group.group_user:
+        return Responser.response_error(msg="已加入该小组")
     group.group_user = group.group_user + ',' + group_user
     group.update()
     return Responser.response_success(msg="加入小组成功")

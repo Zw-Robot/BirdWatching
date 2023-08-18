@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from flask import jsonify, make_response
 
@@ -102,53 +103,46 @@ class FileResponser:
         return response
 
     @staticmethod
-    def image_save(image=None, path=None, filename=None):
-        if not path or not image:
-            return ""
-        else:
-            if not os.path.exists('/robot/birdwatching/var/images/{}'.format(path)):
-                os.makedirs('/robot/birdwatching/var/images/{}'.format(path))
-            savepath = '/robot/birdwatching/var/images/{}/{}.png'.format(path, filename)
-
+    def image_save(image=None):
+        filename = str(uuid.uuid4())
         if image:
+            savepath = '/robot/BirdWatching/var/{}.png'.format(filename)
             try:
-                image.save(savepath)
+                with open(savepath, 'wb') as f:
+                    f.write(image)
             except:
-                savepath=""
-        return savepath
+                savepath = ""
+            return filename + '.png'
+        else:
+            return None
 
     @staticmethod
-    def audio_save(audio=None, path=None, filename=None):
-        if not path or not audio:
-            return ""
-        if not os.path.exists('/robot/birdwatching/var/audio/{}'.format(path)):
-            os.makedirs('/robot/birdwatching/var/audio/{}'.format(path))
-        savepath = ""
+    def audio_save(audio=None):
+        filename = str(uuid.uuid4())
         if audio:
-            savepath = '/robot/birdwatching/var/audio/{}/{}.mp3'.format(path, filename)
+            savepath = '/robot/BirdWatching/var/{}.mp3'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(audio)
             except:
-                savepath =""
-        return savepath
-
+                savepath = ""
+            return filename + '.mp3'
+        else:
+            return None
 
     @staticmethod
-    def video_save(video=None, path=None, filename=None):
-        if not path or not video:
-            return ""
-        if not os.path.exists('/robot/birdwatching/var/video/{}'.format(path)):
-            os.makedirs('/robot/birdwatching/var/video/{}'.format(path))
-        savepath = ""
+    def video_save(video=None):
+        filename = str(uuid.uuid4())
         if video:
-            savepath = '/robot/birdwatching/var/video/{}/{}.mp4'.format(path, filename)
+            savepath = '/robot/BirdWatching/var/{}.mp4'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(video)
             except:
                 savepath = ""
-        return savepath
+            return filename + '.mp4'
+        else:
+            return None
 
     @staticmethod
     def get_path(path, label):
