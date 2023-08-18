@@ -179,12 +179,12 @@ HandelItemChange(e:any){
   //获取被选中的复选框的值
   app.globalData.checkedList = e.detail.value;
   console.log(app.globalData.checkedList);
-
+  const user_id = 1
   app.globalData.messageList = []
   for(const val of e.detail.value){
     const id = app.globalData.messageList.length 
     console.log(val)
-    const br:BirdRecord = new BirdRecord(id,val,currentDateString,currentTime,)
+    const br:BirdRecord = new BirdRecord(user_id,id,val,currentDateString,currentTime,)
     app.globalData.messageList.push(br)
   }
   console.log(app.globalData.messageList);

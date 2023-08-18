@@ -1,3 +1,4 @@
+import base64
 import os
 import uuid
 
@@ -106,6 +107,7 @@ class FileResponser:
     def image_save(image=None):
         filename = str(uuid.uuid4())
         if image:
+            image = base64.b64decode(image)
             savepath = '/robot/BirdWatching/var/{}.png'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
@@ -120,6 +122,7 @@ class FileResponser:
     def audio_save(audio=None):
         filename = str(uuid.uuid4())
         if audio:
+            audio = base64.b64decode(audio)
             savepath = '/robot/BirdWatching/var/{}.mp3'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
@@ -134,6 +137,7 @@ class FileResponser:
     def video_save(video=None):
         filename = str(uuid.uuid4())
         if video:
+            video = base64.b64decode(video)
             savepath = '/robot/BirdWatching/var/{}.mp4'.format(filename)
             try:
                 with open(savepath, 'wb') as f:

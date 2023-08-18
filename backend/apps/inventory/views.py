@@ -739,7 +739,7 @@ def get_bird_record(request):
     }
     return Responser.response_success(data=bird_record_dict)
 
-@inventory.route('/wx_get_record',methdos=["GET"])
+@inventory.route('/wx_get_record',methods=["GET"])
 @requestGET
 def wx_get_record(request):
     userid = int(request.args.get("userid"))

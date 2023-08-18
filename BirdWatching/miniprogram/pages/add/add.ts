@@ -1,6 +1,6 @@
 // pages/add/add.ts
 import { appname, poskey } from "../../components/config";
-import { create_bird_survey } from "../../components/interface";
+import { create_bird_record, create_bird_survey } from "../../components/interface";
 const checkapp=getApp()
 const recorder = wx.getRecorderManager();
 let currentDate = new Date();
@@ -76,10 +76,10 @@ Page({
 
   //提交按钮
   jumpToDetail() {
-    create_bird_survey({parmas:this.data.messageList}).then(res=>{
-      console.log(res);
+    // create_bird_survey({parmas:this.data.messageList}).then(res=>{
+    //   console.log(res);
       
-    })
+    // })
     wx.showModal({
         title: '提示',
         content: '是否确认提交',
@@ -90,11 +90,16 @@ Page({
                     title: '成功',
                     duration: 1000,
                     success: function () {
-                    setTimeout(function () {
-                    wx.reLaunch({
-                    url: '../../pages/home/home',
-                    })
-                    }, 1000);
+                      for(const item of checkapp.globalData.messageList){
+                        var data = item.submit()
+                        console.log(data);
+                        
+                        create_bird_record(data).then(res=>{
+                          console.log(res);
+                          
+                        })
+                      }
+                      checkapp.globalData.messageList = []
                  }
                })
                                                         
@@ -186,14 +191,38 @@ Page({
         _this.setData({
           src: res.tempFilePath,
         })
+        wx.getFileSystemManager().readFile({
+      
+          filePath: _this.data.src,
+          encoding: 'base64',
+          success: function (res) {
+            checkapp.globalData.messageList[_this.data.nav_type].videos.push(res.data)
+          }
+          })
       }
+      
     })
+    console.log( checkapp.globalData.messageList);
+    
+  },
+  getimg:function(e:any) {
+    for(const item of e.detail){
+      checkapp.globalData.messageList[this.data.nav_type].images.push(item.fileContent)
+    }
+    console.log(checkapp.globalData.messageList);
+  },
+  delimg:function(e:any) {
+    console.log(e.detail);
+    checkapp.globalData.messageList[this.data.nav_type].images.splice(e.detail,1) 
+    console.log(checkapp.globalData.messageList);
   },
   /**
    * 上传视频 目前后台限制最大100M, 以后如果视频太大可以选择视频的时候进行压缩
    */
   uploadvideo: function() {
     var src = this.data.src;
+    console.log(src);
+    
     wx.uploadFile({
       url: '',
       // methid: 'POST',           // 可用可不用

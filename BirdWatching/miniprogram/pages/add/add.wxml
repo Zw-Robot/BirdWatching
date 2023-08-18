@@ -65,7 +65,7 @@
 
 <view>
   <text class="picture">照片</text>
-  <my-image></my-image>
+  <my-image bind:imageChange="getimg" bind:imageDel="delimg"></my-image>
     <!-- 上传视频 -->
     <view class="birdvideo">
     <!-- 上传 S -->

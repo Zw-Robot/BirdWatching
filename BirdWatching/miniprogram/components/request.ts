@@ -1,5 +1,5 @@
 class Request{
-  private URL:string = "https://www.birdwatching.top/api"
+  private URL:string = "http://127.0.0.1:5500"
   get(url: string, params: any): Promise<any> {
     const join_url = this.URL + url;
     return new Promise((resolve, reject) => {

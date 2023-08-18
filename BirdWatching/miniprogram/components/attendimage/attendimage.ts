@@ -65,7 +65,7 @@ Component({
       this.setData({
         fileList: this.data.fileList
       })
-      this.triggerEvent('imageDel', delFile);
+      this.triggerEvent('imageDel', idx);
     }
   }
 })
