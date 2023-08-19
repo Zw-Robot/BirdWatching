@@ -670,7 +670,7 @@ def wx_create_bird_record(request):
     temperature = request.json.get("temperature")
     record_describe = request.json.get("record_describe")
     bird_infos = request.json.get("bird_infos", [])
-
+    print(bird_infos)
     # lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
     # if lost_attrs:
     #     return Responser.response_error('缺少参数')

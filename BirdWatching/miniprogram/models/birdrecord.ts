@@ -1,4 +1,4 @@
-import { create_bird_record, wx_post_base64 } from "../components/interface"
+import { create_bird_record, wx_create_bird_record, wx_post_base64 } from "../components/interface"
 const birdRec = getApp()
 
 export class BirdRecord{
@@ -11,7 +11,7 @@ export class BirdRecord{
   Longitude:Number
   Latitude:Number
   weather:String
-  temperature:String
+  temperature:Number
   Num:Number
   Count:Number
   images:AnyArray
@@ -22,10 +22,10 @@ export class BirdRecord{
   tmpvideo:AnyArray
   tmpaudio:AnyArray
 
-  constructor(user_id:Number,id:Number,name:String,date:String,time:String,address:String='',num:Number=0,count:Number = 0,images:AnyArray=[],videos:AnyArray = [],audios:AnyArray = [],text:String = '',  longitude:Number = 0,temperature="",weather="",
+  constructor(user_id:Number,id:Number,name:String,date:String,time:String,address:String='',num:Number=0,count:Number = 0,images:AnyArray=[],videos:AnyArray = [],audios:AnyArray = [],text:String = '',  longitude:Number = 0,temperature=0,weather="",
   latitude:Number = 0,tmpimg=[],tmpvideo=[],tmpaudio=[]){
-    this.user_id = user_id
-    this.id = id
+    this.user_id = 4
+    this.id = 4
     this.name = name
     this.Date = date
     this.Time = time
@@ -86,73 +86,58 @@ export class BirdRecord{
       });
     });
 
-    Promise.all(soundPromise)
-      .then(resolvedSoundPromises => {
-        resolvedSoundPromises.forEach(res => {
-          if (typeof res === "string") {
-            this.tmpaudio.push(res);
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+Promise.all([Promise.all(soundPromise), Promise.all(imagesPromise), Promise.all(videosPromise)])
+.then(([resolvedSoundPromises, resolvedImagePromises, resolvedVideoPromises]) => {
+resolvedSoundPromises.forEach(res => {
+  if (typeof res === "string") {
+    this.tmpaudio.push(res);
+  }
+});
 
-    Promise.all(imagesPromise)
-      .then(resolvedImagePromises => {
-        resolvedImagePromises.forEach(res => {
-          if (typeof res === "string") {
-            this.tmpimg.push(res);
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+resolvedImagePromises.forEach(res => {
+  if (typeof res === "string") {
+    this.tmpimg.push(res);
+  }
+});
 
-    Promise.all(videosPromise)
-      .then(resolvedVideoPromises => {
-        resolvedVideoPromises.forEach(res => {
-          if (typeof res === "string") {
-            this.tmpvideo.push(res);
-          }
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+resolvedVideoPromises.forEach(res => {
+  if (typeof res === "string") {
+    this.tmpvideo.push(res);
+  }
+});
 
-    Promise.all([soundPromise,imagesPromise, videosPromise])
-    .then(res => {
-      const data = {
-        openid: birdRec.globalData.openid,
-        token: birdRec.globalData.token,
-        user_id: birdRec.globalData.userid,
-        bird_id: this.id,
-        record_time: `${this.Date} ${this.Time}`,
-        record_location: this.Address,
-        longitude: this.Longitude,
-        latitude: this.Latitude,
-        weather: this.weather,
-        temperature: this.temperature,
-        record_describe: this.text,
-        bird_infos: [{
-          sound: this.tmpaudio,
-          image: this.tmpimg,
-          videos: this.tmpvideo
-        }]
-      };
-      console.log(data);
-      birdRec.globalCheck()
-      create_bird_record(data).then(res=>{
-        console.log(res);
-      })
-      // 在这里可以访问其他操作的结果，然后返回data对象
-      return data;
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+const data = {
+  openid: birdRec.globalData.openid,
+  token: birdRec.globalData.token,
+  user_id: birdRec.globalData.userid,
+  bird_id: this.id,
+  record_time: `${this.Date} ${this.Time}`,
+  record_location: this.Address,
+  longitude: this.Longitude,
+  latitude: this.Latitude,
+  weather: this.weather,
+  temperature: this.temperature,
+  record_describe: this.text,
+  bird_infos: [{
+    sound: this.tmpaudio,
+    image: this.tmpimg,
+    videos: this.tmpvideo
+  }]
+};
+console.log(data);
+birdRec.globalCheck()
+wx_create_bird_record(data).then(res=>{
+  console.log(res);
+})
+// 在这里可以访问其他操作的结果，然后返回data对象
+return data;
+// 在这里进行上传数据的操作
+})
+.catch(error => {
+console.error('Error:', error);
+});
+
+    
   }
 }
 

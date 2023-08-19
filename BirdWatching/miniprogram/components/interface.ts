@@ -52,6 +52,10 @@ export async function create_bird_record(params: any) {
   const res = await request.post("/inventory/create_bird_record", params);
   return res.data;
 };
+export async function wx_create_bird_record(params: any) {
+  const res = await request.post("/inventory/wx_create_bird_record", params);
+  return res.data;
+};
 export async function update_bird_record(params: any) {
   const res = await request.post("/inventory/update_bird_record", params);
   return res.data;

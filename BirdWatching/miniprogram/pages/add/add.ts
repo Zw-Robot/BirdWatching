@@ -1,6 +1,6 @@
 // pages/add/add.ts
 import { appname, poskey } from "../../components/config";
-import { create_bird_record, create_bird_survey } from "../../components/interface";
+import { create_bird_record, create_bird_survey, wx_create_bird_record } from "../../components/interface";
 const checkapp=getApp()
 let currentDate = new Date();
 
@@ -124,6 +124,8 @@ Page({
                     success: function () {
                       for(const item of checkapp.globalData.messageList){
                         var data = item.submit()
+                        console.log(data);
+                    
                       }
                       checkapp.globalData.messageList = []
                  }
