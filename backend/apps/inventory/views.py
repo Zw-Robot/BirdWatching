@@ -50,25 +50,6 @@ def create_bird(request):
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
-
 
     bird = BirdInventory(
         order_en=order_en,
@@ -85,7 +66,7 @@ def create_bird(request):
         describe=describe,
         habitat=habitat,
         behavior=behavior,
-        bird_info=json.dumps(info_ids)
+        bird_info=json.dumps(bird_infos)
     )
     bird.update()
     return Responser.response_success(msg="创建成功")
@@ -121,24 +102,6 @@ def update_bird(request):
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
 
 
     bird.order_en = order_en if order_en else bird.order_en
@@ -155,7 +118,7 @@ def update_bird(request):
     bird.describe = describe if describe else bird.describe
     bird.habitat = habitat if habitat else bird.habitat
     bird.behavior = behavior if behavior else bird.behavior
-    bird.bird_info = json.dumps(info_ids)
+    bird.bird_info = json.dumps(bird_infos)
 
     bird.update()
     return Responser.response_success(msg="修改成功")
@@ -353,24 +316,6 @@ def create_bird_survey(request):
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
 
     bird_survey = BirdSurvey(
         user_id=user_id,
@@ -413,24 +358,6 @@ def update_bird_survey(request):
     if bird_survey.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类调查')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
 
 
     bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
@@ -440,7 +367,7 @@ def update_bird_survey(request):
     bird_survey.describe = describe if describe else bird_survey.describe
     bird_survey.habitat = habitat if habitat else bird_survey.habitat
     bird_survey.behavior = behavior if behavior else bird_survey.behavior
-    bird_survey.bird_info = json.dumps(info_ids)
+    bird_survey.bird_info = json.dumps(bird_infos)
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
 
@@ -553,28 +480,6 @@ def create_bird_record(request):
     # if lost_attrs:
     #     return Responser.response_error('缺少参数')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    print(bird_infos)
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            print(path)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
-
-
     bird_record = BirdRecords(
         user_id=user_id,
         bird_id=bird_id,
@@ -585,7 +490,7 @@ def create_bird_record(request):
         latitude=latitude,
         weather=weather,
         temperature=temperature,
-        bird_info=json.dumps(info_ids)
+        bird_info=json.dumps(bird_infos)
     )
     bird_record.update()
     return Responser.response_success(msg="创建鸟类记录成功")
@@ -618,24 +523,6 @@ def update_bird_record(request):
     if bird_record.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类记录')
 
-    info_ids = {
-        "images":[],
-        "sounds":[],
-        "videos":[],
-    }
-    for info in bird_infos:
-        for sound in info.get("sound", []):
-            path = FileResponser.audio_save(sound)
-            if path:
-                info_ids["sounds"].append(path)
-        for image in info.get("image", []):
-            path = FileResponser.image_save(image)
-            if path:
-                info_ids["images"].append(path)
-        for video in info.get("video", []):
-            path = FileResponser.video_save(video)
-            if path:
-                info_ids["videos"].append(path)
 
 
     bird_record.bird_id = bird_id if bird_id else bird_record.bird_id
@@ -646,7 +533,7 @@ def update_bird_record(request):
     bird_record.latitude = latitude if latitude else bird_record.latitude
     bird_record.weather = weather if weather else bird_record.weather
     bird_record.temperature = temperature if temperature else bird_record.temperature
-    bird_record.bird_info = json.dumps(info_ids)
+    bird_record.bird_info = json.dumps(bird_infos)
     bird_record.update()
     return Responser.response_success(msg="修改鸟类记录成功")
 
@@ -744,8 +631,26 @@ def get_bird_record(request):
 def wx_get_record(request):
     userid = int(request.args.get("userid"))
     bird_records = BirdRecords.query.filter_by(user_id=userid).all()
-    bird_records_dict = [record.serialize() for record in bird_records]
-    return Responser.response_success(data=bird_records_dict)
+    print(bird_records)
+    rec = []
+    for bird_record in bird_records:
+        bird_record_dict = {
+            'bird_record_id': bird_record.id,
+            'user_id': bird_record.user_id,
+            'bird_id': bird_record.bird_id,
+            'record_time': bird_record.record_time,
+            'record_location': bird_record.record_location,
+            'record_describe': bird_record.record_describe,
+            "longitude": bird_record.longitude,
+            "latitude": bird_record.latitude,
+            "weather": bird_record.weather,
+            "temperature": bird_record.temperature,
+            'bird_info': json.loads(bird_record.bird_info),
+            'create_at': bird_record.create_at,
+            'update_at': bird_record.update_at,
+        }
+        rec.append(bird_record_dict)
+    return Responser.response_success(data=rec)
 
 
 @inventory.route('/get_file/<filename>',methods=["GET"])
@@ -757,3 +662,19 @@ def get_images_value(request,filename):
         return send_file(path, mimetype=mimetype, as_attachment=False)
     else:
         return Responser.response_error("error没有文件")
+
+@inventory.route('/wx_post_base64',methods=["POST"])
+@requestPOST
+def wx_post_base64(request):
+    type = request.json.get("type")
+    binary = request.json.get("binary")
+    print(type)
+    if type == "sound":
+        path = FileResponser.audio_save(binary)
+    elif type == "image":
+        path = FileResponser.image_save(binary)
+    elif type == "video":
+        path = FileResponser.video_save(binary)
+    else:
+        path = ""
+    return Responser.response_success(data={"data":path})

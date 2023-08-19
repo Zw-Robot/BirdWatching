@@ -105,7 +105,8 @@ class FileResponser:
 
     @staticmethod
     def image_save(image=None):
-        filename = str(uuid.uuid4())
+        uuid_string = str(uuid.uuid4())
+        filename = uuid_string.replace('-', '')
         if image:
             image = base64.b64decode(image)
             savepath = '/robot/BirdWatching/var/{}.png'.format(filename)
@@ -120,7 +121,8 @@ class FileResponser:
 
     @staticmethod
     def audio_save(audio=None):
-        filename = str(uuid.uuid4())
+        uuid_string = str(uuid.uuid4())
+        filename = uuid_string.replace('-', '')
         if audio:
             audio = base64.b64decode(audio)
             savepath = '/robot/BirdWatching/var/{}.mp3'.format(filename)
@@ -135,7 +137,8 @@ class FileResponser:
 
     @staticmethod
     def video_save(video=None):
-        filename = str(uuid.uuid4())
+        uuid_string = str(uuid.uuid4())
+        filename = uuid_string.replace('-', '')
         if video:
             video = base64.b64decode(video)
             savepath = '/robot/BirdWatching/var/{}.mp4'.format(filename)

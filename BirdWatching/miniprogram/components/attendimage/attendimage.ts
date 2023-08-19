@@ -11,7 +11,15 @@ Component({
     }
   },
   data: {
-    fileList: []
+    fileChildList: []
+  },
+  observers:{
+    'fileList':function (newval) {
+      console.log(newval);
+      this.setData({
+        fileChildList:newval
+      })
+    }
   },
   ready() {},
   methods: {
@@ -28,6 +36,7 @@ Component({
         }
       })
     },
+
     setFile (data:any) {
       // 将wx.chooseImage返回的数据进行扩展
       data.map((item:any, index:any) => {
@@ -44,10 +53,10 @@ Component({
         item.path = `data:image/${fileFormat};base64,${base64}`;;
       })
       this.setData({ 
-        fileList: this.data.fileList.concat(data)
+        fileChildList: this.data.fileChildList.concat(data)
       });
       // 此处操作是用来将获取到的文件数据传递给父组件进行文件上传
-      this.triggerEvent('imageChange', this.data.fileList)
+      this.triggerEvent('imageChange', this.data.fileChildList)
     },
     // 随机生成文件名
     getFileName (m:any) {
@@ -59,11 +68,11 @@ Component({
     _onDelTab(e:any) {
       // 获取图片索引
       let idx = e.currentTarget.dataset.idx;
-      let delFile = this.data.fileList[idx];
+      let delFile = this.data.fileChildList[idx];
       console.log(delFile);
-      this.data.fileList.splice(idx, 1);
+      this.data.fileChildList.splice(idx, 1);
       this.setData({
-        fileList: this.data.fileList
+        fileChildList: this.data.fileChildList
       })
       this.triggerEvent('imageDel', idx);
     }

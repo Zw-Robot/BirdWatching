@@ -104,3 +104,7 @@ export async function get_all_groups(params: any) {
   const res = await request.get("/competition/get_all_groups", params);
   return res.data;
 };
+export async function wx_post_base64(params: any) {
+  const res = await request.post("/inventory/wx_post_base64", params);
+  return res.data;
+};

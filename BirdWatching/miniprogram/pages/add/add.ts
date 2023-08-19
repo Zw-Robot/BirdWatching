@@ -2,7 +2,6 @@
 import { appname, poskey } from "../../components/config";
 import { create_bird_record, create_bird_survey } from "../../components/interface";
 const checkapp=getApp()
-const recorder = wx.getRecorderManager();
 let currentDate = new Date();
 
 let hours = currentDate.getHours().toString().padStart(2, '0');
@@ -22,8 +21,12 @@ Page({
    * 页面的初始数据
    */
   data:{
+    imageInfo:[],
     // 上传视频
     src: "",        // 上传视频
+    video:'',
+    recorder: wx.getRecorderManager(),
+    audio:"",
     time:currentTime,
     date:currentDateString,
     checkedList:['1',checkapp.globalData.checkedList],
@@ -39,9 +42,6 @@ Page({
     latitude:0.0,
     count:0,//数量
     num:0,//人数,
-    images:[],
-    videos:[],
-    audios:[],
     text:''
   },
 
@@ -59,13 +59,10 @@ Page({
       latitude:checkapp.globalData.messageList[index].Latitude,
       count:checkapp.globalData.messageList[index].Count,
       num:checkapp.globalData.messageList[index].Num,
-      images:checkapp.globalData.messageList[index].images,
-      videos:checkapp.globalData.messageList[index].videos,
-      audios:checkapp.globalData.messageList[index].audios,
       text:checkapp.globalData.messageList[index].text,
     })
     console.log(this.data.nav_type);
-  
+    this.setImageInfo();  
     if(this.data.isFixed){
       wx.pageScrollTo({
         selector:'#content',
@@ -74,6 +71,41 @@ Page({
     }
   },
 
+  setImageInfo(){
+    const fileFormat = 'png'
+    let imgtemp = []
+    for (const data of checkapp.globalData.messageList[this.data.nav_type].images) {
+      const item = {
+        fileName: this.getFileName(13) + '.' + fileFormat,
+        path: `data:image/${fileFormat};base64,${data}`
+      };
+      imgtemp.push(item);
+    }
+    let tmp = checkapp.globalData.messageList[this.data.nav_type].videos
+    if(tmp.length == 0){
+      tmp =''
+    }
+    else{
+      tmp = checkapp.globalData.messageList[this.data.nav_type].videos[0]
+    }
+    let au=checkapp.globalData.messageList[this.data.nav_type].audios
+    if(au.length==0){
+      au = ''
+    }else{
+      au=checkapp.globalData.messageList[this.data.nav_type].audios[0]
+    }
+    this.setData({
+      imageInfo:imgtemp,
+      src:tmp,
+      audio:au
+    })
+
+  },
+  getFileName (m:any) {
+    m = m > 13 ? 13 : m;
+    var num = new Date().getTime();
+    return num.toString().substring(13 - m);
+  },
   //提交按钮
   jumpToDetail() {
     // create_bird_survey({parmas:this.data.messageList}).then(res=>{
@@ -93,11 +125,10 @@ Page({
                       for(const item of checkapp.globalData.messageList){
                         var data = item.submit()
                         console.log(data);
-                        
                         create_bird_record(data).then(res=>{
                           console.log(res);
-                          
                         })
+
                       }
                       checkapp.globalData.messageList = []
                  }
@@ -186,21 +217,15 @@ Page({
    */
   chooseVideo: function() {
     var _this = this;
+    var tmp: string[] = []
     wx.chooseVideo({
       success: function(res) {
         _this.setData({
           src: res.tempFilePath,
         })
-        wx.getFileSystemManager().readFile({
-      
-          filePath: _this.data.src,
-          encoding: 'base64',
-          success: function (res) {
-            checkapp.globalData.messageList[_this.data.nav_type].videos.push(res.data)
-          }
-          })
+        tmp.push(_this.data.src)
+        checkapp.globalData.messageList[_this.data.nav_type].videos = tmp
       }
-      
     })
     console.log( checkapp.globalData.messageList);
     
@@ -245,20 +270,19 @@ Page({
       format: 'mp3',
       duration: 10000,
     };
-    recorder.start(options);
-    
+    this.data.recorder.start(options);
+
   },
 
   //结束录音
   stopClick() {
-    recorder.stop();
-    
+    this.data.recorder.stop();
   },
 
     //播放录音
 playClick() {
   var audio = wx.createInnerAudioContext();
-  audio.src = this.data.file.tempFilePath;
+  audio.src = this.data.audio;
   audio.autoplay = true;
   console.log('播放录音');
 },
@@ -299,6 +323,27 @@ searchInput:function(e:any){
    * 生命周期函数--监听页面加载
    */
   onLoad:function() {
+        //事件监听
+      this.data.recorder.onStart(() => {
+        console.info('开始录音');
+      });
+      this.data.recorder.onPause(() => {
+        console.info('暂停录音');
+      });
+      //结束获取录取文件
+      this.data.recorder.onStop((res) => {
+        console.info('停止录音');
+        console.info(res); //可以看到录音文件
+        const au = res.tempFilePath        
+        this.setData({
+          audio: au
+        });
+        const tmp = []
+        tmp.push(this.data.audio)
+        checkapp.globalData.messageList[this.data.nav_type].audios = tmp;
+        console.log(checkapp.globalData.messageList);
+        
+});
     this.setData({
       checkedList:checkapp.globalData.checkedList
     })
@@ -309,22 +354,6 @@ searchInput:function(e:any){
       messageList:checkapp.globalData.messageList
     })
 
-    var _this = this;
-    //事件监听
-    recorder.onStart(() => {
-      console.info('开始录音');
-    });
-    recorder.onPause(() => {
-      console.info('暂停录音');
-    });
-    //结束获取录取文件
-    recorder.onStop((res) => {
-      console.info('停止录音');
-      console.info(res); //可以看到录音文件
-      _this.setData({
-        file: res
-      });
-    });
 
     //获取定位
     wx.getLocation({
@@ -385,8 +414,9 @@ deletebird(e:any) {
         longitude: loc.longitude,
       });
       checkapp.globalData.messageList[this.data.nav_type].Address = this.data.address
-      checkapp.globalData.messageList[this.data.nav_type].latitude = this.data.latitude
-      checkapp.globalData.messageList[this.data.nav_type].longitude = this.data.longitude
+      checkapp.globalData.messageList[this.data.nav_type].Latitude = this.data.latitude
+      checkapp.globalData.messageList[this.data.nav_type].Longitude = this.data.longitude
+      
     }
     catch{
       this.setData({
