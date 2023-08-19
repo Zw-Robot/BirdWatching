@@ -1,3 +1,6 @@
+import { appname } from "../../components/config";
+import { sgin } from "../../components/interface";
+
 var util = require('../../utils/util.js');
 Page({
 

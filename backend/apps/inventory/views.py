@@ -20,7 +20,7 @@ from sqlalchemy import or_
 from apps.components.common import required_attrs_validator
 from apps.inventory import inventory
 from apps.models import BirdInventory, BirdSurvey, BirdRecords, BirdInfos
-from apps.components.middleware import requestPOST, login_required, requestGET
+from apps.components.middleware import requestPOST, login_required, requestGET, SingAuth
 from apps.components.responser import Responser, FileResponser
 
 
@@ -302,7 +302,7 @@ def get_bird(request):
 # @login_required(['sysadmin'])
 def create_bird_survey(request):
     # 鸟类调查创建接口
-    user_id = request.user_id
+    user_id = request.json.get("user_id")
     survey_name = request.json.get("survey_name")
     survey_desc = request.json.get("survey_desc")
     survey_time = request.json.get("survey_time")
@@ -595,7 +595,6 @@ def get_all_bird_records(request):
         bird_record_list.append(bird_record_dict)
     return Responser.response_page(data=bird_record_list,count=total_pages,page=page,page_size=per_page)
 
-
 @inventory.route('/get_bird_record', methods=["GET"])
 @requestGET
 def get_bird_record(request):
@@ -630,7 +629,7 @@ def get_bird_record(request):
 @requestGET
 def wx_get_record(request):
     userid = int(request.args.get("userid"))
-    record = int(request.args.get("record_id",'-1'))
+    record = int(request.args.get("recordid",'-1'))
     print(record)
     if record >0:
         bird_records = BirdRecords.query.filter_by(id=record,user_id=userid,is_lock=False).all()
@@ -656,6 +655,40 @@ def wx_get_record(request):
         rec.append(bird_record_dict)
     return Responser.response_success(data=rec)
 
+@inventory.route('/wx_create_bird_record', methods=['POST'])
+@requestPOST
+@SingAuth
+def wx_create_bird_record(request):
+    # 鸟类记录创建接口
+    user_id = request.json.get("user_id")
+    bird_id = request.json.get("bird_id")
+    record_time = request.json.get("record_time")
+    record_location = request.json.get("record_location")
+    longitude = request.json.get("longitude")
+    latitude = request.json.get("latitude")
+    weather = request.json.get("weather")
+    temperature = request.json.get("temperature")
+    record_describe = request.json.get("record_describe")
+    bird_infos = request.json.get("bird_infos", [])
+
+    # lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
+    # if lost_attrs:
+    #     return Responser.response_error('缺少参数')
+
+    bird_record = BirdRecords(
+        user_id=user_id,
+        bird_id=bird_id,
+        record_time=record_time,
+        record_location=record_location,
+        record_describe=record_describe,
+        longitude=longitude,
+        latitude=latitude,
+        weather=weather,
+        temperature=temperature,
+        bird_info=json.dumps(bird_infos)
+    )
+    bird_record.update()
+    return Responser.response_success(msg="创建鸟类记录成功")
 
 @inventory.route('/get_file/<filename>',methods=["GET"])
 @requestGET
@@ -682,3 +715,18 @@ def wx_post_base64(request):
     else:
         path = ""
     return Responser.response_success(data={"data":path})
+
+@inventory.route('/wx_delete_bird_record', methods=['POST'])
+@requestPOST
+@SingAuth
+def wx_delete_bird_record(request):
+    # 鸟类记录删除接口
+    bird_record_id = int(request.json.get("record_id"))
+
+    bird_record = BirdRecords.query.filter_by(id=bird_record_id).first()
+    if bird_record is None:
+        return Responser.response_error('找不到指定的鸟类记录')
+
+    bird_record.is_lock = True
+    bird_record.update()
+    return Responser.response_success("删除鸟类记录成功")

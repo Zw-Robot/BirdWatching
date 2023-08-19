@@ -7,10 +7,12 @@
 --------------------------------------------
 """
 import math
+
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 from apps.competition import competition
-from apps.components.middleware import requestPOST, requestGET
+from apps.components.middleware import requestPOST, requestGET,SingAuth
 from apps.components.responser import Responser
 from apps.models import BirdMatch, MatchGroup
 
@@ -141,6 +143,7 @@ def get_all_matches(request):
 
 @competition.route('/create_group', methods=['POST'])
 @requestPOST
+@SingAuth
 def create_group(request):
     # 比赛小组创建接口
     match_id = request.json.get("match_id")
@@ -188,6 +191,7 @@ def update_group(request, db_session=None):
 
 @competition.route('/delete_group', methods=['POST'])
 @requestPOST
+@SingAuth
 def delete_group(request):
     # 比赛小组删除接口
     group_id = request.json.get("group_id")
@@ -203,6 +207,7 @@ def delete_group(request):
 
 @competition.route('/add_group', methods=["POST"])
 @requestPOST
+@SingAuth
 def add_group(request):
     group_name = request.json.get("group_name")
     group_user = request.json.get("group_user")
@@ -213,11 +218,60 @@ def add_group(request):
         return Responser.response_error('找不到指定的小组信息')
     if not group.check_password(password):
         return Responser.response_error('密码错误')
-    if group_name in group.group_user:
+    if group_user in group.group_user:
         return Responser.response_error(msg="已加入该小组")
     group.group_user = group.group_user + ',' + group_user
     group.update()
     return Responser.response_success(msg="加入小组成功")
+
+# 退出group
+@competition.route('/exit_group', methods=["POST"])
+@requestPOST
+@SingAuth
+def exit_group(request):
+    user_id = request.json.get("group_user",'')
+    group = MatchGroup.query.filter_by(is_lock=False).filter(
+        or_(
+            MatchGroup.group_user.like(f"%{user_id}%")
+        )
+    ).first()
+    if group is None:
+        return Responser.response_error('找不到指定的小组信息')
+    group_user = group.group_user.split(',')
+    group_user.remove(user_id)
+    group.group_user = group_user
+    group.update()
+    return Responser.response_success(msg="退出小组成功")
+
+
+# 组别
+@competition.route('/wx_user_group', methods=["POST"])
+@requestPOST
+@SingAuth
+def wx_user_group(request):
+    user_id = request.json.get("group_user")
+    groups = MatchGroup.query.filter_by(is_lock=False).filter(
+        or_(
+            MatchGroup.group_user.like(f"%{user_id}%")
+        )
+    )
+    res = []
+    for group in groups:
+        match = BirdMatch.query.filter_by(id=group.match_id).first()
+        dic = {
+            'group_id': group.id,
+            'match_id': match.id,
+            'match_name': match.match_name,
+            'match_desc': match.match_desc,
+            'group_name': group.group_name,
+            'group_desc': group.group_desc,
+            'group_user': group.group_user,
+            'rank': group.rank,
+            'create_at': group.create_at,
+            'update_at': group.update_at
+        }
+        res.append(dic)
+    return Responser.response_success(data={"data":res})
 
 
 @competition.route('/get_all_groups', methods=["GET"])

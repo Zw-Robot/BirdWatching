@@ -47,10 +47,11 @@ def login(request):
             # wechet_userdata = WXSDK_userinfo(openid, session_key)
 
             '''登录逻辑(更新和新建)'''
-            if LoginSessionCache.query.filter_by(openid=openid).first():
-
+            log = LoginSessionCache.query.filter_by(openid=openid).first()
+            if log:
                 '''存在就更新session_key'''
-                db.session.query(LoginSessionCache).filter(LoginSessionCache.openid == openid).update({LoginSessionCache.session_key: session_key})
+                log.session_key = session_key
+                log.update()
                 '''更新用户数据'''
                 # db.session.query(Userdata).filter(Userdata.openid == openid).update({
                 #     Userdata.username: wechet_userdata['nickName'],
@@ -60,12 +61,9 @@ def login(request):
                 #     Userdata.province: wechet_userdata['province'],
                 #     Userdata.city: wechet_userdata['city']
                 # })
-
-                return 200, '成功', {"openid": openid,"session_key":session_key}
-
             else:
                 '''不存在就创建登录记录写入id和sessionkey'''
-                LoginSessionCache(openid , session_key)
+                log=LoginSessionCache(openid , session_key)
                 '''创建用户关联数据表'''
                 # Userdata(openid=openid,
                 #          username=wechet_userdata['nickName'],
@@ -75,7 +73,7 @@ def login(request):
                 #          province=wechet_userdata['province'],
                 #          city=wechet_userdata['city'])
 
-            return 200, '成功', {"openid": openid,"session_key":session_key}
+            return 200, '成功', {"openid": openid,"session_key":session_key,"log":log.id}
 
         except:
                 return 500, '内部错误', ''

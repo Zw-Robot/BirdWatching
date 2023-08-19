@@ -22,19 +22,31 @@ def auth_login(request):
 @requestPOST
 @SingAuth
 def get_info(request):
-    params = request.json()
-    openid = params.get("openid")  # openid
+    tmp = request.json
+    openid = tmp.get("openid")  # openid
     log = LoginSessionCache.query.filter_by(openid=openid).first()
     if not log:
         return Responser.response_error(msg="未登录")
-    username = params.get("username")  # username
+    params = tmp.get("userInfo")
+    username = params.get("nickName")  # username
     avatar = params.get("avatar")  # avatarUrl
     gender = params.get("gender")   # gender
     country = params.get("country")  # country
     province = params.get("province")   # province
     city = params.get("city") # city
-    Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
-    return Responser.response_success(data={},msg="success")
+    user = Userdata.query.filter_by(openid=openid).first()
+    if user:
+        user.openid=openid
+        user.username=username
+        user.avatar=avatar
+        user.gender=gender
+        user.country=country
+        user.province=province
+        user.city=city
+        user.update()
+    else:
+        user = Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
+    return Responser.response_success(data={"id":user.id},msg="success")
 
 @auth.route('/login', methods=['GET'])
 @requestGET

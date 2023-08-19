@@ -1,4 +1,5 @@
-import { wx_post_base64 } from "../components/interface"
+import { create_bird_record, wx_post_base64 } from "../components/interface"
+const birdRec = getApp()
 
 export class BirdRecord{
   user_id:Number
@@ -9,6 +10,8 @@ export class BirdRecord{
   Address: String
   Longitude:Number
   Latitude:Number
+  weather:String
+  temperature:String
   Num:Number
   Count:Number
   images:AnyArray
@@ -19,7 +22,7 @@ export class BirdRecord{
   tmpvideo:AnyArray
   tmpaudio:AnyArray
 
-  constructor(user_id:Number,id:Number,name:String,date:String,time:String,address:String='',num:Number=0,count:Number = 0,images:AnyArray=[],videos:AnyArray = [],audios:AnyArray = [],text:String = '',  longitude:Number = 0,
+  constructor(user_id:Number,id:Number,name:String,date:String,time:String,address:String='',num:Number=0,count:Number = 0,images:AnyArray=[],videos:AnyArray = [],audios:AnyArray = [],text:String = '',  longitude:Number = 0,temperature="",weather="",
   latitude:Number = 0,tmpimg=[],tmpvideo=[],tmpaudio=[]){
     this.user_id = user_id
     this.id = id
@@ -28,6 +31,8 @@ export class BirdRecord{
     this.Time = time
     this.Address = address
     this.Num = num
+    this.weather = weather
+    this.temperature = temperature
     this.Count = count
     this.images = images
     this.videos = videos
@@ -120,14 +125,16 @@ export class BirdRecord{
     Promise.all([soundPromise,imagesPromise, videosPromise])
     .then(res => {
       const data = {
-        user_id: this.user_id,
-        bird_id: 4,
+        openid: birdRec.globalData.openid,
+        token: birdRec.globalData.token,
+        user_id: birdRec.globalData.userid,
+        bird_id: this.id,
         record_time: `${this.Date} ${this.Time}`,
         record_location: this.Address,
         longitude: this.Longitude,
         latitude: this.Latitude,
-        weather: "Sunny",
-        temperature: 26,
+        weather: this.weather,
+        temperature: this.temperature,
         record_describe: this.text,
         bird_infos: [{
           sound: this.tmpaudio,
@@ -136,7 +143,10 @@ export class BirdRecord{
         }]
       };
       console.log(data);
-      
+      birdRec.globalCheck()
+      create_bird_record(data).then(res=>{
+        console.log(res);
+      })
       // 在这里可以访问其他操作的结果，然后返回data对象
       return data;
     })

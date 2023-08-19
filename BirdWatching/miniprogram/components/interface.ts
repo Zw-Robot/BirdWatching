@@ -108,3 +108,13 @@ export async function wx_post_base64(params: any) {
   const res = await request.post("/inventory/wx_post_base64", params);
   return res.data;
 };
+
+export async function sgin(params: any) {
+  const res = await request.post("/auth/sgin", params);
+  return res.data;
+};
+
+export async function info(params: any) {
+  const res = await request.post("/auth/info", params);
+  return res.data;
+};

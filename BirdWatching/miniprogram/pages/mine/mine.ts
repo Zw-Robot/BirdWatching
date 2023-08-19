@@ -1,5 +1,6 @@
 // pages/mine/mine.ts
-import {get_all_bird_records} from '../../components/interface'
+import {get_all_bird_records, info} from '../../components/interface'
+const mineapp = getApp()
 Page({
 
   /**
@@ -16,7 +17,7 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
+    canIUseOpenData: false
   },
 
   changeType(e:any){
@@ -64,8 +65,19 @@ Page({
       success: (res) => {
         console.log(res)
         this.setData({
+          rawData:res.rawData,
+          signature:res.signature,
+          iv:res.iv,
+          encryptedData:res.encryptedData,
           userInfo: res.userInfo,
           hasUserInfo: true
+        })
+        res["openid"] = mineapp.globalData.openid
+        res["token"]  =mineapp.globalData.token
+        console.log(res);
+        
+        info(res).then(res=>{
+          console.log(res);
         })
       }
     })
