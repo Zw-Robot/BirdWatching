@@ -124,11 +124,6 @@ Page({
                     success: function () {
                       for(const item of checkapp.globalData.messageList){
                         var data = item.submit()
-                        console.log(data);
-                        create_bird_record(data).then(res=>{
-                          console.log(res);
-                        })
-
                       }
                       checkapp.globalData.messageList = []
                  }
@@ -224,9 +219,9 @@ Page({
           src: res.tempFilePath,
         })
         tmp.push(_this.data.src)
-        checkapp.globalData.messageList[_this.data.nav_type].videos = tmp
       }
     })
+    checkapp.globalData.messageList[_this.data.nav_type].videos = tmp
     console.log( checkapp.globalData.messageList);
     
   },

@@ -543,9 +543,9 @@ def update_bird_record(request):
 # @login_required(['sysadmin', 'admin'])
 def delete_bird_record(request):
     # 鸟类记录删除接口
-    bird_record_id = int(request.args.get("bird_record_id"))
+    bird_record_id = int(request.args.get("record_id"))
 
-    bird_record = BirdRecords.query.get(bird_record_id)
+    bird_record = BirdRecords.query.filter_by(id=bird_record_id).first()
     if bird_record is None:
         return Responser.response_error('找不到指定的鸟类记录')
 
@@ -630,14 +630,18 @@ def get_bird_record(request):
 @requestGET
 def wx_get_record(request):
     userid = int(request.args.get("userid"))
-    bird_records = BirdRecords.query.filter_by(user_id=userid).all()
-    print(bird_records)
+    record = int(request.args.get("record_id",'-1'))
+    print(record)
+    if record >0:
+        bird_records = BirdRecords.query.filter_by(id=record,user_id=userid,is_lock=False).all()
+    else:
+        bird_records = BirdRecords.query.filter_by(user_id=userid,is_lock=False).all()
     rec = []
     for bird_record in bird_records:
+        bi = BirdInventory.query.filter_by(id=bird_record.id).first()
         bird_record_dict = {
-            'bird_record_id': bird_record.id,
-            'user_id': bird_record.user_id,
-            'bird_id': bird_record.bird_id,
+            'id':bird_record.id,
+            'bird':bi.species if bi else '',
             'record_time': bird_record.record_time,
             'record_location': bird_record.record_location,
             'record_describe': bird_record.record_describe,

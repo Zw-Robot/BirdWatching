@@ -75,7 +75,7 @@ def login(request):
                 #          province=wechet_userdata['province'],
                 #          city=wechet_userdata['city'])
 
-                return 200, '成功', {"openid": openid,"session_key":session_key}
+            return 200, '成功', {"openid": openid,"session_key":session_key}
 
         except:
                 return 500, '内部错误', ''

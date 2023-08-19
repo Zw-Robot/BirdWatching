@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import Column, String, Integer, Enum, DateTime, Boolean, ForeignKey, Float
 from itsdangerous import Serializer
 from sqlalchemy import func
+from sqlalchemy.dialects.mysql import LONGTEXT
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from apps import db
@@ -236,7 +237,7 @@ class BirdRecords(db.Model):
     weather = Column(String(40),nullable=False,comment="天气")
     temperature = Column(Float,nullable=False,comment="气温")
     record_describe = Column(String(200), nullable=True, comment='描述')
-    bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
+    bird_info = Column(LONGTEXT, nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
     is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
