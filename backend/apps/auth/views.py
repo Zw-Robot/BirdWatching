@@ -1,11 +1,16 @@
+import math
+
 from apps.auth import service,auth
 from apps.components.common import required_attrs_validator
+from apps.components.wxinfo import getWXInfo
 from apps.models import LogonUser, Userdata, LoginSessionCache
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
 from apps.components.responser import Responser, FileResponser
 
 '''登录接口'''
-
+def calculate_level(score):
+    level = math.floor(math.sqrt(score))
+    return level
 
 @auth.route('/sgin', methods=["GET", "POST"], endpoint='auth_login')
 @requestPOST
@@ -18,18 +23,36 @@ def auth_login(request):
         return Responser.response_error(msg=msg)
 
 
+@auth.route('/get_score',methods=["GET"])
+@requestGET
+@SingAuth
+def get_score(request):
+    tmp = request.json
+    openid = tmp.get("openid")  # openid
+    user = Userdata.query.filter_by(openid=openid).first()
+    if user:
+        return Responser.response_success(data={"id":user.id,"level":calculate_level(user.score)},msg="success")
+    else:
+        return Responser.response_error("尚未登陆！")
+
 @auth.route('/info', methods=["GET", "POST"], endpoint='info')
 @requestPOST
 @SingAuth
 def get_info(request):
     tmp = request.json
     openid = tmp.get("openid")  # openid
+    secession = tmp.get("token")
+    encryptedData = tmp.get("encryptedData")
+    iv = tmp.get("iv")
     log = LoginSessionCache.query.filter_by(openid=openid).first()
     if not log:
         return Responser.response_error(msg="未登录")
-    params = tmp.get("userInfo")
+    try:
+        params = getWXInfo(sessionKey=secession,encryptedData=encryptedData,iv=iv)
+    except:
+        params = tmp.get("userInfo")
     username = params.get("nickName")  # username
-    avatar = params.get("avatar")  # avatarUrl
+    avatar = params.get("avatarUrl")  # avatarUrl
     gender = params.get("gender")   # gender
     country = params.get("country")  # country
     province = params.get("province")   # province
@@ -46,7 +69,7 @@ def get_info(request):
         user.update()
     else:
         user = Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
-    return Responser.response_success(data={"id":user.id},msg="success")
+    return Responser.response_success(data={"id":user.id,"level":calculate_level(user.score)},msg="success")
 
 @auth.route('/login', methods=['POST'])
 @requestPOST
@@ -179,6 +202,30 @@ def get_all_users():
             'update_at': user.update_at,
             'login_date': user.login_date,
             'is_lock': user.is_lock
+        }
+        user_list.append(user_dict)
+    return Responser.response_success(data=user_list)
+
+
+@auth.route('/get_all_wxusers', methods=["GET"])
+@requestGET
+@login_required(['sysadmin','admin'])
+def get_all_wxusers():
+    # 获取所有用户信息
+    users = Userdata.query.filter_by().all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'username': user.username,
+            'openid': user.openid,
+            'avatar': user.avatar,
+            'gender': user.gender,
+            'country': user.country,
+            'province': user.province,
+            'city': user.city,
+            'update_at': user.update_at,
+            'score': user.score
         }
         user_list.append(user_dict)
     return Responser.response_success(data=user_list)

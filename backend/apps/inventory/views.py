@@ -19,7 +19,7 @@ from sqlalchemy import or_
 
 from apps.components.common import required_attrs_validator
 from apps.inventory import inventory
-from apps.models import BirdInventory, BirdSurvey, BirdRecords, BirdInfos
+from apps.models import BirdInventory, BirdSurvey, BirdRecords, BirdInfos, Userdata
 from apps.components.middleware import requestPOST, login_required, requestGET, SingAuth
 from apps.components.responser import Responser, FileResponser
 
@@ -336,7 +336,7 @@ def create_bird_survey(request):
 def update_bird_survey(request):
     # 鸟类调查更新接口
     bird_survey_id = request.json.get("bird_survey_id")
-    user_id = request.user_id
+    user_id = request.json.get("user_id")
     survey_name = request.json.get("survey_name", "")
     survey_desc = request.json.get("survey_desc", "")
     survey_time = request.json.get("survey_time", "")
@@ -456,40 +456,40 @@ def get_bird_survey(request):
     return Responser.response_success(data=bird_survey_dict)
 
 
-@inventory.route('/create_bird_record', methods=['POST'])
-@requestPOST
-# @login_required(['sysadmin'])
-def create_bird_record(request):
-    # 鸟类记录创建接口
-    user_id = request.json.get("user_id")
-    bird_id = request.json.get("bird_id")
-    record_time = request.json.get("record_time")
-    record_location = request.json.get("record_location")
-    longitude = request.json.get("longitude")
-    latitude = request.json.get("latitude")
-    weather = request.json.get("weather")
-    temperature = request.json.get("temperature")
-    record_describe = request.json.get("record_describe")
-    bird_infos = request.json.get("bird_infos", [])
-
-    # lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
-    # if lost_attrs:
-    #     return Responser.response_error('缺少参数')
-
-    bird_record = BirdRecords(
-        user_id=user_id,
-        bird_id=bird_id,
-        record_time=record_time,
-        record_location=record_location,
-        record_describe=record_describe,
-        longitude=longitude,
-        latitude=latitude,
-        weather=weather,
-        temperature=temperature,
-        bird_info=json.dumps(bird_infos)
-    )
-    bird_record.update()
-    return Responser.response_success(msg="创建鸟类记录成功")
+# @inventory.route('/create_bird_record', methods=['POST'])
+# @requestPOST
+# # @login_required(['sysadmin'])
+# def create_bird_record(request):
+#     # 鸟类记录创建接口
+#     user_id = request.json.get("user_id")
+#     bird_id = request.json.get("bird_id")
+#     record_time = request.json.get("record_time")
+#     record_location = request.json.get("record_location")
+#     longitude = request.json.get("longitude")
+#     latitude = request.json.get("latitude")
+#     weather = request.json.get("weather")
+#     temperature = request.json.get("temperature")
+#     record_describe = request.json.get("record_describe")
+#     bird_infos = request.json.get("bird_infos", [])
+#
+#     # lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
+#     # if lost_attrs:
+#     #     return Responser.response_error('缺少参数')
+#
+#     bird_record = BirdRecords(
+#         user_id=user_id,
+#         bird_id=bird_id,
+#         record_time=record_time,
+#         record_location=record_location,
+#         record_describe=record_describe,
+#         longitude=longitude,
+#         latitude=latitude,
+#         weather=weather,
+#         temperature=temperature,
+#         bird_info=json.dumps(bird_infos)
+#     )
+#     bird_record.update()
+#     return Responser.response_success(msg="创建鸟类记录成功")
 
 
 @inventory.route('/update_bird_record', methods=['POST'])
@@ -658,6 +658,11 @@ def wx_get_record(request):
 def wx_create_bird_record(request):
     # 鸟类记录创建接口
     user_id = request.json.get("user_id")
+    user = Userdata.query.filter_by(id=user_id)
+    if user:
+        user.score = user.score+1
+    else:
+        return Responser.response_error("没有该用户！")
     bird_id = request.json.get("bird_id")
     record_time = request.json.get("record_time")
     record_location = request.json.get("record_location")

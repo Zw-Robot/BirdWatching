@@ -229,7 +229,7 @@ def add_group(request):
 @requestPOST
 @SingAuth
 def exit_group(request):
-    user_id = request.json.get("group_user",'')
+    user_id = request.json.get("user_id")
     group = MatchGroup.query.filter_by(is_lock=False).filter(
         or_(
             MatchGroup.group_user.like(f"%{user_id}%")
@@ -249,7 +249,7 @@ def exit_group(request):
 @requestPOST
 @SingAuth
 def wx_user_group(request):
-    user_id = request.json.get("group_user")
+    user_id = request.json.get("user_id")
     groups = MatchGroup.query.filter_by(is_lock=False).filter(
         or_(
             MatchGroup.group_user.like(f"%{user_id}%")

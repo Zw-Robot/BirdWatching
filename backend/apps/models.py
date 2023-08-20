@@ -128,10 +128,11 @@ class Userdata(db.Model):
     country = Column(String(255))  # country
     province = Column(String(255))  # province
     city = Column(String(255))  # city
+    score = Column(Integer,comment="积分")
     update_at = Column(DateTime, default=datetime.now())
 
     # 定义对象
-    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None):
+    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,score=0):
         self.openid = openid
         self.username = username
         self.avatar = avatar
@@ -139,6 +140,7 @@ class Userdata(db.Model):
         self.country = country
         self.province = province
         self.city = city
+        self.score = score
         self.update()  # 提交数据
 
     # 提交数据函数
