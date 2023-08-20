@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime
 from math import ceil
 from urllib.parse import quote
-
+import pandas as pd
 from flask import make_response, send_file
 from sqlalchemy import or_
 
@@ -50,7 +50,6 @@ def create_bird(request):
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-
     bird = BirdInventory(
         order_en=order_en,
         order_cn=order_cn,
@@ -59,10 +58,10 @@ def create_bird(request):
         genus=genus,
         species=species,
         latin_name=latin_name,
-        geotype = geotype,
-        seasonal = seasonal,
-        IUCN = IUCN,
-        level = level,
+        geotype=geotype,
+        seasonal=seasonal,
+        IUCN=IUCN,
+        level=level,
         describe=describe,
         habitat=habitat,
         behavior=behavior,
@@ -86,10 +85,10 @@ def update_bird(request):
     genus = request.json.get("genus", "")
     species = request.json.get("species", "")
     latin_name = request.json.get("latin_name", "")
-    geotype = request.json.get("geotype","")
-    seasonal = request.json.get("seasonal","")
-    IUCN = request.json.get("IUCN","")
-    level = request.json.get("level","")
+    geotype = request.json.get("geotype", "")
+    seasonal = request.json.get("seasonal", "")
+    IUCN = request.json.get("IUCN", "")
+    level = request.json.get("level", "")
     describe = request.json.get("describe", "")
     habitat = request.json.get("habitat", "")
     behavior = request.json.get("behavior", "")
@@ -101,8 +100,6 @@ def update_bird(request):
     bird = BirdInventory.query.get(bird_id)
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
-
-
 
     bird.order_en = order_en if order_en else bird.order_en
     bird.order_cn = order_cn if order_cn else bird.order_cn
@@ -149,17 +146,18 @@ def get_all_orders(request):
         if bird.order_cn[0] in [item['name'] for item in result]:
             continue
         tmp = {
-            "id":len(result),
-            "name":bird.order_cn[0]
+            "id": len(result),
+            "name": bird.order_cn[0]
         }
         result.append(tmp)
     return Responser.response_success(data=result)
 
+
 @inventory.route('/wx_get_all_birds', methods=["GET"])
 @requestGET
 def wx_get_all_birds(request):
-    keyword = request.args.get("keyword","")
-    order = request.args.get("order","")
+    keyword = request.args.get("keyword", "")
+    order = request.args.get("order", "")
     if order:
         bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
             or_(
@@ -183,9 +181,9 @@ def wx_get_all_birds(request):
     result = []
     bird_dic = {}
     for bird in bird_inventory_query:
-        bird_name = bird.order_cn+' '+bird.order_en
+        bird_name = bird.order_cn + ' ' + bird.order_en
         bird_info = {
-            "id":bird.id,
+            "id": bird.id,
             'order_en': bird.order_en,
             'order_cn': bird.order_cn,
             'family_en': bird.family_en,
@@ -193,10 +191,10 @@ def wx_get_all_birds(request):
             'genus': bird.genus,
             'species': bird.species,
             'latin_name': bird.latin_name,
-            "geotype" : bird.geotype,
-            "seasonal" : bird.seasonal,
-            "IUCN" : bird.IUCN,
-            "level" : bird.level,
+            "geotype": bird.geotype,
+            "seasonal": bird.seasonal,
+            "IUCN": bird.IUCN,
+            "level": bird.level,
             'describe': bird.describe,
             'habitat': bird.habitat,
             'behavior': bird.behavior,
@@ -204,7 +202,7 @@ def wx_get_all_birds(request):
             'update_at': bird.update_at,
             'is_lock': bird.is_lock
         }
-        bird_dic[bird_name] = bird_dic.get(bird_name,[])
+        bird_dic[bird_name] = bird_dic.get(bird_name, [])
         bird_dic[bird_name].append(bird_info)
     for index, (key, val) in enumerate(bird_dic.items()):
         tmp_dic = {
@@ -214,6 +212,7 @@ def wx_get_all_birds(request):
         }
         result.append(tmp_dic)
     return Responser.response_success(data=result)
+
 
 @inventory.route('/get_all_birds', methods=["GET"])
 @requestGET
@@ -244,10 +243,10 @@ def get_all_birds(request):
             'genus': bird.genus,
             'species': bird.species,
             'latin_name': bird.latin_name,
-            "geotype" : bird.geotype,
-            "seasonal" : bird.seasonal,
-            "IUCN" : bird.IUCN,
-            "level" : bird.level,
+            "geotype": bird.geotype,
+            "seasonal": bird.seasonal,
+            "IUCN": bird.IUCN,
+            "level": bird.level,
             'describe': bird.describe,
             'habitat': bird.habitat,
             'behavior': bird.behavior,
@@ -257,7 +256,7 @@ def get_all_birds(request):
             'is_lock': bird.is_lock
         }
         bird_list.append(bird_dict)
-    return Responser.response_page(data=bird_list,count=total_pages,page=page,page_size=per_page)
+    return Responser.response_page(data=bird_list, count=total_pages, page=page, page_size=per_page)
 
 
 @inventory.route('/get_bird', methods=["GET"])
@@ -283,10 +282,10 @@ def get_bird(request):
         'genus': bird.genus,
         'species': bird.species,
         'latin_name': bird.latin_name,
-        "geotype" : bird.geotype,
-        "seasonal" : bird.seasonal,
-        "IUCN" : bird.IUCN,
-        "level" : bird.level,
+        "geotype": bird.geotype,
+        "seasonal": bird.seasonal,
+        "IUCN": bird.IUCN,
+        "level": bird.level,
         'describe': bird.describe,
         'habitat': bird.habitat,
         'behavior': bird.behavior,
@@ -315,7 +314,6 @@ def create_bird_survey(request):
     lost_attrs = required_attrs_validator([survey_name, survey_time, survey_location, describe, habitat, behavior])
     if lost_attrs:
         return Responser.response_error('缺少参数')
-
 
     bird_survey = BirdSurvey(
         user_id=user_id,
@@ -357,8 +355,6 @@ def update_bird_survey(request):
         return Responser.response_error('找不到指定的鸟类调查信息')
     if bird_survey.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类调查')
-
-
 
     bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
     bird_survey.survey_desc = survey_desc if survey_desc else bird_survey.survey_desc
@@ -426,7 +422,7 @@ def get_all_bird_surveys(request):
         }
 
     bird_survey_list = [process_bird_survey(bird_survey) for bird_survey in bird_surveys]
-    return Responser.response_page(data=bird_survey_list,count=total_pages,page=page,page_size=per_page)
+    return Responser.response_page(data=bird_survey_list, count=total_pages, page=page, page_size=per_page)
 
 
 @inventory.route('/get_bird_survey', methods=["GET"])
@@ -523,8 +519,6 @@ def update_bird_record(request):
     if bird_record.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类记录')
 
-
-
     bird_record.bird_id = bird_id if bird_id else bird_record.bird_id
     bird_record.record_time = record_time if record_time else bird_record.record_time
     bird_record.record_location = record_location if record_location else bird_record.record_location
@@ -593,7 +587,8 @@ def get_all_bird_records(request):
             'is_lock': bird_record.is_lock
         }
         bird_record_list.append(bird_record_dict)
-    return Responser.response_page(data=bird_record_list,count=total_pages,page=page,page_size=per_page)
+    return Responser.response_page(data=bird_record_list, count=total_pages, page=page, page_size=per_page)
+
 
 @inventory.route('/get_bird_record', methods=["GET"])
 @requestGET
@@ -625,22 +620,23 @@ def get_bird_record(request):
     }
     return Responser.response_success(data=bird_record_dict)
 
-@inventory.route('/wx_get_record',methods=["GET"])
+
+@inventory.route('/wx_get_record', methods=["GET"])
 @requestGET
 def wx_get_record(request):
     userid = int(request.args.get("userid"))
-    record = int(request.args.get("recordid",'-1'))
+    record = int(request.args.get("recordid", '-1'))
     print(record)
-    if record >0:
-        bird_records = BirdRecords.query.filter_by(id=record,user_id=userid,is_lock=False).all()
+    if record > 0:
+        bird_records = BirdRecords.query.filter_by(id=record, user_id=userid, is_lock=False).all()
     else:
-        bird_records = BirdRecords.query.filter_by(user_id=userid,is_lock=False).all()
+        bird_records = BirdRecords.query.filter_by(user_id=userid, is_lock=False).all()
     rec = []
     for bird_record in bird_records:
         bi = BirdInventory.query.filter_by(id=bird_record.id).first()
         bird_record_dict = {
-            'id':bird_record.id,
-            'bird':bi.species if bi else '',
+            'id': bird_record.id,
+            'bird': bi.species if bi else '',
             'record_time': bird_record.record_time,
             'record_location': bird_record.record_location,
             'record_describe': bird_record.record_describe,
@@ -654,6 +650,7 @@ def wx_get_record(request):
         }
         rec.append(bird_record_dict)
     return Responser.response_success(data=rec)
+
 
 @inventory.route('/wx_create_bird_record', methods=['POST'])
 @requestPOST
@@ -690,9 +687,10 @@ def wx_create_bird_record(request):
     bird_record.update()
     return Responser.response_success(msg="创建鸟类记录成功")
 
-@inventory.route('/get_file/<filename>',methods=["GET"])
+
+@inventory.route('/get_file/<filename>', methods=["GET"])
 @requestGET
-def get_images_value(request,filename):
+def get_images_value(request, filename):
     path = "/robot/BirdWatching/var/{}".format(filename)
     if os.path.exists(path):
         mimetype, _ = mimetypes.guess_type(path)
@@ -700,7 +698,8 @@ def get_images_value(request,filename):
     else:
         return Responser.response_error("error没有文件")
 
-@inventory.route('/wx_post_base64',methods=["POST"])
+
+@inventory.route('/wx_post_base64', methods=["POST"])
 @requestPOST
 def wx_post_base64(request):
     type = request.json.get("type")
@@ -714,7 +713,8 @@ def wx_post_base64(request):
         path = FileResponser.video_save(binary)
     else:
         path = ""
-    return Responser.response_success(data={"data":path})
+    return Responser.response_success(data={"data": path})
+
 
 @inventory.route('/wx_delete_bird_record', methods=['POST'])
 @requestPOST
@@ -730,3 +730,134 @@ def wx_delete_bird_record(request):
     bird_record.is_lock = True
     bird_record.update()
     return Responser.response_success("删除鸟类记录成功")
+
+
+@inventory.route('/download_records', methods=['POST'])
+@requestPOST
+def download_record(request):
+    # 查询所有鸟类记录
+    select_records = request.json.get("select_records", [])
+    if select_records:
+        bird_records = BirdRecords.query.filter(BirdRecords.id.in_(select_records)).all()
+    else:
+        bird_records = BirdRecords.query.all()
+
+    record = []
+    for bird_record in bird_records:
+        bi = BirdInventory.query.filter_by(id=bird_record.id).first()
+        bird_record_dict = {
+            'id': bird_record.id,
+            'bird': bi.species if bi else '',
+            'record_time': bird_record.record_time,
+            'record_location': bird_record.record_location,
+            'record_describe': bird_record.record_describe,
+            "longitude": bird_record.longitude,
+            "latitude": bird_record.latitude,
+            "weather": bird_record.weather,
+            "temperature": bird_record.temperature,
+            'bird_info': json.loads(bird_record.bird_info),
+            'create_at': bird_record.create_at,
+            'update_at': bird_record.update_at,
+        }
+        record.append(bird_record_dict)
+    # 将查询结果转换为DataFrame
+    df = pd.DataFrame(record)
+
+    # 将DataFrame保存为Excel文件
+    excel_file = 'E:/bird_records.xlsx'  # 替换为您想要保存的文件名
+    df.to_excel(excel_file, index=False)
+
+    # 设置响应头部的内容类型和文件名
+    headers = {
+        'Content-Disposition': 'attachment; filename="bird_records.xlsx"',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }
+
+    # 返回Excel文件给客户端进行下载
+    return send_file(excel_file, as_attachment=True)
+
+
+@inventory.route("/download_example_bird", methods=["POST"])
+@requestPOST
+def download_example_bird(request):
+    df = pd.DataFrame(
+        columns=[
+            "order_en",
+            "order_cn",
+            "family_en",
+            "family_cn",
+            "genus",
+            "species",
+            "latin_name",
+            "geotype",
+            "seasonal",
+            "IUCN",
+            "level",
+            "describe",
+            "habitat",
+            "behavior",
+            "bird_info"
+        ])
+    excel_file = '/robot/BirdWatching/example_bird.xlsx'  # 替换为您想要保存的文件名
+    df.to_excel(excel_file, index=False)
+    # 保存DataFrame为Excel文件
+    print(excel_file)
+    headers = {
+        'Content-Disposition': 'attachment; filename="records.xlsx"',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }
+
+    # 返回Excel文件给客户端进行下载
+    return send_file(excel_file, as_attachment=True)
+
+
+@inventory.route("/upload_bird", methods=["POST"])
+@requestPOST
+def upload_file(request):
+    excel_file = request.files['excelFile']
+    df = pd.read_excel(excel_file)
+    desired_columns = [
+        "order_en",
+        "order_cn",
+        "family_en",
+        "family_cn",
+        "genus",
+        "species",
+        "latin_name",
+        "geotype",
+        "seasonal",
+        "IUCN",
+        "level",
+        "describe",
+        "habitat",
+        "behavior",
+        "bird_info"
+    ]
+    # 获取数据框的列名，并转换为集合
+    columns_set = set(df.columns)
+    for index, row in df.iterrows():
+        bird = BirdInventory(
+            order_en=row['order_en'],
+            order_cn=row['order_cn'],
+            family_en=row['family_en'],
+            family_cn=row['family_cn'],
+            genus=row['genus'],
+            species=row['species'],
+            latin_name=row['latin_name'],
+            geotype=row['geotype'],
+            seasonal=row['seasonal'],
+            IUCN=row['IUCN'],
+            level=row['level'],
+            describe=row['describe'],
+            habitat=row['habitat'],
+            behavior=row['behavior'],
+            bird_info=row['bird_info'],
+        )
+        bird.update()
+    # 判断所需的表头是否存在
+    if set(desired_columns).issubset(columns_set):
+        print("All desired columns are present.")
+    else:
+        return Responser.response_error("格式不对，请根据格式上传")
+
+    return Responser.response_success(msg="上传成功！")
