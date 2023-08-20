@@ -56,6 +56,8 @@ class LogonUser(db.Model):
 
     # 检查密码是否正确
     def check_password(self, password):
+        print(password)
+        print(check_password_hash(self.hash_password, password))
         return check_password_hash(self.hash_password, password)
 
     # 生成token

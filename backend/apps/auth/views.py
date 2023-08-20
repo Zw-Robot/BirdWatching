@@ -48,8 +48,8 @@ def get_info(request):
         user = Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
     return Responser.response_success(data={"id":user.id},msg="success")
 
-@auth.route('/login', methods=['GET'])
-@requestGET
+@auth.route('/login', methods=['POST'])
+@requestPOST
 def login(request):
     # 完成网页端用户的登陆操作
     """
@@ -63,7 +63,7 @@ def login(request):
     if lost_attrs:
         return Responser.response_error('参数缺失')
     user = LogonUser.query.filter_by(username=username,is_lock=False).first()
-    if not user.check_password(password):
+    if user.check_password(password):
         z_token = LogonUser.create_token(user.id, "username", user.role)
     else:
         return Responser.response_error('用户名或密码错误！')
@@ -88,7 +88,7 @@ def create_user(request):
     isExist = LogonUser.query.filter_by(username=username).first()
     if isExist:
         return Responser.response_error('已存在该用户')
-    avatar = FileResponser.image_save(image, 'avatar', username)
+    avatar = FileResponser.image_save(image)
     lost_attrs = required_attrs_validator([username, password, phone, email, role, depart])
     if lost_attrs:
         return Responser.response_error('缺少参数')

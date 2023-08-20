@@ -764,7 +764,7 @@ def download_record(request):
     df = pd.DataFrame(record)
 
     # 将DataFrame保存为Excel文件
-    excel_file = 'E:/bird_records.xlsx'  # 替换为您想要保存的文件名
+    excel_file = '/robot/BirdWatching/bird_records.xlsx'  # 替换为您想要保存的文件名
     df.to_excel(excel_file, index=False)
 
     # 设置响应头部的内容类型和文件名

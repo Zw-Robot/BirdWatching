@@ -280,8 +280,9 @@ def wx_user_group(request):
 def get_all_groups(request):
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
+    match_id = int(request.args.get('match_id',1))
 
-    groups_query = MatchGroup.query
+    groups_query = MatchGroup.query.filter_by(match_id=match_id)
 
     total_pages = math.ceil(groups_query.count() / per_page)
 
