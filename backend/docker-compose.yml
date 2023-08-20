@@ -8,7 +8,7 @@ services:
     ports:
       - "5500:5500" # 端口映射， 这里是将 docker 容器内的 80 端口映射到云服务器的 5500 端口
     volumes:
-      - /robot/BirdWatching/var:/var/birdwatching
+      - /robot/BirdWatching/var:/robot/BirdWatching/var
       - /robot/BirdWatching/var/birdwatching/images:/var/birdwatching/images
       - /robot/BirdWatching/var/birdwatching/audio:/var/birdwatching/audio
       - /robot/BirdWatching/var/birdwatching/videos:/var/birdwatching/videos
