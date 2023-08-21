@@ -5,7 +5,7 @@ DIALECT = 'mysql'
 DRIVER = 'pymysql'
 USERNAME = 'root'
 PASSWORD = 'Ld1ss6H94iu'
-HOST = '49.232.226.159'
+HOST = '43.138.33.82'
 PORT = '3306'
 DATABASE = 'birdwatching'
 
