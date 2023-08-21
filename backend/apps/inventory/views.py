@@ -624,7 +624,7 @@ def get_bird_record(request):
 @inventory.route('/wx_get_record', methods=["GET"])
 @requestGET
 def wx_get_record(request):
-    userid = int(request.args.get("userid"))
+    userid = int(request.args.get("user_id"))
     record = int(request.args.get("recordid", '-1'))
     print(record)
     if record > 0:
