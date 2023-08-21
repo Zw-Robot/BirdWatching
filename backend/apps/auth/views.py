@@ -37,7 +37,6 @@ def get_score(request):
 
 @auth.route('/info', methods=["GET", "POST"], endpoint='info')
 @requestPOST
-@SingAuth
 def get_info(request):
     tmp = request.json
     openid = tmp.get("openid")  # openid

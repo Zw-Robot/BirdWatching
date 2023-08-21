@@ -19,8 +19,9 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData: false,
+    canIUseOpenData: true,
     recordMessage:[],
+    level:0,
   },
 
   changeType(e:any){
@@ -67,7 +68,9 @@ Page({
       token:mineapp.globalData.token
     }
     get_score(date).then(res=>{
-      console.log(res);
+      this.setData({
+        level:res.level
+      })
     })
   },
 
@@ -76,8 +79,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    this.getScore()
     this.getUserProfile()
+    this.getScore()
     this.getAllBirdRecords()
     if (wx.getUserProfile) {
       this.setData({
@@ -103,7 +106,6 @@ Page({
         res['openid'] = mineapp.globalData.openid
         res["token"]  = mineapp.globalData.token
         console.log(res);
-        console.log(res,this.data.newarray);
         
         info(res).then(res=>{
           console.log(res);

@@ -85,7 +85,7 @@
   </view>
   <button 
      class="leave"
-     bindtap="leave_group"
+     bindtap="exitGroup"
      wx:if="{{creat_hidde==false}}">
      <text>退出小组</text>
    </button >

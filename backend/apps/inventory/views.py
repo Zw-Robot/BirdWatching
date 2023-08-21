@@ -637,6 +637,17 @@ def wx_get_record(request):
         bird_record_dict = {
             'id': bird_record.id,
             'bird': bi.species if bi else '',
+            'order_en': bi.order_en if bi else bi,
+            'order_cn': bi.order_cn if bi else bi,
+            'family_en': bi.family_en if bi else bi,
+            'family_cn': bi.family_cn if bi else bi,
+            'genus': bi.genus if bi else bi,
+            'species': bi.species if bi else bi,
+            'latin_name': bi.latin_name if bi else bi,
+            "geotype": bi.geotype if bi else bi,
+            "seasonal": bi.seasonal if bi else bi,
+            "IUCN": bi.IUCN if bi else '',
+            "level": bi.level if bi else '',
             'record_time': bird_record.record_time,
             'record_location': bird_record.record_location,
             'record_describe': bird_record.record_describe,
@@ -658,7 +669,7 @@ def wx_get_record(request):
 def wx_create_bird_record(request):
     # 鸟类记录创建接口
     user_id = request.json.get("user_id")
-    user = Userdata.query.filter_by(id=user_id)
+    user = Userdata.query.filter_by(id=user_id).first()
     if user:
         user.score = user.score+1
     else:

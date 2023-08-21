@@ -114,9 +114,13 @@ export async function delete_group(params: any) {
   const res = await request.post("/competition/delete_group", params);
   return res.data;
 };
-export async function get_all_groups(params: any) {
-  const res = await request.get("/competition/get_all_groups", params);
+export async function wx_user_group(params: any) {
+  const res = await request.get("/competition/wx_user_group", params);
   return res.data;
+};
+export async function exit_group(params: any) {
+  const res = await request.post("/competition/exit_group", params);  
+  return res;
 };
 export async function wx_post_base64(params: any) {
   const res = await request.post("/inventory/wx_post_base64", params);

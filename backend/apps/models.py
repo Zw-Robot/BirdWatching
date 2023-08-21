@@ -233,7 +233,7 @@ class BirdRecords(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False, comment='记录用户id')
-    bird_id = Column(Integer, ForeignKey('bird_inventory.id'), nullable=False, comment='鸟类名录ID')
+    bird_id = Column(Integer, nullable=False, comment='鸟类名录ID')
     record_time = Column(DateTime, nullable=False, comment='时间')
     record_location = Column(String(200), nullable=False, comment='地点')
     longitude = Column(Float,nullable=False,comment="经度")
@@ -346,7 +346,7 @@ class MatchGroup(db.Model):
     __tablename__ = "bird_group"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    match_id = Column(Integer, ForeignKey("bird_match.id"), nullable=False, comment="比赛id")
+    match_id = Column(Integer, nullable=False, comment="比赛id")
     group_name = Column(String(60), unique=True, nullable=False, comment='小组名称')
     hash_password = Column(String(120), nullable=False, comment='密码')
     group_desc = Column(String(200), nullable=True, comment='小组描述')

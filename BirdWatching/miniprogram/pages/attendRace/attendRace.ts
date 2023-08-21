@@ -1,5 +1,5 @@
 // pages/attendRace/attendRace.ts
-import {create_group,add_group,get_all_groups,get_all_matches} from '../../components/interface'
+import {create_group,add_group,get_all_matches, wx_user_group, exit_group} from '../../components/interface'
 const attendapp=getApp()
 Page({
 
@@ -8,6 +8,7 @@ Page({
    */
   data: {
     //比赛信息
+    match_id:'',
     match_name:'',
     match_desc:'',
     start_time:'',
@@ -83,24 +84,17 @@ Page({
     })
   },
 
-  leave_group:function(){
-    this.setData({
-      creat_hidde:true
-    })
-    wx.showModal({
-      title:'退出成功'
-    })
-  },
-
   //创建小组接口
   creatGroup:function(){
     var date={
-      match_id:1,
+      match_id:this.data.match_id,
       group_name:this.data.group_name,
       group_desc:'111',
       group_user:'222',
       password:this.data.password,
-      userid:attendapp.globalData.userid
+      user_id:attendapp.globalData.userid,
+      openid:attendapp.globalData.openid,
+      token:attendapp.globalData.token
     }
     create_group(date).then(res=>{
       console.log(res);
@@ -123,43 +117,54 @@ Page({
   },
 
   addGroup:function(){
+    console.log(attendapp.globalData);
+    
     var date={
-      group_name:this.data.add_group_name,
       user_id:attendapp.globalData.userid,
       openid:attendapp.globalData.openid,
       token:attendapp.globalData.token,
+      group_name:this.data.add_group_name,
       password:this.data.add_password,
     }
-    add_group({date}).then(res=>{
+    console.log(date);
+    
+    add_group(date).then(res=>{
       console.log(res);
-      this.setData({
-        result:res.code
+      wx.showModal({
+        title:res.msg
       })
     })
-    if (this.data.result='0') {
-      wx.showModal({
-        title:'加入成功'
-      })
-      this.setData({
-        creat_hidde:false
-      })
-    }else{
-      wx.showModal({
-        title:'没有此小组'
-      })
-    }
+
+
   },
 
   getAllGroup:function(){
     var date={
-      page: 1,
-      per_page: 20
+      user_id:attendapp.globalData.userid
     }
-    get_all_groups(date).then(res=>{
-      console.log(res);
+    wx_user_group(date).then((res: any)=>{
+      if(res.data.length > 0){
+        this.setData({creat_hidde:false})
+      }
     })
   },
 
+  exitGroup:function(){
+    var date={
+      user_id:attendapp.globalData.userid,
+      openid:attendapp.globalData.openid,
+      token:attendapp.globalData.token,
+    }
+    exit_group(date).then(res=>{
+      console.log(res);
+      wx.showModal({
+        title:res.msg
+      })
+      this.setData({
+        creat_hidde:false
+      })
+    })
+  },
   getAllMatch:function(){
     var date={
       match_id :2,
@@ -167,6 +172,7 @@ Page({
     get_all_matches(date).then(res=>{
       console.log(res);
       this.setData({
+        match_id:res[0].match_id,
         match_name:res[0].match_name,
         match_desc:res[0].match_desc,
         start_time:res[0].start_time,
@@ -200,7 +206,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.getAllGroup()
   },
 
   /**

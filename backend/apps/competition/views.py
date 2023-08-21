@@ -146,10 +146,10 @@ def get_all_matches(request):
 @SingAuth
 def create_group(request):
     # 比赛小组创建接口
-    match_id = request.json.get("match_id")
+    match_id = int(request.json.get("match_id"))
     group_name = request.json.get("group_name")
     group_desc = request.json.get("group_desc")
-    group_user = request.json.get("group_user")
+    group_user = str(request.json.get("user_id"))
     password = request.json.get("password")
     bmatch = BirdMatch.query.filter_by(id=match_id)
     if not bmatch:
@@ -210,13 +210,12 @@ def delete_group(request):
 @SingAuth
 def add_group(request):
     group_name = request.json.get("group_name")
-    group_user = request.json.get("group_user")
+    group_user = str(request.json.get("user_id"))
     password = request.json.get("password")
-
     group = MatchGroup.query.filter_by(group_name=group_name).first()
     if group is None:
         return Responser.response_error('找不到指定的小组信息')
-    if not group.check_password(password):
+    if group.check_password(password):
         return Responser.response_error('密码错误')
     if group_user in group.group_user:
         return Responser.response_error(msg="已加入该小组")
@@ -229,7 +228,7 @@ def add_group(request):
 @requestPOST
 @SingAuth
 def exit_group(request):
-    user_id = request.json.get("user_id")
+    user_id = str(request.json.get("user_id"))
     group = MatchGroup.query.filter_by(is_lock=False).filter(
         or_(
             MatchGroup.group_user.like(f"%{user_id}%")
@@ -238,18 +237,18 @@ def exit_group(request):
     if group is None:
         return Responser.response_error('找不到指定的小组信息')
     group_user = group.group_user.split(',')
+    print(group_user)
     group_user.remove(user_id)
-    group.group_user = group_user
+    group.group_user = ",".join(map(str,group_user))
     group.update()
-    return Responser.response_success(msg="退出小组成功")
+    return Responser.response_success(data={},msg="退出小组成功")
 
 
 # 组别
-@competition.route('/wx_user_group', methods=["POST"])
-@requestPOST
-@SingAuth
+@competition.route('/wx_user_group', methods=["GET"])
+@requestGET
 def wx_user_group(request):
-    user_id = request.json.get("user_id")
+    user_id = int(request.args.get("user_id"))
     groups = MatchGroup.query.filter_by(is_lock=False).filter(
         or_(
             MatchGroup.group_user.like(f"%{user_id}%")

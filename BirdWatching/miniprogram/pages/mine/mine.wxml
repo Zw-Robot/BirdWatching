@@ -23,7 +23,7 @@
 
 <!--  -->
 <view class="dengji">
-  <text>等级</text>
+  <text>等级：{{level}}级</text>
 </view>
 
 <!--  -->
