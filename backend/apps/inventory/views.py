@@ -696,7 +696,7 @@ def wx_create_bird_record(request):
 @inventory.route('/get_file/<filename>', methods=["GET"])
 @requestGET
 def get_images_value(request, filename):
-    path = "/robot/BirdWatching/var/{}".format(filename)
+    path = "/robot/birdwatching/var/{}".format(filename)
     if os.path.exists(path):
         mimetype, _ = mimetypes.guess_type(path)
         return send_file(path, mimetype=mimetype, as_attachment=False)
@@ -769,7 +769,7 @@ def download_record(request):
     df = pd.DataFrame(record)
 
     # 将DataFrame保存为Excel文件
-    excel_file = '/robot/BirdWatching/bird_records.xlsx'  # 替换为您想要保存的文件名
+    excel_file = '/robot/birdwatching/var/bird_records.xlsx'  # 替换为您想要保存的文件名
     df.to_excel(excel_file, index=False)
 
     # 设置响应头部的内容类型和文件名
@@ -803,7 +803,7 @@ def download_example_bird(request):
             "behavior",
             "bird_info"
         ])
-    excel_file = '/robot/BirdWatching/example_bird.xlsx'  # 替换为您想要保存的文件名
+    excel_file = '/robot/birdwatching/var/example_bird.xlsx'  # 替换为您想要保存的文件名
     df.to_excel(excel_file, index=False)
     # 保存DataFrame为Excel文件
     print(excel_file)

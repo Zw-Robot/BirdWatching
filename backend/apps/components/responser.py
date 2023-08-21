@@ -109,7 +109,7 @@ class FileResponser:
         filename = uuid_string.replace('-', '')
         if image:
             image = base64.b64decode(image)
-            savepath = '/robot/BirdWatching/var/{}.png'.format(filename)
+            savepath = '/robot/birdwatching/var/{}.png'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(image)
@@ -125,7 +125,7 @@ class FileResponser:
         filename = uuid_string.replace('-', '')
         if audio:
             audio = base64.b64decode(audio)
-            savepath = '/robot/BirdWatching/var/{}.mp3'.format(filename)
+            savepath = '/robot/birdwatching/var/{}.mp3'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(audio)
@@ -141,7 +141,7 @@ class FileResponser:
         filename = uuid_string.replace('-', '')
         if video:
             video = base64.b64decode(video)
-            savepath = '/robot/BirdWatching/var/{}.mp4'.format(filename)
+            savepath = '/robot/birdwatching/var/{}.mp4'.format(filename)
             try:
                 with open(savepath, 'wb') as f:
                     f.write(video)
