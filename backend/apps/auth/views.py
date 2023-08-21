@@ -23,8 +23,8 @@ def auth_login(request):
         return Responser.response_error(msg=msg)
 
 
-@auth.route('/get_score',methods=["GET"])
-@requestGET
+@auth.route('/get_score',methods=["POST"])
+@requestPOST
 @SingAuth
 def get_score(request):
     tmp = request.json
