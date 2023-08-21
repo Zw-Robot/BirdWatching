@@ -2,11 +2,14 @@
 <view class="imageBox">
   <view class="swiperBox">
     <swiper indicator-dots circular autoplay="true">
-  <swiper-item>
-    <image src="/pages/images/find-chose.png" mode=""/>
+      <swiper-item>
+    <image src="../../pages/images/2de31569066363.jpg" mode=""/>
   </swiper-item>
   <swiper-item >
-    <image src="/pages/images/find-chose.png" mode=""/>
+    <image src="../../pages/images/32e97006cf45ab4dc6f4c3b27fdf8af9.jpeg" mode=""/>
+  </swiper-item>
+  <swiper-item >
+    <image src="../../pages/images/200426070731294000155463.jpg" mode=""/>
   </swiper-item>
 </swiper>
   </view>

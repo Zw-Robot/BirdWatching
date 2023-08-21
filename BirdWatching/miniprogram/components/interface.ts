@@ -62,6 +62,14 @@ export async function update_bird_record(params: any) {
   const res = await request.post("/inventory/update_bird_record", params);
   return res.data;
 };
+export async function wx_get_record(params: any) {
+  const res = await request.get("/inventory/wx_get_record", params);
+  return res;
+};
+export async function get_score(params: any) {
+  const res = await request.post("/auth/get_score", params);
+  return res;
+};
 export async function delete_bird_record(params: any) {
   const res = await request.get("/inventory/delete_bird_record", params);
   return res.data;

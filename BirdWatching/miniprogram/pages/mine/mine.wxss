@@ -5,6 +5,7 @@
   /* flex-direction: column; */
   align-items: center;
   color: #aaa;
+  height: 300rpx;
 }
 .userinfo-avatar {
   overflow: hidden;
@@ -15,6 +16,14 @@
 }
 .main{
   width: 100%;
+}
+
+.dengji{
+  position: absolute;
+  display: flex; 
+  top: 0%;
+  margin-top: 190rpx;
+  margin-left: 170rpx;
 }
 
 .rightBox{
@@ -99,4 +108,25 @@
   left:0;
   top:0;
   z-index:1;
+}
+
+/*  */
+.item{
+  display: flex;
+  flex-direction: column;
+  background-color: #fafbf8;
+  width: 100%;
+  height: 200rpx;
+  box-shadow: 1px 1px 5px 1px rgba(241, 239, 239, 0.5);
+  border-bottom: solid 1rpx #c4c4c4;
+}
+.item .name{
+  margin: 40rpx 40rpx 0rpx 40rpx;
+  font-weight: bolder;
+  font-size: 40rpx;
+}
+.item .location{
+  margin: 30rpx 40rpx 20rpx 40rpx;
+  font-weight: lighter;
+  font-size: 30rpx;
 }

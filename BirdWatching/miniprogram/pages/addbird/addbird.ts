@@ -176,16 +176,23 @@ clearTap:function(){
 
 // 复选框的选中事件
 HandelItemChange(e:any){
+  const checkedList = e.detail.value.map((value: string) => {
+    const [species, id] = value.split('_');
+    return {
+      species: species,
+      id: id
+    };
+  });
+  console.log(checkedList);
   //获取被选中的复选框的值
-  app.globalData.checkedList = e.detail.value;
-  console.log(app.globalData.checkedList);
-  const user_id = 1
+  const user_id = app.globalData.userid
   app.globalData.messageList = []
-  for(const val of e.detail.value){
-    const id = app.globalData.messageList.length 
-    console.log(val)
-    const br:BirdRecord = new BirdRecord(user_id,id,val,currentDateString,currentTime,)
+  app.globalData.checkedList = []
+  for(const val of checkedList){
+    const id = val.id 
+    const br:BirdRecord = new BirdRecord(user_id,val.id,val.species,currentDateString,currentTime,)
     app.globalData.messageList.push(br)
+    app.globalData.checkedList.push(val.species)
   }
   console.log(app.globalData.messageList);
   

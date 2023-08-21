@@ -49,6 +49,13 @@
           "query": "",
           "launchMode": "default",
           "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/recordmessage/recordmessage",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

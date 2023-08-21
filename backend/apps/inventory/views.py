@@ -663,7 +663,7 @@ def wx_create_bird_record(request):
         user.score = user.score+1
     else:
         return Responser.response_error("没有该用户！")
-    bird_id = request.json.get("bird_id")
+    bird_id = int(request.json.get("recordid", '-1'))
     record_time = request.json.get("record_time")
     record_location = request.json.get("record_location")
     longitude = request.json.get("longitude")

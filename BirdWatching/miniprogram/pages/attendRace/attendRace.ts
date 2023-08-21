@@ -1,5 +1,6 @@
 // pages/attendRace/attendRace.ts
 import {create_group,add_group,get_all_groups,get_all_matches} from '../../components/interface'
+const attendapp=getApp()
 Page({
 
   /**
@@ -99,6 +100,7 @@ Page({
       group_desc:'111',
       group_user:'222',
       password:this.data.password,
+      userid:attendapp.globalData.userid
     }
     create_group(date).then(res=>{
       console.log(res);
@@ -123,7 +125,9 @@ Page({
   addGroup:function(){
     var date={
       group_name:this.data.add_group_name,
-      group_user:'222',
+      user_id:attendapp.globalData.userid,
+      openid:attendapp.globalData.openid,
+      token:attendapp.globalData.token,
       password:this.data.add_password,
     }
     add_group({date}).then(res=>{

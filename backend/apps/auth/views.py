@@ -14,7 +14,7 @@ def calculate_level(score):
 
 @auth.route('/sgin', methods=["GET", "POST"], endpoint='auth_login')
 @requestPOST
-@SingAuth
+# @SingAuth
 def auth_login(request):
     code, msg, json = service.login(request)
     if code == 200:

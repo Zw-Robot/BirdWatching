@@ -24,8 +24,8 @@ export class BirdRecord{
 
   constructor(user_id:Number,id:Number,name:String,date:String,time:String,address:String='',num:Number=0,count:Number = 0,images:AnyArray=[],videos:AnyArray = [],audios:AnyArray = [],text:String = '',  longitude:Number = 0,temperature=0,weather="",
   latitude:Number = 0,tmpimg=[],tmpvideo=[],tmpaudio=[]){
-    this.user_id = 4
-    this.id = 4
+    this.user_id = user_id
+    this.id = id
     this.name = name
     this.Date = date
     this.Time = time

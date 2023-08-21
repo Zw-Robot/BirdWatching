@@ -22,6 +22,11 @@
 </view>
 
 <!--  -->
+<view class="dengji">
+  <text>等级</text>
+</view>
+
+<!--  -->
 <view class="rightBox">
 <navigator url="../../pages/information Center/information Center">
   <image src="../../pages/images/3.1铃铛.png" class="righto" mode=""/>
@@ -38,8 +43,15 @@
     <view class="hd-item {{nav_type==index && 'active'}}"  catchtap="changeType" data-index="{{index}}">{{item}}</view>
   </block>
 </view>
-<view class="content {{isFixed && 'pt'}}" id="content">
-<block wx:for="{{nav_type==0?20:nav_type==1?0:40}}" wx:key="list">
-  <view>{{index+1}}</view>
-</block>
-</view>
+
+<navigator 
+url="../../pages/recordmessage/recordmessage?id={{item.id}}" 
+wx:key="{{index}}"
+wx:for="{{record}}"
+class="item"
+>
+<text class="name">{{item.bird}}</text>
+<text class="location">{{item.create_at}}</text>
+</navigator>
+
+<view wx:if="{{nav_type==1}}">我的活动</view>

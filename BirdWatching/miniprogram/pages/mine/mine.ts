@@ -1,5 +1,5 @@
 // pages/mine/mine.ts
-import {get_all_bird_records, info} from '../../components/interface'
+import {get_all_bird_records, info,wx_get_record,get_score} from '../../components/interface'
 const mineapp = getApp()
 Page({
 
@@ -7,7 +7,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    navList:['观鸟记录','观鸟合辑','我的收藏','我的活动'],
+    userid:mineapp.globalData.openid,
+    record:[],
+    navList:['观鸟记录','我的活动'],
     nav_type:0,//默认选中第一个
     isFixed:false,//是否吸顶
     navTop:0,//nav菜单激励顶部距离
@@ -17,7 +19,8 @@ Page({
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData: false
+    canIUseOpenData: false,
+    recordMessage:[],
   },
 
   changeType(e:any){
@@ -35,9 +38,18 @@ Page({
   },
 
   getAllBirdRecords:function(){
-    get_all_bird_records({}).then(res=>{
+    console.log(mineapp.globalData.userid);
+    var date={
+      user_id:mineapp.globalData.userid,
+    }
+    wx_get_record(date).then(res=>{
       console.log(res);
+      this.setData({
+        recordMessage:res,
+        record:res.data
+      })
     })
+    
   },
 
   // 事件处理函数
@@ -47,10 +59,26 @@ Page({
     })
   },
 
+  // 用户等级
+  getScore:function(){
+    var date={
+      userid:mineapp.globalData.userid,
+      openid:mineapp.globalData.openid,
+      token:mineapp.globalData.token
+    }
+    get_score(date).then(res=>{
+      console.log(res);
+    })
+  },
+
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    this.getScore()
+    this.getUserProfile()
+    this.getAllBirdRecords()
     if (wx.getUserProfile) {
       this.setData({
         canIUseGetUserProfile: true
@@ -70,11 +98,12 @@ Page({
           iv:res.iv,
           encryptedData:res.encryptedData,
           userInfo: res.userInfo,
-          hasUserInfo: true
+          hasUserInfo: true,
         })
-        res["openid"] = mineapp.globalData.openid
-        res["token"]  =mineapp.globalData.token
+        res['openid'] = mineapp.globalData.openid
+        res["token"]  = mineapp.globalData.token
         console.log(res);
+        console.log(res,this.data.newarray);
         
         info(res).then(res=>{
           console.log(res);

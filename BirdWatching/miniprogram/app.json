@@ -10,7 +10,9 @@
     "pages/addright/addright",
     "pages/birdmessage/birdmessage",
     "pages/information Center/information Center",
-    "pages/more/more"
+    "pages/more/more",
+    "pages/recordmessage/recordmessage"
+
   ],
   "permission": {
     "scope.userLocation": {

@@ -26,7 +26,7 @@
         wx:for="{{item.twdata}}" 
         wx:key="index" 
         wx:for-item="twodata"
-        value="{{twodata.species}}"
+        value="{{twodata.species}}_{{twodata.id}}"
       >
       <navigator
       class="list-item"  
