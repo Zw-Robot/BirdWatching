@@ -14,7 +14,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from apps.competition import competition
 from apps.components.middleware import requestPOST, requestGET,SingAuth
 from apps.components.responser import Responser
-from apps.models import BirdMatch, MatchGroup
+from apps.models import BirdMatch, MatchGroup, Userdata
 
 
 @competition.route('/create_match', methods=['POST'])
@@ -257,6 +257,14 @@ def wx_user_group(request):
     res = []
     for group in groups:
         match = BirdMatch.query.filter_by(id=group.match_id).first()
+        users = group.group_user
+        gnames = []
+        names = users.split(',')
+        print(names)
+        for name in names:
+            gtemp = Userdata.query.filter_by(id = int(name)).first()
+            if gtemp:
+                gnames.append(gtemp.username)
         dic = {
             'group_id': group.id,
             'match_id': match.id,
@@ -264,7 +272,7 @@ def wx_user_group(request):
             'match_desc': match.match_desc,
             'group_name': group.group_name,
             'group_desc': group.group_desc,
-            'group_user': group.group_user,
+            'group_user': gnames,
             'rank': group.rank,
             'create_at': group.create_at,
             'update_at': group.update_at
