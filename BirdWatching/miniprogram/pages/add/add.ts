@@ -42,7 +42,9 @@ Page({
     latitude:0.0,
     count:0,//数量
     num:0,//人数,
-    text:''
+    text:'',
+    weather:'',
+    temperature:''
   },
 
   //灰色顶部
@@ -60,6 +62,8 @@ Page({
       count:checkapp.globalData.messageList[index].Count,
       num:checkapp.globalData.messageList[index].Num,
       text:checkapp.globalData.messageList[index].text,
+      weather:checkapp.globalData.messageList[index].weather,
+      temperature:checkapp.globalData.messageList[index].temperature,
     })
     console.log(this.data.nav_type);
     this.setImageInfo();  
@@ -130,6 +134,9 @@ Page({
                       checkapp.globalData.messageList = []
                  }
                })
+               wx.switchTab({      
+                url: '../../pages/home/home',
+         }) 
                                                         
             }else{
                console.log('用户点击取消')
@@ -206,6 +213,25 @@ Page({
       num:this.data.num<=0? 0:this.data.num-1,
     })
     checkapp.globalData.messageList[this.data.nav_type].Num=this.data.num
+  },
+
+  // 天气
+  getWeather:function(e:any){
+    this.setData({
+      weather:e.detail.value
+    })
+    checkapp.globalData.messageList[this.data.nav_type].weather=this.data.weather
+  },
+  // 温度
+  getTemperature:function(e:any){
+    console.log(e.detail.value);
+    
+    this.setData({
+     temperature:e.detail.value
+    })
+    checkapp.globalData.messageList[this.data.nav_type].temperature=this.data.temperature
+    console.log(this.data.temperature);
+    
   },
 
   // 上传视频

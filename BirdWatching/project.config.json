@@ -15,8 +15,8 @@
     "es6": true,
     "enhance": true,
     "coverView": false,
-    "postcss": false,
-    "minified": false,
+    "postcss": true,
+    "minified": true,
     "showShadowRootInWxmlPanel": false,
     "packNpmRelationList": [],
     "ignoreUploadUnusedFiles": true

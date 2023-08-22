@@ -69,18 +69,22 @@
    <modal hidden="{{hiddenmodalputright}}" title="加入小组" 
    			confirm-text="加入" cancel-text="取消" bindcancel="modalinputright" 
    			bindconfirm="confirmright">
-     <textarea 
+     <input 
      placeholder="请输入加入小组名称" 
      class="rightmessage"
      value="{{add_group_name}}"
      bindblur="add_group_name"
-     ></textarea>
-     <textarea 
+     ></input>
+     <view class="passwordBox">
+      <input
      placeholder="请输入小组密码" 
      class="rightmessage"
      value="{{add_password}}"
-     bindblur="add_group_password"
-     ></textarea>
+     bindinput="add_group_password"
+     password="{{!eye}}"
+     ></input>
+     <image src="{{eye?'../../pages/images/眼睛.png':'../../pages/images/眼睛-隐藏.png'}}" mode="" class="closeeye" catchtap="switch" />
+     </view>
    </modal>
   </view>
   <button 

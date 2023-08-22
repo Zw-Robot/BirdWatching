@@ -28,89 +28,8 @@ Page({
     isClear:false,
     val:'',
     // 鸟列表
-    rightMenuList:[
-      {
-        id:1,
-        name:'雁1'
-      },
-      {
-        id:2,
-        name:'雁2'
-      },
-      {
-        id:3,
-        name:'雁3'
-      },
-      {
-        id:4,
-        name:'雁4'
-      }
-    ],//边侧栏数据
-    leftMenuList:[{
-      name:'雁形目 ANSERIFORMES1',
-      twodata:[{
-          id:1,
-          value:'栗树鸭1',
-          nameitem:'栗树鸭1',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      },
-      {
-          id:2,
-          value:'栗树鸭2',
-          nameitem:'栗树鸭2',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      }]
-},
-{
-      name:'雁形目 ANSERIFORMES2',
-      twodata:[{
-          id:3,
-          value:'栗树鸭3',
-          nameitem:'栗树鸭3',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      },
-      {
-          id:4,
-          value:'栗树鸭4',
-          nameitem:'栗树鸭4',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      },
-      {
-          id:5,
-          value:'栗树鸭5',
-          nameitem:'栗树鸭5',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-    }
-    ]
-},
-{
-      name:'雁形目 ANSERIFORMES3',
-      twodata:[{
-          id:6,
-          value:'栗树鸭6',
-          nameitem:'栗树鸭6',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      },{
-          id:7,
-          value:'栗树鸭7',
-          nameitem:'栗树鸭7',
-          lading:'Dendory',
-          english:'Leser',
-          subject:'鸭科',
-      }]
-}],//鸟库数据
+    rightMenuList:[],//边侧栏数据
+    leftMenuList:[],//鸟库数据
 },
 
 //所有鸟库数据
@@ -190,7 +109,7 @@ HandelItemChange(e:any){
   app.globalData.checkedList = []
   for(const val of checkedList){
     const id = val.id 
-    const br:BirdRecord = new BirdRecord(user_id,val.id,val.species,currentDateString,currentTime,)
+    const br:BirdRecord = new BirdRecord(user_id,id,val.species,currentDateString,currentTime,)
     app.globalData.messageList.push(br)
     app.globalData.checkedList.push(val.species)
   }

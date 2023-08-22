@@ -31,7 +31,7 @@ input{
   gap: 18rpx;
 }
 .menu-list{
-  height: 898rpx;
+  height: 100%;
 }
 
 /* 鸟库*/

@@ -15,87 +15,8 @@ Page({
     isClear:false,
     val:'',
     // 鸟列表
-    rightMenuList:[
-      {
-        id:1,
-        name:'雁1'
-      },
-      {
-        id:2,
-        name:'雁2'
-      },
-      {
-        id:3,
-        name:'雁3'
-      },
-      {
-        id:4,
-        name:'雁4'
-      }
-    ],//边侧栏数据
-    leftMenuList:[{
-      id:1,
-      name:'雁形目 ANSERIFORMES1',
-      twodata:[{
-          'id':1,
-          'name':'栗树鸭1',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      },
-      {
-          'id':2,
-          'name':'栗树鸭2',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      }]
-},
-{
-      id:2,
-      name:'雁形目 ANSERIFORMES2',
-      count:6,
-      twodata:[{
-          'id':3,
-          'name':'栗树鸭1',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      },
-      {
-          'id':4,
-          'name':'栗树鸭2',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      },
-      {
-        'id':5,
-        'name':'栗树鸭3',
-        'lading':'Dendory',
-        'english':'Leser',
-        'subject':'鸭科'
-    }
-    ]
-},
-{
-      id:3,
-      name:'雁形目 ANSERIFORMES3',
-      count:12,
-      twodata:[{
-          'id':5,
-          'name':'栗树鸭1',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      },{
-          'id':6,
-          'name':'栗树鸭2',
-          'lading':'Dendory',
-          'english':'Leser',
-          'subject':'鸭科'
-      }]
-}],//鸟库数据
+    rightMenuList:[],//边侧栏数据
+    leftMenuList:[],//鸟库数据
 //所有鸟库数据
 cates:[],
 },

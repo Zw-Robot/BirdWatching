@@ -8,9 +8,13 @@ export async function update_bird(params: any) {
   const res = await request.post("/inventory/update_bird", params);
   return res.data;
 }
+export async function wx_delete_bird_record(params: any) {
+  const res = await request.post("/inventory/wx_delete_bird_record", params);
+  return res.data;
+}
 export async function delete_bird(params: any) {
   const res = await request.get("/inventory/delete_bird", params);
-  return res.data;
+  return res;
 }
 export async function get_all_birds(params: any) {
   const res = await request.get("/inventory/get_all_birds", params);
@@ -134,5 +138,10 @@ export async function sgin(params: any) {
 
 export async function info(params: any) {
   const res = await request.post("/auth/info", params);
+  return res.data;
+};
+
+export async function get_show_images(params={}) {
+  const res = await request.get("/inventory/get_show_images", params);
   return res.data;
 };

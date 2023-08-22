@@ -143,6 +143,7 @@
   margin-left: 40rpx;
 }
 .pickerBox .mainName{
+  width: 125rpx;
   color: #363533;
   font-weight: bolder;
   font-family:'Courier New', Courier, monospace;
@@ -161,6 +162,24 @@
   display: flex;
   justify-content: space-between;
   width: 650rpx;
+  margin-top: 20rpx;
+  border-bottom: solid #c4c4c4 1rpx;
+  padding-bottom: 35rpx;
+  margin-left: 40rpx;
+}
+.AddressBox{
+  display: flex;
+  position: relative;
+  width: 650rpx;
+  margin-top: 20rpx;
+  border-bottom: solid #c4c4c4 1rpx;
+  padding-bottom: 35rpx;
+  margin-left: 40rpx;
+}
+.temperatureBox{
+  display: flex;
+  justify-content: space-between;
+  width: 650rpx;
   height: 40rpx;
   margin-top: 20rpx;
   border-bottom: solid #c4c4c4 1rpx;
@@ -173,6 +192,21 @@
   display: flex;
   justify-content: center;
 }
+.weatherBox-item{
+  width: 200rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+}
+.temperatureBox-item{
+  width: 100rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+}
+.shehsidu{
+  margin-top: 11rpx;
+}
 .numberBox .mainName{
   color: #363533;
   font-weight: bolder;
@@ -180,6 +214,16 @@
 }
 .numbertext{
   margin-top: 10rpx;
+}
+
+/* 地点 */
+.resultaddress{
+  width: 550rpx;
+  text-align: end;
+}
+.resultaddressitem{
+  /* display:inline/inline-block; */
+  display: -ms-inline-grid;
 }
 
 /* 照片 */

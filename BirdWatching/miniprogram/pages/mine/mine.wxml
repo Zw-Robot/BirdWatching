@@ -45,6 +45,7 @@
 </view>
 
 <navigator 
+wx:if="{{nav_type==0}}"
 url="../../pages/recordmessage/recordmessage?id={{item.id}}" 
 wx:key="{{index}}"
 wx:for="{{record}}"
@@ -54,4 +55,13 @@ class="item"
 <text class="location">{{item.create_at}}</text>
 </navigator>
 
-<view wx:if="{{nav_type==1}}">我的活动</view>
+<!-- 我的活动 -->
+<view 
+wx:if="{{nav_type==1}}"
+wx:key="{{index}}"
+wx:for="{{wx_user_group}}"
+class="item"
+>
+<text class="name">{{item.match_name}}</text>
+<text class="location">{{item.create_at}}</text>
+</view>

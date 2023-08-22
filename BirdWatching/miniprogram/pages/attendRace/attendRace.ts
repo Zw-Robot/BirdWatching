@@ -7,6 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    eye:false,
     //比赛信息
     match_id:'',
     match_name:'',
@@ -21,7 +22,6 @@ Page({
     hiddenmodalput: true,
     hiddenmodalputright: true,
     group_name:'',
-    password:'',
     add_group_name:'',
     add_password:'',
     result:'',
@@ -29,12 +29,18 @@ Page({
     creat_hidde:true
   },
 
+  switch() {
+    this.setData({
+      eye:!this.data.eye
+    })
+  },
+
   //创建小组
   modalinput: function () {
     this.setData({
       hiddenmodalput: !this.data.hiddenmodalput,
       group_name:'',
-      password:'',
+      add_password:'',
     })
   },
   //提交
@@ -68,7 +74,7 @@ Page({
 
   get_group_password:function(e:any){
     this.setData({
-      password:e.detail.value
+      add_password:e.detail.value
     })
   },
 
@@ -82,6 +88,8 @@ Page({
     this.setData({
       add_password:e.detail.value
     })
+    console.log(e.detail.value);
+    
   },
 
   //创建小组接口
@@ -91,7 +99,7 @@ Page({
       group_name:this.data.group_name,
       group_desc:'111',
       group_user:'222',
-      password:this.data.password,
+      password:this.data.add_password,
       user_id:attendapp.globalData.userid,
       openid:attendapp.globalData.openid,
       token:attendapp.globalData.token
@@ -161,7 +169,7 @@ Page({
         title:res.msg
       })
       this.setData({
-        creat_hidde:false
+        creat_hidde:true
       })
     })
   },

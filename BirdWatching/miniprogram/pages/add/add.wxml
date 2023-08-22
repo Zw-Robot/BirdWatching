@@ -40,9 +40,11 @@
     </view>
   </picker>
 <!-- 选择地点 -->
-<view class="numberBox"  bindtap="ChoosePoint">
+<view class="AddressBox"  bindtap="ChoosePoint">
       <text class="mainName">地点 *</text>
-      <text class="result">{{address}} </text>
+      <view class="resultaddress">
+        <text class="resultaddressitem">{{address}} </text>
+      </view>
 </view>
 <!-- 数量 -->
 <view class="numberBox">
@@ -60,6 +62,31 @@
       <button class="buttoniconone" size="mini" bindtap="subtractnumber">-</button>
       <text class="numbertext">{{num}}</text>
       <button class="buttonicontwo" size="mini" bindtap="add">+</button>
+      </view>
+</view>
+<!-- 天气 -->
+<view class="numberBox">
+      <text class="mainName">天气 *</text>
+      <view class="weatherBox-item">
+      <input 
+      class="numbertext" 
+      value="{{weather}}" 
+      bindinput="getWeather">
+      </input>
+      </view>
+</view>
+<!-- 温度 -->
+<view class="temperatureBox">
+      <text class="mainName">温度 *</text>
+      <view class="temperatureBox-item">
+      <input 
+      class="numbertext" 
+      type="number" 
+      placeholder="27" 
+      value="{{temperature}}"
+      bindinput="getTemperature"
+      />
+      <view class="shehsidu">℃</view>
       </view>
 </view>
 
@@ -107,7 +134,6 @@
     <button bindtouchstart="startClick" class="rectangle">开始录音</button>
     <button bindtouchend="stopClick" class="rectangle" >结束录音</button>
     <button bindtap="playClick"  class="rectangle">播放录音</button>
-
   </view>
 </view>
 

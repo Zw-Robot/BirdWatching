@@ -1,5 +1,5 @@
 // pages/mine/mine.ts
-import {get_all_bird_records, info,wx_get_record,get_score} from '../../components/interface'
+import {get_all_bird_records, info,wx_get_record,get_score,wx_user_group} from '../../components/interface'
 const mineapp = getApp()
 Page({
 
@@ -22,6 +22,7 @@ Page({
     canIUseOpenData: true,
     recordMessage:[],
     level:0,
+    wx_user_group:[],
   },
 
   changeType(e:any){
@@ -39,7 +40,6 @@ Page({
   },
 
   getAllBirdRecords:function(){
-    console.log(mineapp.globalData.userid);
     var date={
       user_id:mineapp.globalData.userid,
     }
@@ -69,7 +69,16 @@ Page({
     }
     get_score(date).then(res=>{
       this.setData({
-        level:res.level
+        level:res.data.level
+      })
+    })
+  },
+
+  //我的活动
+  userGroup:function(){
+    wx_user_group({user_id:mineapp.globalData.userid}).then(res=>{
+      this.setData({
+        wx_user_group:res.data
       })
     })
   },
@@ -79,14 +88,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    this.userGroup()
     this.getUserProfile()
     this.getScore()
     this.getAllBirdRecords()
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true
-      })
-    }
+
   },
 
   getUserProfile() {
@@ -149,7 +155,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.userGroup()
+    this.getScore()
+    this.getAllBirdRecords()
   },
 
   /**

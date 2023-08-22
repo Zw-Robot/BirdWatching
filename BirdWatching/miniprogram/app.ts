@@ -27,7 +27,6 @@ App({
             code: res.code
           }
           sgin(data).then(res => {
-            console.log(res);
             _this.globalData.openid = res.openid,
             _this.globalData.token = res.session_key
             _this.globalData.userid = res.log

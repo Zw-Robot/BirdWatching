@@ -754,6 +754,13 @@ def get_images_value(request, filename):
         return Responser.response_error("error没有文件")
 
 
+@inventory.route('/get_show_images', methods=["GET"])
+@requestGET
+def get_show_images(request):
+    path = "/robot/birdwatching/show/"
+    li = os.listdir(path)
+    return Responser.response_success(data=li)
+
 @inventory.route('/wx_post_base64', methods=["POST"])
 @requestPOST
 def wx_post_base64(request):

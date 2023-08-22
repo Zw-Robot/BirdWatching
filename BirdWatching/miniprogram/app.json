@@ -12,7 +12,6 @@
     "pages/information Center/information Center",
     "pages/more/more",
     "pages/recordmessage/recordmessage"
-
   ],
   "permission": {
     "scope.userLocation": {
@@ -26,31 +25,32 @@
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "list": [{
-      "pagePath": "pages/home/home",
-      "text": "首页",
-      "iconPath": "pages/images/bird.png",
-      "selectedIconPath": "pages/images/bird-chose.png"
-    },
-    {
-      "pagePath": "pages/find/find",
-      "text": "发现",
-      "iconPath": "pages/images/find.png",
-      "selectedIconPath": "pages/images/find-chose.png"
-    },
-    {
-      "pagePath": "pages/storehouse/storehouse",
-      "text": "鸟库",
-      "iconPath": "pages/images/book.png",
-      "selectedIconPath": "pages/images/book-chose.png"
-    },
-    {
-      "pagePath": "pages/mine/mine",
-      "text": "我的",
-      "iconPath": "pages/images/mine.png",
-      "selectedIconPath": "pages/images/mine-chose.png"
-    }
-  ]
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "pages/images/bird.png",
+        "selectedIconPath": "pages/images/bird-chose.png"
+      },
+      {
+        "pagePath": "pages/find/find",
+        "text": "发现",
+        "iconPath": "pages/images/find.png",
+        "selectedIconPath": "pages/images/find-chose.png"
+      },
+      {
+        "pagePath": "pages/storehouse/storehouse",
+        "text": "鸟库",
+        "iconPath": "pages/images/book.png",
+        "selectedIconPath": "pages/images/book-chose.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "pages/images/mine.png",
+        "selectedIconPath": "pages/images/mine-chose.png"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json",
   "plugins": {

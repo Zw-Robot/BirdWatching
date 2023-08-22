@@ -1,5 +1,7 @@
 import { appname } from "../../components/config";
-import { sgin } from "../../components/interface";
+import { get_show_images, sgin } from "../../components/interface";
+import { request } from "../../components/request";
+const homeapp=getApp()
 
 var util = require('../../utils/util.js');
 Page({
@@ -9,7 +11,8 @@ Page({
    */
   data: {
     //存放轮播图数据列表
-    swiperList:[]
+    swiperList:[],
+    fronturl:request.URL+'/inventory/get_file/'
   },
 
   /**
@@ -23,21 +26,17 @@ Page({
     this.setData({
       time: time
     });
+    homeapp.globalLongin()
   },
 
   //获取轮播图数据
-  // getSwiperList(){
-  //   wx.request({
-  //     url:'',
-  //     method:'GET',
-  //     success:(res:any)=>{
-  //       console.log(res);
-  //       this.setData({
-  //         swiperList:res.data
-  //       })
-  //     }
-  //   })
-  // },
+  getSwiperList(){
+    get_show_images().then(res=>{
+      this.setData({
+        swiperList:res.data
+      })
+    })
+  },
 
   //添加记录区域
   gotoAdd(){
