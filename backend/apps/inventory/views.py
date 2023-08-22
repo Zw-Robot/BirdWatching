@@ -73,7 +73,7 @@ def create_bird(request):
 
 @inventory.route('/update_bird', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin', 'admin','others'])
+@login_required(['sysadmin', 'admin','others'])
 def update_bird(request):
     # 鸟类记录更新接口
     username = request.json.get("username")
@@ -97,7 +97,7 @@ def update_bird(request):
     lost_attrs = required_attrs_validator([bird_id, username])
     if lost_attrs:
         return Responser.response_error('缺少参数')
-    bird = BirdInventory.query.get(bird_id)
+    bird = BirdInventory.query.filter_by(id=bird_id).first()
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
 
@@ -123,12 +123,12 @@ def update_bird(request):
 
 @inventory.route('/delete_bird', methods=['GET'])
 @requestGET
-# @login_required(['sysadmin', 'admin'])
+@login_required(['sysadmin', 'admin'])
 def delete_bird(request):
     # 鸟类记录删除接口
     bird_id = int(request.args.get("bird_id"))
 
-    bird = BirdInventory.query.get(bird_id)
+    bird = BirdInventory.query.filter_by(bird_id).first()
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
 
