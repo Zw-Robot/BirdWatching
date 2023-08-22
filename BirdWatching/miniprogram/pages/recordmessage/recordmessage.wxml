@@ -1,0 +1,40 @@
+<!--pages/recordmessage/recordmessage.wxml-->
+<view class="box">
+  <view class="message-item">
+    <text class="maintitle">{{record.bird}}</text>
+    <text class="mainitem">{{record.latin_name}} / {{record.IUCN}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">记录时间</text>
+    <text class="item">{{record.create_at}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">地址</text>
+    <text class="item">{{record.record_location}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">图片</text>
+    <view wx:for="{{record.bird_info[0].image}}">
+      <image src="{{item}}" mode=""/>
+    </view>
+    <text class="item">{{}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">视频</text>
+    <view wx:for="{{record.bird_info[2].videos}}">
+      <image src="{{item}}" mode=""/>
+    </view>
+    <text class="item">{{}}</text>
+  </view>
+  <view class="message-item">
+    <text class="title">声音</text>
+    <view wx:for="{{record.bird_info[1].videos}}">
+      <image src="{{item}}" mode=""/>
+    </view>
+    <text class="item">{{}}</text>
+  </view>
+  <view class="message-item"> 
+    <text class="title">描述</text>
+    <text class="item">{{record.record_describe}}</text>
+  </view>
+</view>

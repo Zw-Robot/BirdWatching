@@ -216,26 +216,43 @@ def wx_get_all_birds(request):
 
 @inventory.route('/get_all_birds', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin', 'admin'])
+@login_required(['sysadmin', 'admin'])
 def get_all_birds(request):
     # 鸟类名录查询所有接口
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
-    bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
 
+    keyword = request.args.get("keyword", "")
+    order = request.args.get("order", "")
+    if order:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
+            or_(
+                BirdInventory.order_cn.like(f"%{order}%")
+            )
+        )
+    elif keyword:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False).filter(
+            or_(
+                BirdInventory.family_cn.like(f"%{keyword}%"),
+                BirdInventory.genus.like(f"%{keyword}%"),
+                BirdInventory.order_cn.like(f"%{keyword}%"),
+                BirdInventory.seasonal.like(f"%{keyword}%"),
+                BirdInventory.species.like(f"%{keyword}%"),
+                BirdInventory.IUCN.like(f"%{keyword}%"),
+                BirdInventory.level.like(f"%{keyword}%")
+            )
+        )
+    else:
+        bird_inventory_query = BirdInventory.query.filter_by(is_lock=False)
     total_pages = ceil(bird_inventory_query.count() / per_page)
 
     birds = bird_inventory_query.paginate(page=page, per_page=per_page)
-
-    bird_list = []
+    result = []
+    bird_dic = {}
     for bird in birds:
-        files = []
-        infos = bird.bird_info.split(',') if bird.bird_info else []
-        for info in infos:
-            temp = BirdInfos.query.get(info)
-            files.append(FileResponser.get_path(temp.path if temp.path else "", temp.label))
-        bird_dict = {
-            'bird_id': bird.id,
+        bird_name = bird.order_cn + ' ' + bird.order_en
+        bird_info = {
+            "id": bird.id,
             'order_en': bird.order_en,
             'order_cn': bird.order_cn,
             'family_en': bird.family_en,
@@ -250,13 +267,20 @@ def get_all_birds(request):
             'describe': bird.describe,
             'habitat': bird.habitat,
             'behavior': bird.behavior,
-            'bird_info': files,
             'create_at': bird.create_at,
             'update_at': bird.update_at,
             'is_lock': bird.is_lock
         }
-        bird_list.append(bird_dict)
-    return Responser.response_page(data=bird_list, count=total_pages, page=page, page_size=per_page)
+        bird_dic[bird_name] = bird_dic.get(bird_name, [])
+        bird_dic[bird_name].append(bird_info)
+    for index, (key, val) in enumerate(bird_dic.items()):
+        tmp_dic = {
+            "id": index,
+            "name": key,
+            "twdata": val
+        }
+        result.append(tmp_dic)
+    return Responser.response_page(data=result, count=total_pages, page=page, page_size=per_page)
 
 
 @inventory.route('/get_bird', methods=["GET"])

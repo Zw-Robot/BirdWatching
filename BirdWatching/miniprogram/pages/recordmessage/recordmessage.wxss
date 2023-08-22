@@ -1,0 +1,28 @@
+/* pages/recordmessage/recordmessage.wxss */
+page{
+  background-color: #f0f1eb;
+}
+.message-item .maintitle{
+  font-weight: bolder;
+  font-size: 60rpx;
+}
+.message-item .mainitem{
+  margin-top: 20rpx;
+  margin-bottom: 40rpx;
+  color: #9d9e99;
+  font-style: italic;
+}
+.message-item{
+  display: flex;
+  flex-direction: column;
+  margin: 60rpx 60rpx;
+  border-bottom: solid #d5d6d0 1rpx;
+}
+.message-item .title{
+  font-weight: bolder;
+}
+.item{
+  margin-top: 20rpx;
+  margin-bottom: 40rpx;
+  color: #9d9e99;
+}
