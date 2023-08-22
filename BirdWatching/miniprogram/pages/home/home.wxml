@@ -1,9 +1,9 @@
 <!-- 轮播图区域 -->
 <view class="imageBox">
-  <view class="swiperBox" wx:for="{{images}}" wx:key="index">
+  <view class="swiperBox">
     <swiper indicator-dots circular autoplay="true">
-      <swiper-item>
-        <image src="{{fronturl}}{{item}}" mode=""/>
+      <swiper-item  wx:for="{{swiperList}}">
+        <image src="{{fronturl}}{{item}}"/>
       </swiper-item>
 </swiper>
   </view>

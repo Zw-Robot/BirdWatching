@@ -20,7 +20,7 @@ Page({
    */
   onLoad() {
     //调用轮播图
-    // this.getSwiperList()
+    this.getSwiperList()
     // 时间
     var time = util.formatTime(new Date());
     this.setData({
@@ -33,7 +33,7 @@ Page({
   getSwiperList(){
     get_show_images().then(res=>{
       this.setData({
-        swiperList:res.data
+        swiperList:res
       })
     })
   },
