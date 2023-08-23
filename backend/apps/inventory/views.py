@@ -26,7 +26,7 @@ from apps.components.responser import Responser, FileResponser
 
 @inventory.route('/create_bird', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin'])
+@login_required(['sysadmin','admin'])
 def create_bird(request):
     # 鸟类名录创建接口
     username = request.json.get("username")
@@ -73,7 +73,7 @@ def create_bird(request):
 
 @inventory.route('/update_bird', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin','others'])
+@login_required(['sysadmin','admin'])
 def update_bird(request):
     # 鸟类记录更新接口
     username = request.json.get("username")
@@ -216,7 +216,7 @@ def wx_get_all_birds(request):
 
 @inventory.route('/get_all_birds', methods=["GET"])
 @requestGET
-@login_required(['sysadmin', 'admin'])
+# @login_required(['sysadmin', 'admin'])
 def get_all_birds(request):
     # 鸟类名录查询所有接口
     page = int(request.args.get('page', 1))
@@ -322,7 +322,7 @@ def get_bird(request):
 
 @inventory.route('/create_bird_survey', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin'])
+@login_required(['sysadmin','admin'])
 def create_bird_survey(request):
     # 鸟类调查创建接口
     user_id = int(request.json.get("user_id"))
@@ -353,10 +353,10 @@ def create_bird_survey(request):
     return Responser.response_success(msg="创建鸟类调查成功")
 
 
-@inventory.route('/update_bird_survey', methods=['POST'])
+@inventory.route('/wx_update_bird_survey', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin', 'admin', 'others'])
-def update_bird_survey(request):
+@SingAuth
+def wx_update_bird_survey(request):
     # 鸟类调查更新接口
     # bird_survey_id = int(request.json.get("bird_survey_id"))
     user_id = int(request.json.get("user_id"))
@@ -390,10 +390,44 @@ def update_bird_survey(request):
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
 
+@inventory.route('/update_bird_survey', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin'])
+def update_bird_survey(request):
+    # 鸟类调查更新接口
+    bird_survey_id = int(request.json.get("bird_survey_id"))
+    user_id = int(request.json.get("user_id"))
+    survey_name = request.json.get("survey_name", "")
+    survey_desc = request.json.get("survey_desc", "")
+    survey_time = request.json.get("survey_time", "")
+    survey_location = request.json.get("survey_location", "")
+    describe = request.json.get("describe", "")
+    habitat = request.json.get("habitat", "")
+    behavior = request.json.get("behavior", "")
+    bird_infos = request.json.get("bird_info", [])
 
-@inventory.route('/delete_bird_survey', methods=['GET'])
-@requestGET
-# @login_required(['sysadmin', 'admin'])
+    lost_attrs = required_attrs_validator([bird_survey_id])
+    if lost_attrs:
+        return Responser.response_error('缺少参数')
+
+    bird_survey = BirdSurvey.query.filter_by(id=bird_survey_id).first()
+    if bird_survey is None:
+        return Responser.response_error('找不到指定的鸟类调查信息')
+    bird_survey.user_id = user_id if user_id else bird_survey.user_id
+    bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
+    bird_survey.survey_desc = survey_desc if survey_desc else bird_survey.survey_desc
+    bird_survey.survey_time = datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S') if survey_time else bird_survey.survey_time
+    bird_survey.survey_location = survey_location if survey_location else bird_survey.survey_location
+    bird_survey.describe = describe if describe else bird_survey.describe
+    bird_survey.habitat = habitat if habitat else bird_survey.habitat
+    bird_survey.behavior = behavior if behavior else bird_survey.behavior
+    bird_survey.bird_info = json.dumps(bird_infos)
+    bird_survey.update()
+    return Responser.response_success(msg="修改鸟类调查成功")
+
+@inventory.route('/delete_bird_survey', methods=['POST'])
+@requestPOST
+@login_required(['sysadmin', 'admin'])
 def delete_bird_survey(request):
     # 鸟类调查删除接口
     bird_survey_id = int(request.args.get("bird_survey_id"))
@@ -409,7 +443,7 @@ def delete_bird_survey(request):
 
 @inventory.route('/get_all_bird_surveys', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin', 'admin'])
+@login_required(['sysadmin', 'admin'])
 def get_all_bird_surveys(request):
     # 鸟类调查查询所有接口
     page = int(request.args.get('page', 1))
@@ -419,16 +453,9 @@ def get_all_bird_surveys(request):
     total_pages = ceil(bird_surveys_query.count() / per_page)
 
     bird_surveys = bird_surveys_query.paginate(page=page, per_page=per_page)
-
-    bird_survey_list = []
-
-    def process_bird_survey(bird_survey):
-        files = []
-        infos = bird_survey.bird_info.split(',') if bird_survey.bird_info else []
-        for info in infos:
-            temp = BirdInfos.query.get(info)
-            files.append(FileResponser.get_path(temp.path if temp else "", temp.label if temp else ""))
-        return {
+    data = []
+    for bird_survey in bird_surveys:
+        bird_survey_list = {
             'bird_survey_id': bird_survey.id,
             'user_id': bird_survey.user_id,
             'survey_name': bird_survey.survey_name,
@@ -438,14 +465,14 @@ def get_all_bird_surveys(request):
             'describe': bird_survey.describe,
             'habitat': bird_survey.habitat,
             'behavior': bird_survey.behavior,
-            'bird_info': files,
+            'bird_info': json.loads(bird_survey.bird_info),
             'create_at': bird_survey.create_at,
             'update_at': bird_survey.update_at,
             'is_lock': bird_survey.is_lock
         }
+        data.append(bird_survey_list)
 
-    bird_survey_list = [process_bird_survey(bird_survey) for bird_survey in bird_surveys]
-    return Responser.response_page(data=bird_survey_list, count=total_pages, page=page, page_size=per_page)
+    return Responser.response_page(data=data, count=total_pages, page=page, page_size=per_page)
 
 
 @inventory.route('/get_bird_survey', methods=["GET"])
@@ -474,44 +501,44 @@ def get_bird_survey(request):
     return Responser.response_success(data=bird_survey_dict)
 
 
-@inventory.route('/update_bird_record', methods=['POST'])
-@requestPOST
-# @login_required(['sysadmin', 'admin', 'others'])
-def update_bird_record(request):
-    # 鸟类记录更新接口
-    bird_record_id = request.json.get("bird_record_id")
-    user_id = request.json.get("user_id")
-    bird_id = request.json.get("bird_id")
-    record_time = request.json.get("record_time", "")
-    longitude = request.json.get("longitude", "")
-    latitude = request.json.get("latitude", "")
-    weather = request.json.get("weather", "")
-    temperature = request.json.get("temperature", "")
-    record_location = request.json.get("record_location", "")
-    record_describe = request.json.get("record_describe", "")
-    bird_infos = request.json.get("bird_info", [])
-
-    lost_attrs = required_attrs_validator([user_id, bird_id, bird_record_id])
-    if lost_attrs:
-        return Responser.response_error('缺少参数')
-
-    bird_record = BirdRecords.query.get(bird_record_id)
-    if bird_record is None:
-        return Responser.response_error('找不到指定的鸟类记录')
-    if bird_record.user_id != user_id:
-        return Responser.response_error('没有权限修改该鸟类记录')
-
-    bird_record.bird_id = bird_id if bird_id else bird_record.bird_id
-    bird_record.record_time = record_time if record_time else bird_record.record_time
-    bird_record.record_location = record_location if record_location else bird_record.record_location
-    bird_record.record_describe = record_describe if record_describe else bird_record.record_describe
-    bird_record.longitude = longitude if longitude else bird_record.longitude
-    bird_record.latitude = latitude if latitude else bird_record.latitude
-    bird_record.weather = weather if weather else bird_record.weather
-    bird_record.temperature = temperature if temperature else bird_record.temperature
-    bird_record.bird_info = json.dumps(bird_infos)
-    bird_record.update()
-    return Responser.response_success(msg="修改鸟类记录成功")
+# @inventory.route('/update_bird_record', methods=['POST'])
+# @requestPOST
+# # @login_required(['sysadmin', 'admin', 'others'])
+# def update_bird_record(request):
+#     # 鸟类记录更新接口
+#     bird_record_id = request.json.get("bird_record_id")
+#     user_id = request.json.get("user_id")
+#     bird_id = request.json.get("bird_id")
+#     record_time = request.json.get("record_time", "")
+#     longitude = request.json.get("longitude", "")
+#     latitude = request.json.get("latitude", "")
+#     weather = request.json.get("weather", "")
+#     temperature = request.json.get("temperature", "")
+#     record_location = request.json.get("record_location", "")
+#     record_describe = request.json.get("record_describe", "")
+#     bird_infos = request.json.get("bird_info", [])
+#
+#     lost_attrs = required_attrs_validator([user_id, bird_id, bird_record_id])
+#     if lost_attrs:
+#         return Responser.response_error('缺少参数')
+#
+#     bird_record = BirdRecords.query.get(bird_record_id)
+#     if bird_record is None:
+#         return Responser.response_error('找不到指定的鸟类记录')
+#     if bird_record.user_id != user_id:
+#         return Responser.response_error('没有权限修改该鸟类记录')
+#
+#     bird_record.bird_id = bird_id if bird_id else bird_record.bird_id
+#     bird_record.record_time = record_time if record_time else bird_record.record_time
+#     bird_record.record_location = record_location if record_location else bird_record.record_location
+#     bird_record.record_describe = record_describe if record_describe else bird_record.record_describe
+#     bird_record.longitude = longitude if longitude else bird_record.longitude
+#     bird_record.latitude = latitude if latitude else bird_record.latitude
+#     bird_record.weather = weather if weather else bird_record.weather
+#     bird_record.temperature = temperature if temperature else bird_record.temperature
+#     bird_record.bird_info = json.dumps(bird_infos)
+#     bird_record.update()
+#     return Responser.response_success(msg="修改鸟类记录成功")
 
 
 @inventory.route('/wx_delete_bird_record', methods=['POST'])
@@ -547,7 +574,7 @@ def delete_bird_record(request):
 
 @inventory.route('/get_all_bird_records', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin', 'admin'])
+@login_required(['sysadmin', 'admin'])
 def get_all_bird_records(request):
     # 鸟类记录获取所有接口
 

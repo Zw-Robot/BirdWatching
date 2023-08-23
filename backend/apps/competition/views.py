@@ -12,7 +12,7 @@ from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 
 from apps.competition import competition
-from apps.components.middleware import requestPOST, requestGET,SingAuth
+from apps.components.middleware import requestPOST, requestGET, SingAuth, login_required
 from apps.components.responser import Responser
 from apps.models import BirdMatch, MatchGroup, Userdata
 
@@ -54,7 +54,7 @@ def create_match(request):
 # @login_required(['sysadmin', 'admin', 'other'])
 def update_match(request):
     # 鸟类比赛更新接口
-    match_id = request.json.get("match_id")
+    match_id = int(request.json.get("match_id"))
     match_create = request.json.get("match_create")
     match_name = request.json.get("match_name")
     match_desc = request.json.get("match_desc")
@@ -68,7 +68,7 @@ def update_match(request):
     if any(attr is None for attr in required_attrs):
         return Responser.response_error('缺少必要参数')
 
-    bird_match = BirdMatch.query.get(match_id)
+    bird_match = BirdMatch.query.filter_by(match_id).first()
     if bird_match is None:
         return Responser.response_error('找不到指定的比赛信息')
 
@@ -87,12 +87,12 @@ def update_match(request):
 
 @competition.route('/delete_match', methods=['GET'])
 @requestGET
-# @login_required(['sysadmin', 'admin'])
+@login_required(['sysadmin', 'admin'])
 def delete_match(request):
     # 鸟类比赛删除接口
     match_id = int(request.args.get("match_id"))
 
-    bird_match = BirdMatch.query.get(match_id)
+    bird_match = BirdMatch.query.filter_by(match_id).first()
     if bird_match is None:
         return Responser.response_error('找不到指定的比赛信息')
 
@@ -103,13 +103,12 @@ def delete_match(request):
 
 @competition.route('/get_all_matches', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin', 'admin', 'other'])
+@login_required(['sysadmin', 'admin', 'other'])
 def get_all_matches(request):
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
 
     bird_matches_query = BirdMatch.query.filter_by(is_lock=False)
-
     total_pages = math.ceil(bird_matches_query.count() / per_page)
 
     bird_matches_paginated = bird_matches_query.paginate(page=page, per_page=per_page, error_out=False)
@@ -131,14 +130,7 @@ def get_all_matches(request):
         }
         match_list.append(match_dict)
 
-    pagination_data = {
-        'current_page': bird_matches_paginated.page,
-        'total_pages': total_pages,
-        'total_items': bird_matches_paginated.total,
-        'per_page': per_page
-    }
-
-    return Responser.response_success(data=match_list, pagination=pagination_data)
+    return Responser.response_page(data=match_list,page=page,page_size=per_page,count=total_pages)
 
 
 @competition.route('/create_group', methods=['POST'])
@@ -283,37 +275,41 @@ def wx_user_group(request):
 
 @competition.route('/get_all_groups', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin', 'admin', 'other'])
+@login_required(['sysadmin', 'admin', 'other'])
 def get_all_groups(request):
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
     match_id = int(request.args.get('match_id',1))
 
     groups_query = MatchGroup.query.filter_by(match_id=match_id)
-
     total_pages = math.ceil(groups_query.count() / per_page)
 
     groups_paginated = groups_query.paginate(page=page, per_page=per_page, error_out=False)
 
     group_list = []
-    for group in groups_paginated.items:
-        group_dict = {
+    for group in groups_paginated:
+        match = BirdMatch.query.filter_by(id=group.match_id).first()
+        users = group.group_user
+        gnames = []
+        names = users.split(',')
+        print(names)
+        for name in names:
+            gtemp = Userdata.query.filter_by(id=int(name)).first()
+            if gtemp:
+                gnames.append(gtemp.username)
+        dic = {
             'group_id': group.id,
-            'match_id': group.match_id,
+            'match_id': match.id,
+            'match_name': match.match_name,
+            'match_desc': match.match_desc,
             'group_name': group.group_name,
             'group_desc': group.group_desc,
-            'group_user': group.group_user,
+            'group_user': gnames,
             'rank': group.rank,
             'create_at': group.create_at,
             'update_at': group.update_at
         }
-        group_list.append(group_dict)
+        group_list.append(dic)
 
-    pagination_data = {
-        'current_page': groups_paginated.page,
-        'total_pages': total_pages,
-        'total_items': groups_paginated.total,
-        'per_page': per_page
-    }
 
-    return Responser.response_success(data=group_list, pagination=pagination_data)
+    return Responser.response_page(data=group_list,page=page,page_size=per_page,count=total_pages)
