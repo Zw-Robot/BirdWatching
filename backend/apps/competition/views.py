@@ -7,6 +7,7 @@
 --------------------------------------------
 """
 import math
+from datetime import datetime
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -19,7 +20,7 @@ from apps.models import BirdMatch, MatchGroup, Userdata
 
 @competition.route('/create_match', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin'])
+@login_required(['sysadmin'])
 def create_match(request):
     # 鸟类比赛创建接口
     match_create = request.json.get("match_create")
@@ -42,8 +43,8 @@ def create_match(request):
         match_location=match_location,
         referee=referee,
         match_image=match_image,
-        start_time=start_time,
-        end_time=end_time
+        start_time=datetime.strptime(start_time,'%Y-%m-%d %H:%M:%S'),
+        end_time=datetime.strptime(end_time,'%Y-%m-%d %H:%M:%S')
     )
     bird_match.update()
     return Responser.response_success(msg="比赛创建成功")
@@ -68,7 +69,7 @@ def update_match(request):
     if any(attr is None for attr in required_attrs):
         return Responser.response_error('缺少必要参数')
 
-    bird_match = BirdMatch.query.filter_by(match_id).first()
+    bird_match = BirdMatch.query.filter_by(id=match_id).first()
     if bird_match is None:
         return Responser.response_error('找不到指定的比赛信息')
 
@@ -85,14 +86,14 @@ def update_match(request):
     return Responser.response_success(msg="比赛信息更新成功")
 
 
-@competition.route('/delete_match', methods=['GET'])
-@requestGET
+@competition.route('/delete_match', methods=['POST'])
+@requestPOST
 @login_required(['sysadmin', 'admin'])
 def delete_match(request):
     # 鸟类比赛删除接口
-    match_id = int(request.args.get("match_id"))
+    match_id = int(request.json.get("match_id"))
 
-    bird_match = BirdMatch.query.filter_by(match_id).first()
+    bird_match = BirdMatch.query.filter_by(id=match_id).first()
     if bird_match is None:
         return Responser.response_error('找不到指定的比赛信息')
 
@@ -131,6 +132,27 @@ def get_all_matches(request):
         match_list.append(match_dict)
 
     return Responser.response_page(data=match_list,page=page,page_size=per_page,count=total_pages)
+
+
+@competition.route('/wx_get_matches', methods=["GET"])
+@requestGET
+def wx_get_matches(request):
+    bird_match = BirdMatch.query.filter_by(is_lock=False).first()
+    match_dict = {
+        'match_id': bird_match.id,
+        'match_create': bird_match.match_create,
+        'match_name': bird_match.match_name,
+        'match_desc': bird_match.match_desc,
+        'match_location': bird_match.match_location,
+        'referee': bird_match.referee,
+        'match_image': bird_match.match_image,
+        'start_time': bird_match.start_time,
+        'end_time': bird_match.end_time,
+        'create_at': bird_match.create_at,
+        'update_at': bird_match.update_at
+    }
+
+    return Responser.response_success(data=match_dict)
 
 
 @competition.route('/create_group', methods=['POST'])
