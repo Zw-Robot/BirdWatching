@@ -1,6 +1,6 @@
 .DS_Store
-front-admin/node_modules/
-dist/
+vue-admin-box/node_modules/
+vue-admin-box/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
