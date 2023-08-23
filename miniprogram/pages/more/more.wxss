@@ -1,0 +1,18 @@
+/* pages/more/more.wxss */
+.one{
+  width: 700rpx;
+  margin: 10rpx 0rpx 30rpx 20rpx;
+  display: flex;
+  border-bottom: solid 1rpx #e1e1e0;
+}
+.one text{
+  margin: 10rpx 0rpx 20rpx 0rpx ;
+  font-weight: bolder;
+}
+.one image{
+  margin-top: 8rpx;
+  width: 30rpx;
+  height: 30rpx;
+  right: 3%;
+  position: absolute;
+}

@@ -1,0 +1,132 @@
+/* pages/mine/mine.wxss */
+/**index.wxss**/
+.userinfo {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  color: #aaa;
+  height: 300rpx;
+}
+.userinfo-avatar {
+  overflow: hidden;
+  width: 128rpx;
+  height: 128rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+.main{
+  width: 100%;
+}
+
+.dengji{
+  position: absolute;
+  display: flex; 
+  top: 0%;
+  margin-top: 190rpx;
+  margin-left: 170rpx;
+}
+
+.rightBox{
+  position: absolute;
+  display: flex;
+  right: 0%;
+  top: 0%;
+  margin-top: 20rpx;
+  margin-right: 15rpx;
+}
+.righto{
+  width: 50rpx;
+  height: 50rpx;
+  margin-right: 20rpx;
+  margin-top: 8rpx;
+}
+.rightt{
+  width: 45rpx;
+  height: 45rpx;
+  margin-top: 10rpx;
+}
+
+/*  */
+.hd{
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  display: flex;
+  background: #fff;
+  box-shadow: 0 5rpx 5rpx #ccc;
+  position: relative;
+}
+.hd-item{
+  flex: 1;
+  text-align: center;
+  font-weight:500;
+  color: #333;
+  font-size: 28rpx;
+  position: relative;
+}
+.hd-item::after{
+  content:'';
+  position: absolute;
+  width: 0%;
+  height: 6rpx;
+  background: linear-gradient(to right,#b3b3b3,#363636);
+  border-radius: 3rpx;
+  left:50%;
+  transform:translate(-50%);
+  bottom: 4rpx;
+  /* 添加过渡效果 */
+  transition: 0.3s width linear;
+}
+/* 激活选中样式 */
+.hd-item.active{
+  font-size: 30rpx;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color:transparent;
+  background-image: linear-gradient(to right,#b3b3b3,#363636);
+  transform: 0.3s all linear;
+  transition-delay:0.1s;
+}
+.hd-item.active::after{
+  width: 40rpx;
+}
+.content view{ 
+  background: #fff;
+  height: 50rpx;
+  line-height: 50rpx;
+  border-bottom: 1rpx solid #eaeef1;
+  padding: 20rpx;
+  color: #999;
+  text-align: center;
+}
+.content .pt{
+  padding-top: 88rpx;
+}
+
+.fixed{
+  position: fixed;
+  left:0;
+  top:0;
+  z-index:1;
+}
+
+/*  */
+.item{
+  display: flex;
+  flex-direction: column;
+  background-color: #fafbf8;
+  width: 100%;
+  height: 200rpx;
+  box-shadow: 1px 1px 5px 1px rgba(241, 239, 239, 0.5);
+  border-bottom: solid 1rpx #c4c4c4;
+}
+.item .name{
+  margin: 40rpx 40rpx 0rpx 40rpx;
+  font-weight: bolder;
+  font-size: 40rpx;
+}
+.item .location{
+  margin: 30rpx 40rpx 20rpx 40rpx;
+  font-weight: lighter;
+  font-size: 30rpx;
+}
