@@ -531,21 +531,6 @@ def get_bird_survey(request):
 #     return Responser.response_success(msg="修改鸟类记录成功")
 
 
-@inventory.route('/wx_delete_bird_record', methods=['POST'])
-@requestPOST
-@SingAuth
-# @login_required(['sysadmin', 'admin'])
-def wxdelete_bird_record(request):
-    # 鸟类记录删除接口
-    bird_record_id = int(request.args.get("record_id"))
-
-    bird_record = BirdRecords.query.filter_by(id=bird_record_id).first()
-    if bird_record is None:
-        return Responser.response_error('找不到指定的鸟类记录')
-
-    bird_record.is_lock = True
-    bird_record.update()
-    return Responser.response_success("删除鸟类记录成功")
 
 @inventory.route('/delete_bird_record', methods=['POST'])
 @requestPOST
@@ -641,7 +626,7 @@ def wx_get_record(request):
         bird_records = BirdRecords.query.filter_by(user_id=userid, is_lock=False).all()
     rec = []
     for bird_record in bird_records:
-        bi = BirdInventory.query.filter_by(id=bird_record.id).first()
+        bi = BirdInventory.query.filter_by(id=bird_record.bird_id).first()
         bird_record_dict = {
             'id': bird_record.id,
             'bird': bi.species if bi else '',
