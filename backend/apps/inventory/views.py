@@ -325,30 +325,29 @@ def get_bird(request):
 # @login_required(['sysadmin'])
 def create_bird_survey(request):
     # 鸟类调查创建接口
-    user_id = request.json.get("user_id")
-    survey_name = request.json.get("survey_name")
-    survey_desc = request.json.get("survey_desc")
+    user_id = int(request.json.get("user_id"))
+    survey_name = request.json.get("survey_name","")
+    survey_desc = request.json.get("survey_desc","")
     survey_time = request.json.get("survey_time")
-    survey_location = request.json.get("survey_location")
-    describe = request.json.get("describe")
-    habitat = request.json.get("habitat")
-    behavior = request.json.get("behavior")
+    survey_location = request.json.get("survey_location","")
+    describe = request.json.get("describe","")
+    habitat = request.json.get("habitat","")
+    behavior = request.json.get("behavior","")
     bird_infos = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([survey_name, survey_time, survey_location, describe, habitat, behavior])
+    lost_attrs = required_attrs_validator([survey_name, survey_location, survey_desc,survey_time])
     if lost_attrs:
         return Responser.response_error('缺少参数')
-
     bird_survey = BirdSurvey(
         user_id=user_id,
         survey_name=survey_name,
         survey_desc=survey_desc,
-        survey_time=survey_time,
+        survey_time=datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S'),
         survey_location=survey_location,
         describe=describe,
         habitat=habitat,
         behavior=behavior,
-        bird_info=bird_infos
+        bird_info=json.dumps(bird_infos)
     )
     bird_survey.update()
     return Responser.response_success(msg="创建鸟类调查成功")
@@ -359,8 +358,8 @@ def create_bird_survey(request):
 # @login_required(['sysadmin', 'admin', 'others'])
 def update_bird_survey(request):
     # 鸟类调查更新接口
-    bird_survey_id = request.json.get("bird_survey_id")
-    user_id = request.json.get("user_id")
+    # bird_survey_id = int(request.json.get("bird_survey_id"))
+    user_id = int(request.json.get("user_id"))
     survey_name = request.json.get("survey_name", "")
     survey_desc = request.json.get("survey_desc", "")
     survey_time = request.json.get("survey_time", "")
@@ -370,11 +369,11 @@ def update_bird_survey(request):
     behavior = request.json.get("behavior", "")
     bird_infos = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([bird_survey_id, user_id])
+    lost_attrs = required_attrs_validator([user_id])
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-    bird_survey = BirdSurvey.query.get(bird_survey_id)
+    bird_survey = BirdSurvey.query.filter_by(user_id=user_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
     if bird_survey.user_id != user_id:
@@ -382,7 +381,7 @@ def update_bird_survey(request):
 
     bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
     bird_survey.survey_desc = survey_desc if survey_desc else bird_survey.survey_desc
-    bird_survey.survey_time = survey_time if survey_time else bird_survey.survey_time
+    bird_survey.survey_time = datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S') if survey_time else bird_survey.survey_time
     bird_survey.survey_location = survey_location if survey_location else bird_survey.survey_location
     bird_survey.describe = describe if describe else bird_survey.describe
     bird_survey.habitat = habitat if habitat else bird_survey.habitat
@@ -399,7 +398,7 @@ def delete_bird_survey(request):
     # 鸟类调查删除接口
     bird_survey_id = int(request.args.get("bird_survey_id"))
 
-    bird_survey = BirdSurvey.query.get(bird_survey_id)
+    bird_survey = BirdSurvey.query.filter_by(bird_survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
 
@@ -454,15 +453,10 @@ def get_all_bird_surveys(request):
 # @login_required(['sysadmin', 'admin', 'others'])
 def get_bird_survey(request):
     # 鸟类调查查询单个接口
-    bird_survey_id = int(request.args.get("bird_survey_id"))
-    bird_survey = BirdSurvey.query.get(bird_survey_id)
+    user_id = int(request.args.get("user_id",-1))
+    bird_survey = BirdSurvey.query.filter_by(user_id=user_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
-    files = []
-    infos = bird_survey.bird_info.split(',') if bird_survey.bird_info else []
-    for info in infos:
-        temp = BirdInfos.query.get(info)
-        files.append(FileResponser.get_path(temp.path if temp.path else "", temp.label))
     bird_survey_dict = {
         'bird_survey_id': bird_survey.id,
         'user_id': bird_survey.user_id,
@@ -473,47 +467,11 @@ def get_bird_survey(request):
         'describe': bird_survey.describe,
         'habitat': bird_survey.habitat,
         'behavior': bird_survey.behavior,
-        'bird_info': files,
+        'bird_info': json.loads(bird_survey.bird_info),
         'create_at': bird_survey.create_at,
         'update_at': bird_survey.update_at,
     }
     return Responser.response_success(data=bird_survey_dict)
-
-
-# @inventory.route('/create_bird_record', methods=['POST'])
-# @requestPOST
-# # @login_required(['sysadmin'])
-# def create_bird_record(request):
-#     # 鸟类记录创建接口
-#     user_id = request.json.get("user_id")
-#     bird_id = request.json.get("bird_id")
-#     record_time = request.json.get("record_time")
-#     record_location = request.json.get("record_location")
-#     longitude = request.json.get("longitude")
-#     latitude = request.json.get("latitude")
-#     weather = request.json.get("weather")
-#     temperature = request.json.get("temperature")
-#     record_describe = request.json.get("record_describe")
-#     bird_infos = request.json.get("bird_infos", [])
-#
-#     # lost_attrs = required_attrs_validator([bird_id, record_time, record_location])
-#     # if lost_attrs:
-#     #     return Responser.response_error('缺少参数')
-#
-#     bird_record = BirdRecords(
-#         user_id=user_id,
-#         bird_id=bird_id,
-#         record_time=record_time,
-#         record_location=record_location,
-#         record_describe=record_describe,
-#         longitude=longitude,
-#         latitude=latitude,
-#         weather=weather,
-#         temperature=temperature,
-#         bird_info=json.dumps(bird_infos)
-#     )
-#     bird_record.update()
-#     return Responser.response_success(msg="创建鸟类记录成功")
 
 
 @inventory.route('/update_bird_record', methods=['POST'])
@@ -603,12 +561,6 @@ def get_all_bird_records(request):
 
     bird_record_list = []
     for bird_record in bird_records:
-        files = []
-        infos = bird_record.bird_info.split(',') if bird_record.bird_info else []
-        for info in infos:
-            temp = BirdInfos.query.get(info)
-            files.append(FileResponser.get_path(temp.path if temp.path else "", temp.label))
-
         bird_record_dict = {
             'bird_record_id': bird_record.id,
             'user_id': bird_record.user_id,
@@ -620,7 +572,7 @@ def get_all_bird_records(request):
             "latitude": bird_record.latitude,
             "weather": bird_record.weather,
             "temperature": bird_record.temperature,
-            'bird_info': files,
+            'bird_info': json.loads(bird_record.bird_info),
             'create_at': bird_record.create_at,
             'update_at': bird_record.update_at,
             'is_lock': bird_record.is_lock
