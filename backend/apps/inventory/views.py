@@ -248,9 +248,7 @@ def get_all_birds(request):
 
     birds = bird_inventory_query.paginate(page=page, per_page=per_page)
     result = []
-    bird_dic = {}
     for bird in birds:
-        bird_name = bird.order_cn + ' ' + bird.order_en
         bird_info = {
             "id": bird.id,
             'order_en': bird.order_en,
@@ -271,15 +269,7 @@ def get_all_birds(request):
             'update_at': bird.update_at,
             'is_lock': bird.is_lock
         }
-        bird_dic[bird_name] = bird_dic.get(bird_name, [])
-        bird_dic[bird_name].append(bird_info)
-    for index, (key, val) in enumerate(bird_dic.items()):
-        tmp_dic = {
-            "id": index,
-            "name": key,
-            "twdata": val
-        }
-        result.append(tmp_dic)
+        result.append(bird_info)
     return Responser.response_page(data=result, count=total_pages, page=page, page_size=per_page)
 
 

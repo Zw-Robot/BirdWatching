@@ -68,7 +68,7 @@ def login_required(*role):
                 if user_role:
 
                     # 获取token中的权限列表如果在参数列表中则表示有权限，否则就表示没有权限
-                    result = True if user_role in role else False
+                    result = True if user_role in role[0] else False
                     if not result:
                         return Responser.response_error("权限不够",400)
 
