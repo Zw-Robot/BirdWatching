@@ -2,10 +2,10 @@
 <swiper  >
   <swiper-item class="picture">
     <navigator url="/pages/attendRace/attendRace">
-      <image src="/pages/images/观鸟比赛ui .png" mode=""/>
+      <image src="{{matchurl}}" mode=""/>
     </navigator>
   </swiper-item>
   <swiper-item class="picture">
-    <image src="/pages/images/其他ui.png" mode=""/>
+    <image src="{{others}}" mode=""/>
   </swiper-item>
 </swiper>

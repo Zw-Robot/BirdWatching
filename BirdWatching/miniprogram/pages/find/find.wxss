@@ -6,7 +6,7 @@ swiper{
   height: 950rpx;
 }
 swiper .picture{
-  margin-top: 100rpx;
+  margin-top: -10rpx;
   display: flex;
   align-items: center;
    justify-content: center;

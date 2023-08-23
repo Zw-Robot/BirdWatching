@@ -1,3 +1,5 @@
+import { request } from "../../components/request"
+
 // pages/find/find.ts
 Page({
 
@@ -5,6 +7,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    matchurl:request.URL+"/inventory/get_file/"+"seematchui.png",
+    others:request.URL+"/inventory/get_file/"+"othersui.png"
 
   },
 

@@ -383,3 +383,48 @@ class MatchGroup(db.Model):
         self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
+
+
+class Feedbacks(db.Model):
+    """用户反馈"""
+
+    __tablename__ = 'feedbacks'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, nullable=False, comment='用户ID')
+    feedback_text = Column(LONGTEXT, nullable=False, comment='反馈内容')
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    resolve_res = Column(LONGTEXT,comment='处理结果')
+    is_resolved = Column(Boolean, default=False, nullable=False, comment='是否已解决')
+
+    def __init__(self, user_id, feedback_text):
+        self.user_id = user_id
+        self.feedback_text = feedback_text
+        self.is_resolved = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+class SystemNotifications(db.Model):
+    """系统通知"""
+
+    __tablename__ = 'system_notifications'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(100), nullable=False, comment='通知标题')
+    content = Column(String(500), nullable=False, comment='通知内容')
+    create_at = Column(DateTime, default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+    is_lock = Column(Boolean, default=False, nullable=False, comment='结束通知')
+    def __init__(self, title, content):
+        self.title = title
+        self.content = content
+        self.is_read = False
+
+    def update(self):
+        self.update_at = datetime.now()
+        db.session.add(self)
+        db.session.commit()

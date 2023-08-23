@@ -1,5 +1,4 @@
-import { appname } from "../../components/config";
-import { get_show_images, sgin } from "../../components/interface";
+import { get_show_images } from "../../components/interface";
 import { request } from "../../components/request";
 const homeapp=getApp()
 
