@@ -348,7 +348,7 @@ def create_bird_survey(request):
 @SingAuth
 def wx_update_bird_survey(request):
     # 鸟类调查更新接口
-    # bird_survey_id = int(request.json.get("bird_survey_id"))
+    bird_survey_id = int(request.json.get("bird_survey_id"))
     user_id = int(request.json.get("user_id"))
     survey_name = request.json.get("survey_name", "")
     survey_desc = request.json.get("survey_desc", "")
@@ -359,11 +359,11 @@ def wx_update_bird_survey(request):
     behavior = request.json.get("behavior", "")
     bird_infos = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([user_id])
+    lost_attrs = required_attrs_validator([bird_survey_id])
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-    bird_survey = BirdSurvey.query.filter_by(user_id=user_id).first()
+    bird_survey = BirdSurvey.query.filter_by(bird_survey_id=bird_survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
     if bird_survey.user_id != user_id:
@@ -465,18 +465,40 @@ def get_all_bird_surveys(request):
     return Responser.response_page(data=data, count=total_pages, page=page, page_size=per_page)
 
 
-@inventory.route('/get_bird_survey', methods=["GET"])
+@inventory.route('/wx_get_bird_surveys', methods=["GET"])
 @requestGET
 # @login_required(['sysadmin', 'admin', 'others'])
-def get_bird_survey(request):
+def wx_get_bird_surveys(request):
     # 鸟类调查查询单个接口
     user_id = int(request.args.get("user_id",-1))
-    bird_survey = BirdSurvey.query.filter_by(user_id=user_id).first()
+    bird_surveys = BirdSurvey.query.filter_by(user_id=user_id,is_lock=False).all()
+    if bird_surveys is None:
+        return Responser.response_error('找不到指定的鸟类调查信息')
+    data = []
+    for bird_survey in bird_surveys:
+        bird_survey_list = {
+            'bird_survey_id': bird_survey.id,
+            'survey_name': bird_survey.survey_name,
+            'survey_desc': bird_survey.survey_desc,
+            'survey_time': bird_survey.survey_time,
+            'survey_location': bird_survey.survey_location,
+            'is_lock': bird_survey.is_lock
+        }
+        data.append(bird_survey_list)
+
+    return Responser.response_success(data=data)
+
+
+@inventory.route('/wx_get_survey', methods=["GET"])
+@requestGET
+# @login_required(['sysadmin', 'admin', 'others'])
+def wx_get_survey(request):
+    # 鸟类调查查询单个接口
+    survey_id = int(request.args.get("survey_id",-1))
+    bird_survey = BirdSurvey.query.filter_by(id=survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
-    bird_survey_dict = {
-        'bird_survey_id': bird_survey.id,
-        'user_id': bird_survey.user_id,
+    bird_survey_d = {
         'survey_name': bird_survey.survey_name,
         'survey_desc': bird_survey.survey_desc,
         'survey_time': bird_survey.survey_time,
@@ -487,9 +509,10 @@ def get_bird_survey(request):
         'bird_info': json.loads(bird_survey.bird_info),
         'create_at': bird_survey.create_at,
         'update_at': bird_survey.update_at,
+        'is_lock': bird_survey.is_lock
     }
-    return Responser.response_success(data=bird_survey_dict)
 
+    return Responser.response_success(data=bird_survey_d)
 
 # @inventory.route('/update_bird_record', methods=['POST'])
 # @requestPOST

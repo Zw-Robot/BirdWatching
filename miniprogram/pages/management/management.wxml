@@ -1,2 +1,0 @@
-<!--pages/management/management.wxml-->
-<button bindtap="jumpToDetail">退出登录</button>
