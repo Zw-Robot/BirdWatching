@@ -350,10 +350,6 @@ def wx_update_bird_survey(request):
     # 鸟类调查更新接口
     bird_survey_id = int(request.json.get("bird_survey_id"))
     user_id = int(request.json.get("user_id"))
-    survey_name = request.json.get("survey_name", "")
-    survey_desc = request.json.get("survey_desc", "")
-    survey_time = request.json.get("survey_time", "")
-    survey_location = request.json.get("survey_location", "")
     describe = request.json.get("describe", "")
     habitat = request.json.get("habitat", "")
     behavior = request.json.get("behavior", "")
@@ -363,20 +359,17 @@ def wx_update_bird_survey(request):
     if lost_attrs:
         return Responser.response_error('缺少参数')
 
-    bird_survey = BirdSurvey.query.filter_by(bird_survey_id=bird_survey_id).first()
+    bird_survey = BirdSurvey.query.filter_by(id=bird_survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
     if bird_survey.user_id != user_id:
         return Responser.response_error('没有权限修改该鸟类调查')
 
-    bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
-    bird_survey.survey_desc = survey_desc if survey_desc else bird_survey.survey_desc
-    bird_survey.survey_time = datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S') if survey_time else bird_survey.survey_time
-    bird_survey.survey_location = survey_location if survey_location else bird_survey.survey_location
     bird_survey.describe = describe if describe else bird_survey.describe
     bird_survey.habitat = habitat if habitat else bird_survey.habitat
     bird_survey.behavior = behavior if behavior else bird_survey.behavior
     bird_survey.bird_info = json.dumps(bird_infos)
+    bird_survey.is_lock = True
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
 
