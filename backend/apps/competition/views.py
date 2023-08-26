@@ -354,7 +354,7 @@ def export_records(request):
     group_id = request.json.get('group_id', '')
     records = []
     match_list = [int(id) for id in match_id.split(',')]
-    writer = pd.ExcelWriter('exported_records.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter('/robot/birdwatching/var/exported_records.xlsx', engine='xlsxwriter')
     for match in match_list:
         match_temp = BirdMatch.query.filter_by(id=match).first()
         start = match_temp.start_time
@@ -405,6 +405,6 @@ def export_records(request):
             # 将 DataFrame 写入 Excel 文件，每个比赛作为一个 sheet
             df.to_excel(writer, sheet_name=name+'_'+group.group_name, index=False)
     writer.save()
-    results = open('./exported_records.xlsx', 'rb').read()
+    results = open('/robot/birdwatching/var/exported_records.xlsx', 'rb').read()
     return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
    					headers={"Content-Disposition": 'attachment; filename=exported_records.xlsx'})
