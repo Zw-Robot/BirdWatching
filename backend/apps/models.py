@@ -261,6 +261,7 @@ class BirdRecords(db.Model):
         self.latitude = latitude
         self.weather = weather
         self.temperature = temperature
+        self.create_at = datetime.now()
         self.is_lock = False
 
     def update(self):

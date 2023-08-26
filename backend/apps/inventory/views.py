@@ -14,7 +14,7 @@ from datetime import datetime
 from math import ceil
 from urllib.parse import quote
 import pandas as pd
-from flask import make_response, send_file
+from flask import make_response, send_file, Response
 from sqlalchemy import or_
 
 from apps.components.common import required_attrs_validator
@@ -804,9 +804,10 @@ def download_record(request):
         'Content-Disposition': 'attachment; filename="bird_records.xlsx"',
         'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     }
+    results = open('/robot/birdwatching/var/bird_records.xlsx', 'rb').read()
+    return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={"Content-Disposition": 'attachment; filename=bird_records.xlsx'})
 
-    # 返回Excel文件给客户端进行下载
-    return send_file(excel_file, as_attachment=True)
 
 
 @inventory.route("/download_example_bird", methods=["POST"])
@@ -832,15 +833,10 @@ def download_example_bird(request):
         ])
     excel_file = '/robot/birdwatching/var/example_bird.xlsx'  # 替换为您想要保存的文件名
     df.to_excel(excel_file, index=False)
-    # 保存DataFrame为Excel文件
-    print(excel_file)
-    headers = {
-        'Content-Disposition': 'attachment; filename="records.xlsx"',
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }
 
-    # 返回Excel文件给客户端进行下载
-    return send_file(excel_file, as_attachment=True)
+    results = open('/robot/birdwatching/var/example_bird.xlsx', 'rb').read()
+    return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={"Content-Disposition": 'attachment; filename=example_bird.xlsx'})
 
 
 @inventory.route("/upload_bird", methods=["POST"])
