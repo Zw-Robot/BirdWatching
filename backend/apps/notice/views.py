@@ -1,3 +1,5 @@
+import math
+
 from apps.components.middleware import requestGET, SingAuth, requestPOST, login_required
 from apps.components.responser import Responser
 from apps.models import SystemNotifications, Feedbacks
@@ -7,9 +9,15 @@ from apps.notice import notice
 
 @notice.route('/get_feedbacks', methods=['GET'])
 @requestGET
-@login_required(['sysadmin', 'admin', 'others'])
+# @login_required(['sysadmin', 'admin', 'others'])
 def get_feedbacks(request):
-    feedbacks = Feedbacks.query.all()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+
+    feed = Feedbacks.query.filter_by(is_lock=False)
+    total_pages = math.ceil(feed.count() / per_page)
+
+    feedbacks = feed.paginate(page=page, per_page=per_page, error_out=False)
 
     feedback_list = []
     for feedback in feedbacks:
@@ -23,7 +31,7 @@ def get_feedbacks(request):
         }
         feedback_list.append(feedback_data)
 
-    return Responser.response_success(data=feedback_list)
+    return Responser.response_page(data=feedback_list,page=page,page_size=per_page,count=total_pages)
 
 
 @notice.route('/wx_get_feedbacks', methods=['GET'])
@@ -60,7 +68,7 @@ def create_feedbacks(request):
 
 @notice.route('/resolve_feedbacks', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin', 'others'])
+# @login_required(['sysadmin', 'admin', 'others'])
 def resolve_feedbacks(request):
     id = int(request.json.get("id",'-1'))
     resolve_res = request.json.get("resolve",'')
@@ -89,9 +97,9 @@ def create_system_notification(request):
     return Responser.response_success(msg="系统通知创建成功")
 
 
-@notice.route('/get_system_notifications', methods=['GET'])
+@notice.route('/wx_get_system_notifications', methods=['GET'])
 @requestGET
-def get_system_notifications(request):
+def wx_get_system_notifications(request):
     notifications = SystemNotifications.query.filter_by(is_lock=False)
 
     notification_list = []
@@ -107,15 +115,41 @@ def get_system_notifications(request):
 
     return Responser.response_success(data=notification_list)
 
+@notice.route('/get_system_notifications', methods=['GET'])
+@requestGET
+def get_system_notifications(request):
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+
+    notifications = SystemNotifications.query.filter_by(is_lock=False)
+    total_pages = math.ceil(notifications.count() / per_page)
+
+    notions = notifications.paginate(page=page, per_page=per_page, error_out=False)
+
+
+    notification_list = []
+    for notification in notions:
+        notification_data = {
+            "id": notification.id,
+            "title": notification.title,
+            "content": notification.content,
+            "create_at": notification.create_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "is_lock": notification.is_lock
+        }
+        notification_list.append(notification_data)
+
+    return Responser.response_page(data=notification_list,page=page,page_size=per_page,count=total_pages)
+
 
 @notice.route('/delete_system_notice', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin'])  # 添加登录验证装饰器
+# @login_required(['sysadmin', 'admin'])  # 添加登录验证装饰器
 def delete_system_notice(request):
     id = int(request.json.get("id", -1))
-    notifications = SystemNotifications.query.filter_by(id=id)
+    notifications = SystemNotifications.query.filter_by(id=id).first()
     if notifications:
         notifications.is_lock = True
+        notifications.update()
     else:
         return Responser.response_error('不存在该通知')
 

@@ -1,5 +1,3 @@
-// components/attendimage/attendimage.ts
-// const app = getApp();
 Component({
   properties: {
     fileList: {

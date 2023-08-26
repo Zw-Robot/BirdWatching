@@ -1,0 +1,98 @@
+<!-- 灰色部分 -->
+<view class="waitBox">
+<!-- 名称 -->
+<view class="pickerBox">
+  <text class="mainName">名称 *</text>
+  <text class="result">{{record.survey_name}}</text>
+</view>
+<!-- 时间 -->
+<view class="pickerBox">
+  <text class="mainName">时间 *</text>
+  <text class="result">{{record.survey_time}}</text>
+</view>
+<!-- 描述 -->
+<view class="pickerBox">
+  <text class="mainName">描述 *</text>
+  <text class="result">{{record.survey_desc}}</text>
+</view>
+<!-- 地点 -->
+<view class="pickerBox">
+  <text class="mainName">地点 *</text>
+  <text class="result">{{record.survey_location}}</text>
+</view>
+
+<!-- 描述 -->
+<view class="beizhu">
+  <view class="beizhuname">描述*</view>
+  <textarea value="{{miaoshu}}" class="beizhu-item" bindinput ="miaoshu" ></textarea>
+</view>
+<!-- 生境 -->
+<view class="beizhu">
+  <view class="beizhuname">生境*</view>
+  <textarea value="{{shengjing}}" class="beizhu-item" bindinput ="shengjing" ></textarea>
+</view>
+<!-- 习性 -->
+<view class="beizhu">
+  <view class="beizhuname">习性*</view>
+  <textarea value="{{xixing}}" class="beizhu-item" bindinput ="xixing" ></textarea>
+</view>
+
+<view class="uploadBox">
+  <text class="picture">照片</text>
+  <my-image bind:imageChange="getimg"
+            bind:imageDel="delimg">
+  </my-image>
+    <!-- 上传视频 -->
+    <view class="birdvideo">
+    <!-- 上传 S -->
+<view class="img-list">
+    <!-- 上传列表 -->
+    <view class="upload-video">
+      <block wx:if="{{src != ''}}">
+      <text class="picture">视频</text>
+        <view class="videobox">
+        <image class="icon-deletes" src="../../pages/images/拍照.png" bindtap="deleteVideo"></image>
+        </view>
+        <!-- 视频窗口 -->
+        <video src="{{src}}" class="img-li"></video>
+      </block>
+    </view>
+    <block wx:for="{{imgList}}" wx:key="index">
+    </block>
+    
+    <!-- 视频 S -->
+    <view class="img-li" wx:if="{{src == ''}}" bindtap="chooseVideo">
+      <text class="picturevideo">视频</text>
+    <view class="videoboxitem">
+      <image class="icon-deletes" src="../../pages/images/拍照.png" ></image>
+    </view>
+    </view>
+    <!-- 视频 E -->
+  </view>
+  <!-- 上传 E -->
+  </view>
+  <!-- 录音 -->
+<view class="musicBox">
+  <text class="picture">录音</text>
+  <view class="listen">
+  </view>
+  <view class="startend">
+    <button bindtouchstart="startClick" class="rectangle">开始录音</button>
+    <button bindtouchend="stopClick" class="rectangle" >结束录音</button>
+    <button bindtap="playClick"  class="rectangle">播放录音</button>
+  </view>
+</view>
+
+</view>
+
+<!-- 提交按钮 -->
+<view class="bottom-btn">
+  <van-button 
+  round 
+  type="default" 
+  color="#1296db"
+  bindtap='jumpToDetail'
+  >提交
+  </van-button>
+</view>
+</view>

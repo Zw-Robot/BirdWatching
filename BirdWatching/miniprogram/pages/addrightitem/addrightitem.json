@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "my-image":"../../components/attendimage/attendimage"
+  }
+}

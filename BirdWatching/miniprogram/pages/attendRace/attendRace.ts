@@ -1,5 +1,5 @@
 // pages/attendRace/attendRace.ts
-import {create_group,add_group,get_all_matches, wx_user_group, exit_group} from '../../components/interface'
+import {create_group,add_group, wx_user_group, exit_group, wx_get_matches} from '../../components/interface'
 const attendapp=getApp()
 Page({
 
@@ -174,24 +174,20 @@ Page({
     })
   },
   getAllMatch:function(){
-    var date={
-      match_id :2,
-    }
-    get_all_matches(date).then(res=>{
+    wx_get_matches().then(res=>{
       console.log(res);
       this.setData({
-        match_id:res[0].match_id,
-        match_name:res[0].match_name,
-        match_desc:res[0].match_desc,
-        start_time:res[0].start_time,
-        end_time:res[0].end_time,
-        creat_at:res[0].creat_at,
-        match_create:res[0].match_create,
-        match_location:res[0].match_location,
-        referee:res[0].referee,
+        match_id:res.match_id,
+        match_name:res.match_name,
+        match_desc:res.match_desc,
+        start_time:res.start_time,
+        end_time:res.end_time,
+        creat_at:res.creat_at,
+        match_create:res.match_create,
+        match_location:res.match_location,
+        referee:res.referee,
       })
       console.log(res[0].match_desc);
-      
     })
   },
 

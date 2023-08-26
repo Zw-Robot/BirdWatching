@@ -126,9 +126,9 @@ def update_bird(request):
 @login_required(['sysadmin', 'admin'])
 def delete_bird(request):
     # 鸟类记录删除接口
-    bird_id = int(request.args.get("bird_id"))
+    bird_id = int(request.json.get("bird_id"))
 
-    bird = BirdInventory.query.filter_by(bird_id).first()
+    bird = BirdInventory.query.filter_by(id=bird_id).first()
     if bird is None:
         return Responser.response_error('找不到指定的鸟类信息')
 

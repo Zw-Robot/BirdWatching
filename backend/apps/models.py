@@ -32,7 +32,6 @@ class LogonUser(db.Model):
                         onupdate=func.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该用户')
 
-
     def __init__(self, username, hash_password, phone, email=None, avatar=None, role='others', depart=0):
         self.username = username
         self.password = hash_password
@@ -80,7 +79,6 @@ class LogonUser(db.Model):
         }
         payload_str = s.dumps(payload)
 
-
         payload_base64 = base64.b64encode(payload_str.encode('utf-8')).decode('utf-8')
         token = payload_base64
         return token
@@ -100,7 +98,8 @@ class LoginSessionCache(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     openid = Column(String(255))  # openid
     session_key = Column(String(255))  # token
-    update_at = Column(DateTime,default=datetime.now())
+    update_at = Column(DateTime, default=datetime.now())
+
     # 定义对象
     def __init__(self, openid=None, session_key=None):
         self.openid = openid
@@ -109,7 +108,7 @@ class LoginSessionCache(db.Model):
 
     # 提交数据函数
     def update(self):
-        self.update_at=datetime.now()
+        self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
 
@@ -128,11 +127,13 @@ class Userdata(db.Model):
     country = Column(String(255))  # country
     province = Column(String(255))  # province
     city = Column(String(255))  # city
-    score = Column(Integer,comment="积分")
+    score = Column(Integer, comment="积分")
     update_at = Column(DateTime, default=datetime.now())
+    is_lock = Column(Boolean, default=False)
 
     # 定义对象
-    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,score=0):
+    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,
+                 score=0):
         self.openid = openid
         self.username = username
         self.avatar = avatar
@@ -188,20 +189,21 @@ class BirdInventory(db.Model):
     genus = Column(String(40), nullable=False, comment='属')
     species = Column(String(40), nullable=False, comment='种')
     latin_name = Column(String(40), nullable=False, comment='拉丁名')
-    geotype = Column(String(40),nullable=True, comment='地理型')
-    seasonal = Column(String(200),nullable=True,comment='季节型 逗号分割')
-    IUCN = Column(String(40),nullable=True,comment='濒危等级')
-    level = Column(String(100),nullable=True,comment='保护等级')
+    geotype = Column(String(40), nullable=True, comment='地理型')
+    seasonal = Column(String(200), nullable=True, comment='季节型 逗号分割')
+    IUCN = Column(String(40), nullable=True, comment='濒危等级')
+    level = Column(String(100), nullable=True, comment='保护等级')
     describe = Column(String(200), nullable=True, comment='描述')
     habitat = Column(String(200), nullable=True, comment='生境')
     behavior = Column(String(200), nullable=True, comment='习性')
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息id 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
-    is_check = Column(Boolean,default=False, nullable=False,comment='是否检查')
+    is_check = Column(Boolean, default=False, nullable=False, comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
 
-    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name,geotype,seasonal,IUCN,level,describe=None,
+    def __init__(self, order_en, order_cn, family_en, family_cn, genus, species, latin_name, geotype, seasonal, IUCN,
+                 level, describe=None,
                  habitat=None, behavior=None, bird_info=None):
         self.order_en = order_en
         self.order_cn = order_cn
@@ -236,18 +238,19 @@ class BirdRecords(db.Model):
     bird_id = Column(Integer, nullable=False, comment='鸟类名录ID')
     record_time = Column(DateTime, nullable=False, comment='时间')
     record_location = Column(String(200), nullable=False, comment='地点')
-    longitude = Column(Float,nullable=False,comment="经度")
-    latitude = Column(Float,nullable=False,comment="经度")
-    weather = Column(String(40),nullable=False,comment="天气")
-    temperature = Column(Float,nullable=False,comment="气温")
+    longitude = Column(Float, nullable=False, comment="经度")
+    latitude = Column(Float, nullable=False, comment="经度")
+    weather = Column(String(40), nullable=False, comment="天气")
+    temperature = Column(Float, nullable=False, comment="气温")
     record_describe = Column(String(200), nullable=True, comment='描述')
     bird_info = Column(LONGTEXT, nullable=True, comment='鸟类声音图像信息 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
-    is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
+    is_check = Column(Boolean, default=False, nullable=False, comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该记录')
 
-    def __init__(self, user_id, bird_id, record_time, record_location, longitude,latitude,weather,temperature,record_describe=None, bird_info=None,):
+    def __init__(self, user_id, bird_id, record_time, record_location, longitude, latitude, weather, temperature,
+                 record_describe=None, bird_info=None, ):
         self.user_id = user_id
         self.bird_id = bird_id
         self.record_time = record_time
@@ -283,7 +286,7 @@ class BirdSurvey(db.Model):
     bird_info = Column(String(200), nullable=False, comment='鸟类声音图像信息,逗号分割')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
-    is_check = Column(Boolean, default=False, nullable=False,comment='是否检查')
+    is_check = Column(Boolean, default=False, nullable=False, comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除调查')
 
     def __init__(self, user_id, survey_name, survey_desc=None, survey_time=None, survey_location=None, describe=None,
@@ -323,7 +326,8 @@ class BirdMatch(db.Model):
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除')
 
-    def __init__(self, match_create, match_name, match_desc, match_location,match_image, referee, start_time, end_time):
+    def __init__(self, match_create, match_name, match_desc, match_location, match_image, referee, start_time,
+                 end_time):
         self.match_create = match_create
         self.match_name = match_name
         self.match_desc = match_desc
@@ -356,7 +360,7 @@ class MatchGroup(db.Model):
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否结束小组')
 
-    def __init__(self, match_id, group_name, hash_password ,group_desc, group_user):
+    def __init__(self, match_id, group_name, hash_password, group_desc, group_user):
         self.match_id = match_id
         self.group_name = group_name
         self.password = hash_password
@@ -395,18 +399,21 @@ class Feedbacks(db.Model):
     feedback_text = Column(LONGTEXT, nullable=False, comment='反馈内容')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
-    resolve_res = Column(LONGTEXT,comment='处理结果')
+    resolve_res = Column(LONGTEXT, comment='处理结果')
     is_resolved = Column(Boolean, default=False, nullable=False, comment='是否已解决')
+    is_lock = Column(Boolean, default=False, nullable=False)
 
     def __init__(self, user_id, feedback_text):
         self.user_id = user_id
         self.feedback_text = feedback_text
         self.is_resolved = False
+        self.is_lock = False
 
     def update(self):
         self.update_at = datetime.now()
         db.session.add(self)
         db.session.commit()
+
 
 class SystemNotifications(db.Model):
     """系统通知"""
@@ -419,10 +426,12 @@ class SystemNotifications(db.Model):
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False, nullable=False, comment='结束通知')
+
     def __init__(self, title, content):
         self.title = title
         self.content = content
         self.is_read = False
+        self.is_lock = False
 
     def update(self):
         self.update_at = datetime.now()

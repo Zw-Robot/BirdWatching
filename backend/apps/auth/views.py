@@ -181,14 +181,20 @@ def delete_user(request):
 
 @auth.route('/get_all_users', methods=["GET"])
 @requestGET
-@login_required(['sysadmin','admin'])
-def get_all_users():
+# @login_required(['sysadmin','admin'])
+def get_all_users(request):
     # 获取所有用户信息
-    users = LogonUser.query.filter_by().all()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+
+    users = LogonUser.query.filter_by(is_lock=False)
+    total_pages = math.ceil(users.count() / per_page)
+
+    users_paginated = users.paginate(page=page, per_page=per_page, error_out=False)
     user_list = []
-    for user in users:
-        if user.role == 'sysadmin':
-            continue
+    for user in users_paginated:
+        # if user.role == 'sysadmin':
+        #     continue
         user_dict = {
             'id': user.id,
             'username': user.username,
@@ -203,17 +209,24 @@ def get_all_users():
             'is_lock': user.is_lock
         }
         user_list.append(user_dict)
-    return Responser.response_success(data=user_list)
+    return Responser.response_page(data=user_list,page=page,page_size=per_page,count=total_pages)
+
 
 
 @auth.route('/get_all_wxusers', methods=["GET"])
 @requestGET
-@login_required(['sysadmin','admin'])
-def get_all_wxusers():
+# @login_required(['sysadmin','admin'])
+def get_all_wxusers(request):
     # 获取所有用户信息
-    users = Userdata.query.filter_by().all()
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 20))
+
+    users = Userdata.query.filter_by(is_lock=False)
+    total_pages = math.ceil(users.count() / per_page)
+
+    users_paginated = users.paginate(page=page, per_page=per_page, error_out=False)
     user_list = []
-    for user in users:
+    for user in users_paginated:
         user_dict = {
             'id': user.id,
             'username': user.username,
@@ -227,7 +240,7 @@ def get_all_wxusers():
             'score': user.score
         }
         user_list.append(user_dict)
-    return Responser.response_success(data=user_list)
+    return Responser.response_page(data=user_list,page=page,page_size=per_page,count=total_pages)
 
 
 @auth.route('/get_simple_users', methods=["GET"])

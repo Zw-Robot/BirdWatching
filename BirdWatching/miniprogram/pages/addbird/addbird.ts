@@ -15,7 +15,7 @@ let day = currentDate.getDate().toString().padStart(2, '0');
 
 let currentDateString = year + '-' + month + '-' + day;
 
-import { get_all_birds, get_all_orders, wx_get_all_birds } from "../../components/interface";
+import { get_all_orders, wx_get_all_birds } from "../../components/interface";
 
 Page({
 
@@ -30,6 +30,9 @@ Page({
     // 鸟列表
     rightMenuList:[],//边侧栏数据
     leftMenuList:[],//鸟库数据
+    latitude:app.globalData.latitude,
+    longitude:app.globalData.longitude,
+    address:app.globalData.address,
 },
 
 //所有鸟库数据
@@ -105,17 +108,21 @@ HandelItemChange(e:any){
   console.log(checkedList);
   //获取被选中的复选框的值
   const user_id = app.globalData.userid
+  const longitude = app.globalData.longitude
+  const latitude = app.globalData.latitude
+  const address = app.globalData.address
+  const temperature = Number(app.globalData.temperature)
+  const weather = app.globalData.weather
   app.globalData.messageList = []
   app.globalData.checkedList = []
   for(const val of checkedList){
     const id = val.id 
-    const br:BirdRecord = new BirdRecord(user_id,id,val.species,currentDateString,currentTime,)
+    const br:BirdRecord = new BirdRecord(user_id,id,val.species,currentDateString,currentTime,longitude,latitude,address,temperature,weather)
+    console.log(br);
     app.globalData.messageList.push(br)
     app.globalData.checkedList.push(val.species)
   }
   console.log(app.globalData.messageList);
-  
-  
 },
 
 getAllBirds:function(){
@@ -155,7 +162,7 @@ getOrder:function(){
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    
   },
 
   /**

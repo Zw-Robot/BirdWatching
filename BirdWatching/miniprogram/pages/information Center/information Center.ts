@@ -1,4 +1,6 @@
 // pages/information Center/information Center.ts
+import {get_system_notifications} from '../../components/interface'
+const centerapp=getApp()
 Page({
 
   /**
@@ -9,6 +11,7 @@ Page({
     nav_type:0,//默认选中第一个
     isFixed:false,//是否吸顶
     navTop:0,//nav菜单激励顶部距离
+    center:[]
   },
 
   changeType(e:any){
@@ -25,11 +28,22 @@ Page({
     }
   },
 
+  // 获取系统通知接口
+  getSystem:function(){
+    get_system_notifications({}).then(res=>{
+      console.log(res);
+      this.setData({
+        center:res.data
+      })
+    })
+    
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    this.getSystem()
   },
 
   /**

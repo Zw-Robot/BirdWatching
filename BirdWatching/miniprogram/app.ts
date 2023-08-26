@@ -1,4 +1,13 @@
+import { poskey, weatherkey } from "./components/config";
 import { sgin } from "./components/interface"
+var amapFile = require('./utils/amap-wx.js');
+
+var QQMapWX = require('./utils/qqmap-wx-jssdk.min.js');
+
+var qqmapsdk = new QQMapWX({
+  key: poskey    // 这里就是申请的key
+});
+var AmapFun = new amapFile.AMapWX({key: weatherkey});
 
 // app.ts
 App({
@@ -8,8 +17,46 @@ App({
     userid:-1,
     openid:"",
     token:"",
-    userInfo: {}
+    userInfo: {},
+    latitude:0,
+    longitude:0,
+    address:'',
+    temperature:0,
+    weather:'',
+  },
 
+  getWeather(){
+    var _this = this
+    AmapFun.getWeather({
+      success: function(data){
+        //成功回调
+        _this.globalData.temperature = Number(data.temperature.data)
+        _this.globalData.weather = data.weather.data
+      },
+      fail: function(info){
+        //失败回调
+        console.log(info)
+      }
+    })
+  },
+  getAddressInfo() {
+    var _this = this
+    wx.getLocation({
+      type: 'wgs84',
+      success (res) {
+        _this.globalData.latitude = res.latitude;
+        _this.globalData.longitude = res.longitude
+        qqmapsdk.reverseGeocoder({
+          location:{
+            latitude: res.latitude,
+            longitude: res.longitude
+          },
+          success: (res: { result: any; address: string; }) => {
+            _this.globalData.address = res.result.address
+          },
+        })
+        }
+     })
   },
   onLaunch() {
     // 展示本地存储能力
@@ -18,6 +65,8 @@ App({
     wx.setStorageSync('logs', logs)
     // 登录
     this.globalLongin()
+    this.getAddressInfo()
+    this.getWeather()
   },
   globalLongin(){
     const _this = this

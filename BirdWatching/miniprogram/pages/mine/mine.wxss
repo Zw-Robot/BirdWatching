@@ -1,10 +1,14 @@
 /* pages/mine/mine.wxss */
+page{
+  background-color: #fbfbfb;
+}
 /**index.wxss**/
 .userinfo {
   display: flex;
   /* flex-direction: column; */
   align-items: center;
   color: #aaa;
+  background-color: #fbfbfb;
   height: 300rpx;
 }
 .userinfo-avatar {

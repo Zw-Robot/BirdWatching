@@ -50,11 +50,31 @@ export async function get_all_bird_surveys(params: any) {
 }
 export async function get_bird_survey(params: any) {
   const res = await request.get("/inventory/get_bird_survey", params);
-  return res.data;
+  return res;
+};
+export async function wx_get_bird_surveys(params: any) {
+  const res = await request.get("/inventory/wx_get_bird_surveys", params);
+  return res;
+};
+export async function wx_get_survey(params: any) {
+  const res = await request.get("/inventory/wx_get_survey", params);
+  return res;
+};
+export async function create_feedbacks(params: any) {
+  const res = await request.post("/notice/create_feedbacks", params);
+  return res;
+};
+export async function get_system_notifications(params: any) {
+  const res = await request.get("/notice/get_system_notifications", params);
+  return res;
 };
 export async function create_bird_record(params: any) {
   const res = await request.post("/inventory/create_bird_record", params);
   return res.data;
+};
+export async function wx_update_bird_survey(params: any) {
+  const res = await request.post("/inventory/wx_update_bird_survey", params);
+  return res;
 };
 export async function wx_create_bird_record(params: any) {
   const res = await request.post("/inventory/wx_create_bird_record", params);
@@ -94,8 +114,8 @@ export async function update_match(params: any) {
   const res = await request.post("/competition/update_match", params);
   return res.data;
 };
-export async function get_all_matches(params: any) {
-  const res = await request.get("/competition/get_all_matches", params);
+export async function wx_get_matches(params: any={}) {
+  const res = await request.get("/competition/wx_get_matches", params);
   return res.data;
 };
 export async function delete_match(params: any) {

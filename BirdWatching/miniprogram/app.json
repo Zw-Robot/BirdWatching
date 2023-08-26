@@ -8,13 +8,16 @@
     "pages/add/add",
     "pages/attendRace/attendRace",
     "pages/addright/addright",
+    "pages/addrightitem/addrightitem",
     "pages/birdmessage/birdmessage",
     "pages/information Center/information Center",
     "pages/more/more",
     "pages/recordmessage/recordmessage",
     "pages/User_feedback/User_feedback",
-    "pages/management/management",
     "pages/logout/logout"
+  ],
+  "requiredPrivateInfos": [
+    "getLocation"
   ],
   "permission": {
     "scope.userLocation": {

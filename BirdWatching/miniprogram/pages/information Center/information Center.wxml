@@ -4,8 +4,18 @@
     <view class="hd-item {{nav_type==index && 'active'}}"  catchtap="changeType" data-index="{{index}}">{{item}}</view>
   </block>
 </view>
-<view class="content {{isFixed && 'pt'}}" id="content">
-<block wx:for="{{nav_type==0?20:nav_type==1?0:40}}" wx:key="list">
-  <view>{{index+1}}</view>
-</block>
+
+<!-- 系统通知 -->
+<view 
+wx:if="{{nav_type==0}}"
+wx:for="{{center}}"
+class="item"
+>
+  <text class="name">{{item.title}}</text>
+  <text class="location">{{item.create_at}}</text>
+</view>
+
+<!-- 用户互动 -->
+<view wx:if="{{nav_type==1}}">
+互动
 </view>

@@ -1,6 +1,5 @@
 // pages/add/add.ts
 import { appname, poskey } from "../../components/config";
-import { create_bird_record, create_bird_survey, wx_create_bird_record } from "../../components/interface";
 const checkapp=getApp()
 let currentDate = new Date();
 
@@ -37,14 +36,14 @@ Page({
     mav_type:0,
     isFixed:false,//是否吸顶
     navTop:0,//nav菜单激励顶部距离
-    address:'',
-    longitude:0.0,
-    latitude:0.0,
+    address:checkapp.globalData.address,
+    longitude:checkapp.globalData.longitude,
+    latitude:checkapp.globalData.latitude,
     count:0,//数量
     num:0,//人数,
     text:'',
-    weather:'',
-    temperature:''
+    weather:checkapp.globalData.weather,
+    temperature:checkapp.globalData.temperature,
   },
 
   //灰色顶部
@@ -112,10 +111,6 @@ Page({
   },
   //提交按钮
   jumpToDetail() {
-    // create_bird_survey({parmas:this.data.messageList}).then(res=>{
-    //   console.log(res);
-      
-    // })
     wx.showModal({
         title: '提示',
         content: '是否确认提交',
@@ -129,7 +124,6 @@ Page({
                       for(const item of checkapp.globalData.messageList){
                         var data = item.submit()
                         console.log(data);
-                    
                       }
                       checkapp.globalData.messageList = []
                  }
@@ -321,27 +315,6 @@ searchInput:function(e:any){
 
 },
 
-    //上传录音
-// uploadClick() {
-//   var file = this.data.file;
-//   //后端使用相同的上传处理 common/upload 或者自己写一个
-//   wx.uploadFile({
-//     filePath: file.tempFilePath,
-//     name: '音频文件',
-//     url: url.getDomain() + '/common/upload',
-//     formData: {
-//       backinfo: JSON.stringify({
-//         handleType: 0
-//       })
-//     },
-//     success: res => {
-//       var data=JSON.parse(res.data);
-//       console.info(data);
-//       console.info('上传成功');
-//     }
-//   })
-// },
-
   /**
    * 生命周期函数--监听页面加载
    */
@@ -375,15 +348,6 @@ searchInput:function(e:any){
     })
     this.setData({
       messageList:checkapp.globalData.messageList
-    })
-
-
-    //获取定位
-    wx.getLocation({
-      isHighAccuracy:true,
-      success(res){
-        console.log(res,"定位后获取信息");
-      }
     })
   },
   togglePopup(e:any) {
@@ -429,12 +393,13 @@ deletebird(e:any) {
    */
   onShow:function() {
     
-    const loc = chooseLocation.getLocation();
     try{
       this.setData({
-        address: loc.address,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
+        address:checkapp.globalData.address,
+        longitude:checkapp.globalData.longitude,
+        latitude:checkapp.globalData.latitude,
+        weather:checkapp.globalData.weather,
+        temperature:checkapp.globalData.temperature,
       });
       checkapp.globalData.messageList[this.data.nav_type].Address = this.data.address
       checkapp.globalData.messageList[this.data.nav_type].Latitude = this.data.latitude
@@ -446,6 +411,8 @@ deletebird(e:any) {
         address: "",
         latitude: 0.0,
         longitude: 0.0,
+        weather:'',
+        temperature:0
       });
     }
 

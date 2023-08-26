@@ -1,4 +1,6 @@
 // pages/User_feedback/User_feedback.ts
+import {create_feedbacks} from '../../components/interface'
+const feedapp=getApp()
 Page({
 
   /**
@@ -19,23 +21,22 @@ searchInput:function(e:any){
 
   //提交按钮
   jumpToDetail() {
-    // create_bird_survey({parmas:this.data.messageList}).then(res=>{
-    //   console.log(res);
-      
-    // })
+    var that=this
     wx.showModal({
         title: '提示',
         content: '是否确认提交',
         success: function (res) {
             if (res.confirm) {
                 console.log('用户点击确定')
+                that.CreatFeedbacks()
                 wx.showToast({
                     title: '成功',
                     duration: 1000,
                })
                wx.switchTab({      
-                url: '../../pages/more/more',
-         })                 
+                url: '../../pages/mine/mine',
+               })      
+               that.data.text=''
             }else{
                console.log('用户点击取消')
             }
@@ -44,11 +45,24 @@ searchInput:function(e:any){
     })
 },
 
+// 用户反馈接口
+CreatFeedbacks:function(){
+  var date={
+    user_id:feedapp.globalData.userid,
+    feedback_text:this.data.text,
+    openid:feedapp.globalData.openid,
+    token:feedapp.globalData.token
+  }
+  create_feedbacks(date).then(res=>{
+    console.log(res);
+  })
+},
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-
+    this.CreatFeedbacks()
   },
 
   /**

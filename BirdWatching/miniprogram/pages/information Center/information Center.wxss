@@ -1,4 +1,7 @@
 /* pages/information Center/information Center.wxss */
+page{
+  background-color: #fbfbfb;
+}
 /*  */
 .hd{
   width: 100%;
@@ -43,15 +46,6 @@
 .hd-item.active::after{
   width: 40rpx;
 }
-.content view{ 
-  background: #fff;
-  height: 50rpx;
-  line-height: 50rpx;
-  border-bottom: 1rpx solid #eaeef1;
-  padding: 20rpx;
-  color: #999;
-  text-align: center;
-}
 .content .pt{
   padding-top: 88rpx;
 }
@@ -61,4 +55,25 @@
   left:0;
   top:0;
   z-index:1;
+}
+
+/*  */
+.item{
+  display: flex;
+  flex-direction: column;
+  background-color: #fafbf8;
+  width: 100%;
+  height: 200rpx;
+  box-shadow: 1px 1px 5px 1px rgba(241, 239, 239, 0.5);
+  border-bottom: solid 1rpx #c4c4c4;
+}
+.item .name{
+  margin: 40rpx 40rpx 0rpx 40rpx;
+  font-weight: bolder;
+  font-size: 40rpx;
+}
+.item .location{
+  margin: 30rpx 40rpx 20rpx 40rpx;
+  font-weight: lighter;
+  font-size: 30rpx;
 }
