@@ -26,7 +26,7 @@ from apps.components.responser import Responser, FileResponser
 
 @inventory.route('/create_bird', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def create_bird(request):
     # 鸟类名录创建接口
     username = request.json.get("username")
@@ -73,7 +73,7 @@ def create_bird(request):
 
 @inventory.route('/update_bird', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def update_bird(request):
     # 鸟类记录更新接口
     username = request.json.get("username")
@@ -312,27 +312,27 @@ def get_bird(request):
 
 @inventory.route('/create_bird_survey', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def create_bird_survey(request):
     # 鸟类调查创建接口
     user_id = int(request.json.get("user_id"))
-    survey_name = request.json.get("survey_name","")
-    survey_desc = request.json.get("survey_desc","")
+    survey_name = request.json.get("survey_name", "")
+    survey_desc = request.json.get("survey_desc", "")
     survey_time = request.json.get("survey_time")
-    survey_location = request.json.get("survey_location","")
-    describe = request.json.get("describe","")
-    habitat = request.json.get("habitat","")
-    behavior = request.json.get("behavior","")
+    survey_location = request.json.get("survey_location", "")
+    describe = request.json.get("describe", "")
+    habitat = request.json.get("habitat", "")
+    behavior = request.json.get("behavior", "")
     bird_infos = request.json.get("bird_info", [])
 
-    lost_attrs = required_attrs_validator([survey_name, survey_location, survey_desc,survey_time])
+    lost_attrs = required_attrs_validator([survey_name, survey_location, survey_desc, survey_time])
     if lost_attrs:
         return Responser.response_error('缺少参数')
     bird_survey = BirdSurvey(
         user_id=user_id,
         survey_name=survey_name,
         survey_desc=survey_desc,
-        survey_time=datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S'),
+        survey_time=datetime.strptime(survey_time, '%Y-%m-%d %H:%M:%S'),
         survey_location=survey_location,
         describe=describe,
         habitat=habitat,
@@ -373,6 +373,7 @@ def wx_update_bird_survey(request):
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
 
+
 @inventory.route('/update_bird_survey', methods=['POST'])
 @requestPOST
 @login_required(['sysadmin', 'admin'])
@@ -399,7 +400,8 @@ def update_bird_survey(request):
     bird_survey.user_id = user_id if user_id else bird_survey.user_id
     bird_survey.survey_name = survey_name if survey_name else bird_survey.survey_name
     bird_survey.survey_desc = survey_desc if survey_desc else bird_survey.survey_desc
-    bird_survey.survey_time = datetime.strptime(survey_time,'%Y-%m-%d %H:%M:%S') if survey_time else bird_survey.survey_time
+    bird_survey.survey_time = datetime.strptime(survey_time,
+                                                '%Y-%m-%d %H:%M:%S') if survey_time else bird_survey.survey_time
     bird_survey.survey_location = survey_location if survey_location else bird_survey.survey_location
     bird_survey.describe = describe if describe else bird_survey.describe
     bird_survey.habitat = habitat if habitat else bird_survey.habitat
@@ -408,12 +410,13 @@ def update_bird_survey(request):
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
 
+
 @inventory.route('/delete_bird_survey', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin', 'admin'])
+# @login_required(['sysadmin', 'admin'])
 def delete_bird_survey(request):
     # 鸟类调查删除接口
-    bird_survey_id = int(request.args.get("bird_survey_id"))
+    bird_survey_id = int(request.json.get("bird_survey_id"))
 
     bird_survey = BirdSurvey.query.filter_by(bird_survey_id).first()
     if bird_survey is None:
@@ -426,7 +429,7 @@ def delete_bird_survey(request):
 
 @inventory.route('/get_all_bird_surveys', methods=["GET"])
 @requestGET
-@login_required(['sysadmin', 'admin'])
+# @login_required(['sysadmin', 'admin'])
 def get_all_bird_surveys(request):
     # 鸟类调查查询所有接口
     page = int(request.args.get('page', 1))
@@ -438,9 +441,12 @@ def get_all_bird_surveys(request):
     bird_surveys = bird_surveys_query.paginate(page=page, per_page=per_page)
     data = []
     for bird_survey in bird_surveys:
+        user = Userdata.query.filter_by(id=int(bird_survey.user_id)).first()
         bird_survey_list = {
             'bird_survey_id': bird_survey.id,
-            'user_id': bird_survey.user_id,
+            'user_id': user.id,
+            'user_username': user.username if user else '',
+            'user_name': user.name if user else '',
             'survey_name': bird_survey.survey_name,
             'survey_desc': bird_survey.survey_desc,
             'survey_time': bird_survey.survey_time,
@@ -463,8 +469,8 @@ def get_all_bird_surveys(request):
 # @login_required(['sysadmin', 'admin', 'others'])
 def wx_get_bird_surveys(request):
     # 鸟类调查查询单个接口
-    user_id = int(request.args.get("user_id",-1))
-    bird_surveys = BirdSurvey.query.filter_by(user_id=user_id,is_lock=False).all()
+    user_id = int(request.args.get("user_id", -1))
+    bird_surveys = BirdSurvey.query.filter_by(user_id=user_id, is_lock=False).all()
     if bird_surveys is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
     data = []
@@ -487,7 +493,7 @@ def wx_get_bird_surveys(request):
 # @login_required(['sysadmin', 'admin', 'others'])
 def wx_get_survey(request):
     # 鸟类调查查询单个接口
-    survey_id = int(request.args.get("survey_id",-1))
+    survey_id = int(request.args.get("survey_id", -1))
     bird_survey = BirdSurvey.query.filter_by(id=survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
@@ -506,6 +512,7 @@ def wx_get_survey(request):
     }
 
     return Responser.response_success(data=bird_survey_d)
+
 
 # @inventory.route('/update_bird_record', methods=['POST'])
 # @requestPOST
@@ -547,7 +554,6 @@ def wx_get_survey(request):
 #     return Responser.response_success(msg="修改鸟类记录成功")
 
 
-
 @inventory.route('/delete_bird_record', methods=['POST'])
 @requestPOST
 @login_required(['sysadmin', 'admin'])
@@ -562,6 +568,7 @@ def delete_bird_record(request):
     bird_record.is_lock = True
     bird_record.update()
     return Responser.response_success("删除鸟类记录成功")
+
 
 @inventory.route('/get_all_bird_records', methods=["GET"])
 @requestGET
@@ -680,7 +687,7 @@ def wx_create_bird_record(request):
     user_id = request.json.get("user_id")
     user = Userdata.query.filter_by(id=user_id).first()
     if user:
-        user.score = user.score+1
+        user.score = user.score + 1
     else:
         return Responser.response_error("没有该用户！")
     bird_id = int(request.json.get("recordid", '-1'))
@@ -730,6 +737,7 @@ def get_show_images(request):
     path = "/robot/birdwatching/show/"
     li = os.listdir(path)
     return Responser.response_success(data=li)
+
 
 @inventory.route('/wx_post_base64', methods=["POST"])
 @requestPOST
@@ -807,7 +815,6 @@ def download_record(request):
     results = open('/robot/birdwatching/var/bird_records.xlsx', 'rb').read()
     return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     headers={"Content-Disposition": 'attachment; filename=bird_records.xlsx'})
-
 
 
 @inventory.route("/download_example_bird", methods=["POST"])
