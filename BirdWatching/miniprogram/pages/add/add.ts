@@ -164,8 +164,8 @@ Page({
     const referer = appname
     const category = '';
     const location = JSON.stringify({
-      latitude: 39.89631551,
-      longitude: 116.323459711
+      latitude: checkapp.globalData.latitude,
+      longitude:checkapp.globalData.longitude
     });
     wx.navigateTo({
       url: 'plugin://chooseLocation/index?key=' + key + '&referer=' + referer + '&location=' + location + '&category=' + category
@@ -392,14 +392,23 @@ deletebird(e:any) {
    * 生命周期函数--监听页面显示
    */
   onShow:function() {
-    
+    const loc = chooseLocation.getLocation();
+    if(loc){
+      var add = loc.address + loc.name
+      var log = loc.longitude
+      var lat = loc.latitude
+    }else{
+      var add = checkapp.globalData.address
+      var log = checkapp.globalData.longitude
+      var lat = checkapp.globalData.latitude
+    }
     try{
       this.setData({
-        address:checkapp.globalData.address,
-        longitude:checkapp.globalData.longitude,
-        latitude:checkapp.globalData.latitude,
-        weather:checkapp.globalData.weather,
-        temperature:checkapp.globalData.temperature,
+        address:add,
+        longitude:log,
+        latitude:lat,
+        weather:this.data.weather,
+        temperature:this.data.temperature,
       });
       checkapp.globalData.messageList[this.data.nav_type].Address = this.data.address
       checkapp.globalData.messageList[this.data.nav_type].Latitude = this.data.latitude

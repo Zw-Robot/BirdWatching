@@ -121,8 +121,8 @@ def update_bird(request):
     return Responser.response_success(msg="修改成功")
 
 
-@inventory.route('/delete_bird', methods=['GET'])
-@requestGET
+@inventory.route('/delete_bird', methods=['POST'])
+@requestPOST
 @login_required(['sysadmin', 'admin'])
 def delete_bird(request):
     # 鸟类记录删除接口

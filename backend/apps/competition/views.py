@@ -54,7 +54,7 @@ def create_match(request):
 
 @competition.route('/update_match', methods=['POST'])
 @requestPOST
-# @login_required(['sysadmin', 'admin', 'other'])
+@login_required(['sysadmin'])
 def update_match(request):
     # 鸟类比赛更新接口
     match_id = int(request.json.get("match_id"))
@@ -233,16 +233,16 @@ def add_group(request):
         return Responser.response_error('找不到指定的小组信息')
     if group.check_password(password):
         return Responser.response_error('密码错误')
-    group = MatchGroup.query.filter_by(is_lock=False).filter(
+    group_find = MatchGroup.query.filter_by(is_lock=False).filter(
         or_(
             MatchGroup.group_user.like(f"%{group_user}%")
         )
     ).first()
-    if group:
+    if group_find:
         return Responser.response_error(msg="已加入其他小组")
     if group_user in group.group_user:
         return Responser.response_error(msg="已加入该小组")
-    group.group_user = group.group_user + ',' + group_user
+    group.group_user = group_user + ',' + group.group_user
     group.update()
     return Responser.response_success(msg="加入小组成功")
 
@@ -261,8 +261,8 @@ def exit_group(request):
     if group is None:
         return Responser.response_error('找不到指定的小组信息')
     group_user = group.group_user.split(',')
-    print(group_user)
     group_user.remove(user_id)
+    print(group_user)
     group.group_user = ",".join(map(str, group_user))
     group.update()
     return Responser.response_success(data={}, msg="退出小组成功")
@@ -307,7 +307,7 @@ def wx_user_group(request):
 
 @competition.route('/get_all_groups', methods=["GET"])
 @requestGET
-@login_required(['sysadmin', 'admin', 'other'])
+@login_required(['sysadmin', 'admin'])
 def get_all_groups(request):
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
@@ -319,16 +319,18 @@ def get_all_groups(request):
     groups_paginated = groups_query.paginate(page=page, per_page=per_page, error_out=False)
 
     group_list = []
+    match = BirdMatch.query.filter_by(id=match_id).first()
+
     for group in groups_paginated:
-        match = BirdMatch.query.filter_by(id=group.match_id).first()
         users = group.group_user
         gnames = []
         names = users.split(',')
         print(names)
         for name in names:
-            gtemp = Userdata.query.filter_by(id=int(name)).first()
-            if gtemp:
-                gnames.append(gtemp.username)
+            if name:
+                gtemp = Userdata.query.filter_by(id=int(name)).first()
+                if gtemp:
+                    gnames.append(gtemp.username)
         dic = {
             'group_id': group.id,
             'match_id': match.id,
@@ -348,7 +350,7 @@ def get_all_groups(request):
 
 @competition.route('/export_records', methods=["POST"])
 @requestPOST
-# @login_required(['sysadmin', 'admin', 'other'])
+@login_required(['sysadmin', 'admin', 'other'])
 def export_records(request):
     match_id = request.json.get('match_id', '')
     group_id = request.json.get('group_id', '')
