@@ -776,9 +776,10 @@ def wx_delete_bird_record(request):
 @requestPOST
 def download_record(request):
     # 查询所有鸟类记录
-    select_records = request.json.get("select_records", [])
+    select_records = request.json.get("select_records")
+    records_list = [int(id) for id in select_records.split(",")]
     if select_records:
-        bird_records = BirdRecords.query.filter(BirdRecords.id.in_(select_records)).all()
+        bird_records = BirdRecords.query.filter(BirdRecords.id.in_(records_list)).all()
     else:
         bird_records = BirdRecords.query.all()
 
@@ -808,10 +809,6 @@ def download_record(request):
     df.to_excel(excel_file, index=False)
 
     # 设置响应头部的内容类型和文件名
-    headers = {
-        'Content-Disposition': 'attachment; filename="bird_records.xlsx"',
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }
     results = open('/robot/birdwatching/var/bird_records.xlsx', 'rb').read()
     return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     headers={"Content-Disposition": 'attachment; filename=bird_records.xlsx'})
@@ -820,37 +817,42 @@ def download_record(request):
 @inventory.route("/download_example_bird", methods=["POST"])
 @requestPOST
 def download_example_bird(request):
-    df = pd.DataFrame(
-        columns=[
-            "order_en",
-            "order_cn",
-            "family_en",
-            "family_cn",
-            "genus",
-            "species",
-            "latin_name",
-            "geotype",
-            "seasonal",
-            "IUCN",
-            "level",
-            "describe",
-            "habitat",
-            "behavior",
-            "bird_info"
-        ])
-    excel_file = '/robot/birdwatching/var/example_bird.xlsx'  # 替换为您想要保存的文件名
-    df.to_excel(excel_file, index=False)
+    if os.path.exists('/robot/birdwatching/var/example_bird.xlsx'):
+        os.remove('/robot/birdwatching/var/example_bird.xlsx')
+    bird_dic = {
+        "order_en":'目 英文',
+        "order_cn":'目 中文',
+        "family_en":'科 英文',
+        "family_cn":'科 中文',
+        "genus":'属',
+        "species":'种',
+        "latin_name":'拉丁名',
+        "geotype":'地理属性',
+        "seasonal":'季节属性',
+        "IUCN":'IUCN',
+        "level":'保护等级',
+        "describe":'描述',
+        "habitat":'生境',
+        "behavior":'习性',
+        "bird_info":'其他'
+    }
+    df = pd.DataFrame([bird_dic])
+    df.to_excel('./example_bird.xlsx', index=False)
+    # response = make_response(send_file('/robot/birdwatching/var/example_bird.xlsx', as_attachment=True))
+    # response.headers['Content-Disposition'] = 'attachment; filename=exported_records.xlsx'
+    # response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+    # return response
 
-    results = open('/robot/birdwatching/var/example_bird.xlsx', 'rb').read()
+    results = open('./example_bird.xlsx', 'rb').read()
     return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    headers={"Content-Disposition": 'attachment; filename=example_bird.xlsx'})
-
+                    headers={"Content-Disposition": 'attachment; filename=bird_records.xlsx'})
 
 @inventory.route("/upload_bird", methods=["POST"])
 @requestPOST
 def upload_file(request):
     excel_file = request.files['excelFile']
     df = pd.read_excel(excel_file)
+    print(df)
     desired_columns = [
         "order_en",
         "order_cn",
@@ -870,29 +872,31 @@ def upload_file(request):
     ]
     # 获取数据框的列名，并转换为集合
     columns_set = set(df.columns)
-    for index, row in df.iterrows():
-        bird = BirdInventory(
-            order_en=row['order_en'],
-            order_cn=row['order_cn'],
-            family_en=row['family_en'],
-            family_cn=row['family_cn'],
-            genus=row['genus'],
-            species=row['species'],
-            latin_name=row['latin_name'],
-            geotype=row['geotype'],
-            seasonal=row['seasonal'],
-            IUCN=row['IUCN'],
-            level=row['level'],
-            describe=row['describe'],
-            habitat=row['habitat'],
-            behavior=row['behavior'],
-            bird_info=row['bird_info'],
-        )
-        bird.update()
-    # 判断所需的表头是否存在
     if set(desired_columns).issubset(columns_set):
         print("All desired columns are present.")
     else:
         return Responser.response_error("格式不对，请根据格式上传")
+
+    for index, row in df.iterrows():
+        bird = BirdInventory(
+            order_en=row['order_en'] if row['order_en'] else '',
+            order_cn=row['order_cn'] if row['order_cn'] else '',
+            family_en=row['family_en'] if row['family_en'] else '',
+            family_cn=row['family_cn'] if row['family_cn'] else '',
+            genus=row['genus'] if row['genus'] else '',
+            species=row['species'] if row['species'] else '',
+            latin_name=row['latin_name'] if row['latin_name'] else '',
+            geotype=row['geotype'] if row['geotype'] else '',
+            seasonal=row['seasonal'] if row['seasonal'] else '',
+            IUCN=row['IUCN'] if row['IUCN'] else '',
+            level=row['level'] if row['level'] else '',
+            describe=row['describe'] if row['describe'] else '',
+            habitat=row['habitat'] if row['habitat'] else '',
+            behavior=row['behavior'] if row['behavior'] else '',
+            bird_info=row['bird_info'] if row['bird_info'] else '',
+        )
+        bird.update()
+    # 判断所需的表头是否存在
+
 
     return Responser.response_success(msg="上传成功！")

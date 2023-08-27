@@ -8,10 +8,11 @@
 """
 import json
 import math
+import os
 from datetime import datetime
 
 import pandas as pd
-from flask import Response
+from flask import Response, send_file, make_response
 from sqlalchemy import or_
 
 from apps.competition import competition
@@ -184,7 +185,7 @@ def create_group(request):
 
 @competition.route('/update_group', methods=['POST'])
 @requestPOST
-@login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def update_group(request, db_session=None):
     # 比赛小组更新接口
     group_id = request.json.get("group_id")
@@ -350,6 +351,8 @@ def export_records(request):
     group_id = request.json.get('group_id', '')
     records = []
     match_list = [int(id) for id in match_id.split(',')]
+    if os.path.exists('/robot/birdwatching/var/exported_records.xlsx'):
+        os.remove('/robot/birdwatching/var/exported_records.xlsx')
     writer = pd.ExcelWriter('/robot/birdwatching/var/exported_records.xlsx', engine='xlsxwriter')
     for match in match_list:
         match_temp = BirdMatch.query.filter_by(id=match).first()
@@ -403,8 +406,15 @@ def export_records(request):
             df = pd.DataFrame(bird_record_dicts)
             print(df)
             # 将 DataFrame 写入 Excel 文件，每个比赛作为一个 sheet
-            df.to_excel(writer, sheet_name=name+'_'+group.group_name, index=False)
+            df.to_excel(writer, sheet_name=name + '_' + group.group_name, index=False)
     writer.save()
-    results = open('/robot/birdwatching/var/exported_records.xlsx', 'rb').read()
-    return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-   					headers={"Content-Disposition": 'attachment; filename=exported_records.xlsx'})
+    # results = open('/robot/birdwatching/var/exported_records.xlsx', 'rb').read()
+    # return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    #                 headers={'Content-Disposition': 'attachment; filename=exported_records.xlsx'})
+    # return send_file('/robot/birdwatching/var/exported_records.xlsx', as_attachment=True)
+    # return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    #                 headers={"Content-Disposition": 'attachment; filename=exported_records.xlsx',"Content-Type":'application/x-xlsx'})
+    response = make_response(send_file('/robot/birdwatching/var/exported_records.xlsx', as_attachment=True))
+    response.headers['Content-Disposition'] = 'attachment; filename=exported_records.xlsx'
+    response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+    return response
