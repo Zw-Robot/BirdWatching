@@ -270,6 +270,31 @@ def get_all_wxusers(request):
         user_list.append(user_dict)
     return Responser.response_page(data=user_list, page=page, page_size=per_page, count=total_pages)
 
+@auth.route('/wx_get_single_wxusers', methods=["GET"])
+@requestGET
+# @SingAuth
+def wx_get_single_wxusers(request):
+    # 获取所有用户信息
+    user_id = int(request.args.get('user_id'))
+
+    user = Userdata.query.filter_by(id=user_id).first()
+
+    user_dict = {
+        'id': user.id,
+        'username': user.username,
+        'avatar': user.avatar,
+        'gender': user.gender,
+        'country': user.country,
+        'province': user.province,
+        'city': user.city,
+        'name': user.name,
+        'phone': user.phone,
+        'email': user.email,
+        'update_at': user.update_at,
+        'score': user.score
+    }
+    return Responser.response_success(data=user_dict)
+
 
 @auth.route('/get_simple_users', methods=["GET"])
 @requestGET
