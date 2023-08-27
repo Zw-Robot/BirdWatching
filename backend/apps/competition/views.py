@@ -344,7 +344,7 @@ def get_all_groups(request):
 
 @competition.route('/export_records', methods=["POST"])
 @requestPOST
-@login_required(['sysadmin', 'admin', 'other'])
+# @login_required(['sysadmin', 'admin', 'other'])
 def export_records(request):
     match_id = request.json.get('match_id', '')
     group_id = request.json.get('group_id', '')
@@ -364,7 +364,11 @@ def export_records(request):
             group_list = MatchGroup.query.filter_by(match_id=match).all()
 
         for group in group_list:
-            users = [int(user) for user in group.group_user.split(',')]
+            print(group.group_user)
+            if group.group_user:
+                users = [int(user) for user in group.group_user.split(',')]
+            else:
+                continue
             group_records = BirdRecords.query.filter(
                 BirdRecords.user_id.in_(users),
                 BirdRecords.update_at.between(start, end)

@@ -323,10 +323,11 @@ def get_user_list(request):
     users = Userdata.query.all()
     res = []
     for user in users:
-        dic = {
-            "user_id":user.id,
-            "user_name":user.name,
-            "user_username":user.username
-        }
-        res.append(dic)
+        if user.name:
+            dic = {
+                "user_id":user.id,
+                "user_name":user.name,
+                "user_username":user.username
+            }
+            res.append(dic)
     return Responser.response_success(data=res)
