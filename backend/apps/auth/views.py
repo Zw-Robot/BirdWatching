@@ -314,3 +314,19 @@ def get_simple_users(request):
         'create_at': user.create_at,
     }
     return Responser.response_success(data=user_dict)
+
+@auth.route('/get_user_list', methods=["GET"])
+@requestGET
+@login_required(['sysadmin', 'admin', 'others'])
+def get_user_list(request):
+    # 获取单个用户信息
+    users = Userdata.query.all()
+    res = []
+    for user in users:
+        dic = {
+            "user_id":user.id,
+            "user_name":user.name,
+            "user_username":user.username
+        }
+        res.append(dic)
+    return Responser.response_success(data=res)

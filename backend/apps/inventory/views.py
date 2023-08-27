@@ -418,7 +418,7 @@ def delete_bird_survey(request):
     # 鸟类调查删除接口
     bird_survey_id = int(request.json.get("bird_survey_id"))
 
-    bird_survey = BirdSurvey.query.filter_by(bird_survey_id).first()
+    bird_survey = BirdSurvey.query.filter_by(id=bird_survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
 
