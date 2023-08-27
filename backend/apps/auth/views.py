@@ -1,6 +1,6 @@
 import math
 
-from apps.auth import service,auth
+from apps.auth import service, auth
 from apps.components.common import required_attrs_validator
 from apps.components.wxinfo import getWXInfo
 from apps.models import LogonUser, Userdata, LoginSessionCache
@@ -8,9 +8,12 @@ from apps.components.middleware import requestPOST, SingAuth, login_required, re
 from apps.components.responser import Responser, FileResponser
 
 '''登录接口'''
+
+
 def calculate_level(score):
     level = math.floor(math.sqrt(score))
     return level
+
 
 @auth.route('/sgin', methods=["GET", "POST"], endpoint='auth_login')
 @requestPOST
@@ -18,12 +21,12 @@ def calculate_level(score):
 def auth_login(request):
     code, msg, json = service.login(request)
     if code == 200:
-        return Responser.response_success(data=json,msg=msg)
+        return Responser.response_success(data=json, msg=msg)
     else:
         return Responser.response_error(msg=msg)
 
 
-@auth.route('/get_score',methods=["POST"])
+@auth.route('/get_score', methods=["POST"])
 @requestPOST
 @SingAuth
 def get_score(request):
@@ -31,9 +34,10 @@ def get_score(request):
     openid = tmp.get("openid")  # openid
     user = Userdata.query.filter_by(openid=openid).first()
     if user:
-        return Responser.response_success(data={"id":user.id,"level":calculate_level(user.score)},msg="success")
+        return Responser.response_success(data={"id": user.id, "level": calculate_level(user.score)}, msg="success")
     else:
         return Responser.response_error("尚未登陆！")
+
 
 @auth.route('/info', methods=["GET", "POST"], endpoint='info')
 @requestPOST
@@ -47,28 +51,50 @@ def get_info(request):
     if not log:
         return Responser.response_error(msg="未登录")
     try:
-        params = getWXInfo(sessionKey=secession,encryptedData=encryptedData,iv=iv)
+        params = getWXInfo(sessionKey=secession, encryptedData=encryptedData, iv=iv)
     except:
         params = tmp.get("userInfo")
     username = params.get("nickName")  # username
     avatar = params.get("avatarUrl")  # avatarUrl
-    gender = params.get("gender")   # gender
+    gender = params.get("gender")  # gender
     country = params.get("country")  # country
-    province = params.get("province")   # province
-    city = params.get("city") # city
+    province = params.get("province")  # province
+    city = params.get("city")
+    name = tmp.get("name", '')  # name
+    phone = tmp.get("phone", '')  # city
+    email = tmp.get("email", '')  # city
     user = Userdata.query.filter_by(openid=openid).first()
     if user:
-        user.openid=openid
-        user.username=username
-        user.avatar=avatar
-        user.gender=gender
-        user.country=country
-        user.province=province
-        user.city=city
+        user.openid = openid
+        user.username = username
+        user.avatar = avatar
+        user.gender = gender
+        user.country = country
+        user.province = province
+        user.city = city
+        user.name = name
+        user.phone = phone
+        user.email = email
         user.update()
     else:
-        user = Userdata(openid=openid,username=username,avatar=avatar,gender=gender,country=country,province=province,city=city)
-    return Responser.response_success(data={"id":user.id,"level":calculate_level(user.score)},msg="success")
+        user = Userdata(openid=openid, username=username, avatar=avatar, gender=gender, country=country,
+                        province=province, city=city, name=name, phone=phone, email=email)
+    return Responser.response_success(data={"id": user.id, "level": calculate_level(user.score)}, msg="success")
+
+
+@auth.route('/check_info', methods=["POST"])
+@requestPOST
+@SingAuth
+def check_info(request):
+    tmp = request.json
+    openid = tmp.get("openid")  # openid
+    user = Userdata.query.filter_by(openid=openid).first()
+    if not user:
+        return Responser.response_error('尚未登陆')
+    if not (user.name and user.phone and user.email):
+        return Responser.response_error('尚未完善信息，请先完善信息')
+    return Responser.response_success('检查通过')
+
 
 @auth.route('/login', methods=['POST'])
 @requestPOST
@@ -84,7 +110,7 @@ def login(request):
     lost_attrs = required_attrs_validator([username, password])
     if lost_attrs:
         return Responser.response_error('参数缺失')
-    user = LogonUser.query.filter_by(username=username,is_lock=False).first()
+    user = LogonUser.query.filter_by(username=username, is_lock=False).first()
     if user.check_password(password):
         z_token = LogonUser.create_token(user.id, "username", user.role)
     else:
@@ -97,7 +123,7 @@ def login(request):
 
 @auth.route('/create_user', methods=['POST'])
 @requestPOST
-# @login_required('sysadmin')
+@login_required('sysadmin')
 def create_user(request):
     # 完成网页端用户创建接口
     username = request.json.get("username")
@@ -147,7 +173,7 @@ def update_user(request):
     isExist = LogonUser.query.filter_by(username=username).first()
     if isExist:
         return Responser.response_error('已存在该用户')
-    avatar = FileResponser.image_save(image, 'avatar', username)
+    avatar = FileResponser.image_save(image)
     lost_attrs = required_attrs_validator([username, password, phone, email, role, depart])
     if lost_attrs:
         return Responser.response_error('缺少参数')
@@ -167,9 +193,9 @@ def update_user(request):
 
 @auth.route('/delete_user', methods=['GET'])
 @requestGET
-@login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def delete_user(request):
-    #完成网页端用户删除接口
+    # 完成网页端用户删除接口
     userid = request.json.get("id")
     user = LogonUser.query.filter_by(id=userid).first()
     if not user:
@@ -181,7 +207,7 @@ def delete_user(request):
 
 @auth.route('/get_all_users', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def get_all_users(request):
     # 获取所有用户信息
     page = int(request.args.get('page', 1))
@@ -209,13 +235,12 @@ def get_all_users(request):
             'is_lock': user.is_lock
         }
         user_list.append(user_dict)
-    return Responser.response_page(data=user_list,page=page,page_size=per_page,count=total_pages)
-
+    return Responser.response_page(data=user_list, page=page, page_size=per_page, count=total_pages)
 
 
 @auth.route('/get_all_wxusers', methods=["GET"])
 @requestGET
-# @login_required(['sysadmin','admin'])
+@login_required(['sysadmin', 'admin'])
 def get_all_wxusers(request):
     # 获取所有用户信息
     page = int(request.args.get('page', 1))
@@ -236,11 +261,14 @@ def get_all_wxusers(request):
             'country': user.country,
             'province': user.province,
             'city': user.city,
+            'name': user.name,
+            'phone': user.phone,
+            'email': user.email,
             'update_at': user.update_at,
             'score': user.score
         }
         user_list.append(user_dict)
-    return Responser.response_page(data=user_list,page=page,page_size=per_page,count=total_pages)
+    return Responser.response_page(data=user_list, page=page, page_size=per_page, count=total_pages)
 
 
 @auth.route('/get_simple_users', methods=["GET"])

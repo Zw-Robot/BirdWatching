@@ -127,12 +127,15 @@ class Userdata(db.Model):
     country = Column(String(255))  # country
     province = Column(String(255))  # province
     city = Column(String(255))  # city
+    name = Column(String(255))
+    phone = Column(String(255))
+    email = Column(String(255))
     score = Column(Integer, comment="积分")
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False)
 
     # 定义对象
-    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,
+    def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,name='',phone='',email='',
                  score=0):
         self.openid = openid
         self.username = username
@@ -141,6 +144,9 @@ class Userdata(db.Model):
         self.country = country
         self.province = province
         self.city = city
+        self.name = name
+        self.phone = phone
+        self.email = email
         self.score = score
         self.update()  # 提交数据
 

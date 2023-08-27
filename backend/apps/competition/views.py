@@ -197,10 +197,10 @@ def update_group(request, db_session=None):
     if group is None:
         return Responser.response_error('找不到指定的小组信息')
 
-    group.group_name = group_name
-    group.group_desc = group_desc
-    group.group_user = group_user
-    group.rank = group_rank
+    group.group_name = group_name if group_name else group.group_name
+    group.group_desc = group_desc if group_desc else group.group_desc
+    group.group_user = group_user if group_user else group.group_user
+    group.rank = int(group_rank)
     group.update()
     return Responser.response_success(msg="小组信息更新成功")
 
