@@ -1,4 +1,4 @@
-import { get_show_images } from "../../components/interface";
+import { get_show_images ,check_info} from "../../components/interface";
 import { request } from "../../components/request";
 const homeapp=getApp()
 
@@ -48,7 +48,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
   },
 
   /**

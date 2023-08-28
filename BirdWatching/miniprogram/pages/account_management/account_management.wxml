@@ -1,9 +1,25 @@
+<!--pages/account_management/account_management.wxml-->
+<!-- 账号管理 -->
 <!--pages/management/management.wxml-->
 <form bindsubmit="getUserName"> <!--定义提交事件-->
 
 <!-- 头像 -->
+<view class="userinfo" wx:if="{{hasUserInfo==false}}">
+  <block wx:if="{{canIUseOpenData}}">
+    <view class="userinfo-avatar" bindtap="bindViewTap">
+      <open-data type="userAvatarUrl"></open-data>
+    </view>
+  </block>
+    <block wx:elif="{{!hasUserInfo}}">
+      <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
+      <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
+  </block>
+  <block wx:else>
+    <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+  </block>
+</view>
 <view class="userinfo">
-    <button bindtap="getUserProfile" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" wx:if="{{hasUserInfo==false}}">点击获取头像</button>
+    <button bindtap="getUserProfile" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" wx:if="{{hasUserInfo==false}}">点击修改头像</button>
     <image class="avatar" wx:if="{{hasUserInfo==true}}" src="{{avatarUrl}}"></image>
 </view>
 
@@ -38,7 +54,7 @@
 <view class="AddressBox"  bindtap="ChoosePoint">
   <text class="mainName">地点</text>
   <view class="resultaddress">
-    <text class="resultaddressitem">{{address}} </text>
+    <text class="resultaddressitem" bindtap="getAddress">{{address}} </text>
   </view>
 </view>
 
@@ -58,13 +74,11 @@
   </view>
 </view>
 
-<!-- 注册按钮 -->
+<!-- 更新按钮 -->
 <view class="up-bt">
-  <button form-type="submit" role="button" aria-disabled="false" bindtap="onloud">注册</button>
+  <button form-type="submit" role="button" aria-disabled="false" bindtap="onloud">更新</button>
 </view>
 
 </form>
 
-
-
-
+<button bindtap="goout">退出登录</button>

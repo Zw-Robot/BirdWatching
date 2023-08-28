@@ -1,5 +1,6 @@
 // pages/add/add.ts
 import { appname, poskey } from "../../components/config";
+import { check_info } from "../../components/interface";
 const checkapp=getApp()
 let currentDate = new Date();
 
@@ -314,11 +315,26 @@ searchInput:function(e:any){
   console.log(checkapp.globalData.messageList);
 
 },
-
+getlogin:function(){
+  const date={
+    openid:checkapp.globalData.openid,
+    token:checkapp.globalData.token
+  }
+  check_info(date).then(res=>{
+    console.log(res);
+    checkapp.globalData.code=res.code
+    if (res.code===500) {
+      wx.navigateTo({
+        url:'../management/management'
+      })
+    }
+  })
+},
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad:function() {
+      this.getlogin()
         //事件监听
       this.data.recorder.onStart(() => {
         console.info('开始录音');

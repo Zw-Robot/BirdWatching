@@ -1,5 +1,6 @@
 // pages/attendRace/attendRace.ts
-import {create_group,add_group, wx_user_group, exit_group, wx_get_matches} from '../../components/interface'
+import {create_group,add_group, wx_user_group, exit_group, wx_get_matches, check_info} from '../../components/interface'
+import { request } from '../../components/request'
 const attendapp=getApp()
 Page({
 
@@ -7,6 +8,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    swiperList:[],
+    fronturl:request.URL+'/inventory/get_file/',
     eye:false,
     //比赛信息
     match_id:'',
@@ -40,7 +43,22 @@ Page({
     this.setData({
       hiddenmodalput: !this.data.hiddenmodalput,
       group_name:'',
-      add_password:'',
+      password:'',
+    })
+  },
+  getlogin:function(){
+    const date={
+      openid:attendapp.globalData.openid,
+      token:attendapp.globalData.token
+    }
+    check_info(date).then(res=>{
+      console.log(res);
+      attendapp.globalData.code=res.code
+      if (res.code===500) {
+        wx.navigateTo({
+          url:'../management/management'
+        })
+      }
     })
   },
   //提交
@@ -186,8 +204,8 @@ Page({
         match_create:res.match_create,
         match_location:res.match_location,
         referee:res.referee,
+        swiperList:res.match_image
       })
-      console.log(res[0].match_desc);
     })
   },
 
@@ -195,6 +213,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    this.getlogin()
     this.getAllGroup()
     this.getAllMatch()
   },

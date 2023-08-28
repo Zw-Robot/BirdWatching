@@ -1,9 +1,10 @@
-// pages/management/management.ts
+// pages/account_management/account_management.ts
 import { appname, poskey } from "../../components/config";
-import { info } from "../../components/interface";
+import { info,wx_get_single_wxusers,delete_info } from "../../components/interface";
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-const managementapp=getApp()
+const accountapp=getApp()
 const chooseLocation = requirePlugin('chooseLocation');
+
 Page({
 
   /**
@@ -22,21 +23,50 @@ Page({
     }],
 
     geneder:'',
+    i:0,
     name:'', //姓名
-    address:'', //地点
+    address:accountapp.globalData.address, //地点
+    longitude:accountapp.globalData.longitude,
+    latitude:accountapp.globalData.latitude,
     region:'',
     phone:'', // 联系电话
     email:'', //邮箱
 
     // 用户信息
+    usermessage:[],
     nickname:'',
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     canIUseGetUserProfile: false,
-    canIUseOpenData:false,
-    // canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
+    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'), // 如需尝试获取用户信息可改为false
     avatarUrl: defaultAvatarUrl,
+    loc:{},
+  },
+
+  // 获取用户信息接口
+  getSingleUsers:function(){
+    var date={
+      user_id:accountapp.globalData.userid,
+      openid:accountapp.globalData.openid,
+      token:accountapp.globalData.token
+    }
+    wx_get_single_wxusers(date).then(res=>{
+      console.log(res);
+      this.setData({
+        usermessage:res.data,
+        nickname:res.data.avataer,
+        name:res.data.name,
+        phone:res.data.phone,
+        email:res.data.email,
+        geneder:res.geneder,
+        i:res.i,
+      })
+      for (let index = 0; index < this.data.sex.length; index++) {
+        this.data.sex[this.data.i].checked=true
+      }
+    })
+    
   },
 
   // 头像
@@ -98,14 +128,21 @@ Page({
   },
 
   // 地点
+  getAddress:function(){
+    this.setData({
+      address:accountapp.address,
+      longitude:accountapp.longitude,
+      latitude:accountapp.latitude,
+    })
+  },
   ChoosePoint:function()
   { 
     const key = poskey
     const referer = appname
     const category = '';
     const location = JSON.stringify({
-      latitude: managementapp.globalData.latitude,
-      longitude:managementapp.globalData.longitude
+      latitude: accountapp.globalData.latitude,
+      longitude:accountapp.globalData.longitude
     });
     wx.navigateTo({
       url: 'plugin://chooseLocation/index?key=' + key + '&referer=' + referer + '&location=' + location + '&category=' + category
@@ -149,8 +186,8 @@ Page({
       name:this.data.name,
       phone:this.data.phone,
       email:this.data.email,
-      openid:managementapp.globalData.openid,
-      token:managementapp.globalData.token
+      openid:accountapp.globalData.openid,
+      token:accountapp.globalData.token
     }
     console.log(data);
     info(data).then(res=>{
@@ -177,10 +214,34 @@ Page({
     }
   },
 
+  // 退出登录按钮
+  goout:function(){
+    var date={
+      openid:accountapp.globalData.openid,
+      token:accountapp.globalData.token
+    }
+    delete_info(date).then(res=>{
+      console.log(res);
+    })
+    wx.showModal({
+      title: '提示',
+      content: '退出成功!',
+    })
+    wx.switchTab({      
+      url: '../../pages/home/home',
+    }) 
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
+    this.getSingleUsers()
+    this.setData({
+      address:accountapp.address,
+      longitude:accountapp.longitude,
+      latitude:accountapp.latitude,
+    })
     // 头像
     if (wx.getUserProfile) {
       this.setData({
@@ -210,9 +271,9 @@ Page({
       var log = loc.longitude
       var lat = loc.latitude
     }else{
-      var add = managementapp.globalData.address
-      var log = managementapp.globalData.longitude
-      var lat = managementapp.globalData.latitude
+      var add = accountapp.globalData.address
+      var log = accountapp.globalData.longitude
+      var lat = accountapp.globalData.latitude
     }
     try{
       this.setData({

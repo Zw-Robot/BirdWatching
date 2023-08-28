@@ -16,7 +16,7 @@
   <text>用户反馈</text>
   <image src="../../pages/images/更多.png" mode=""/>
 </navigator>
-<navigator class="one" >
+<navigator class="one" url="../../pages/account_management/account_management">
   <text>账号管理</text>
   <image src="../../pages/images/更多.png" mode=""/>
 </navigator>

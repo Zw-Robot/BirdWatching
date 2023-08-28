@@ -1,5 +1,5 @@
 // pages/information Center/information Center.ts
-import {get_system_notifications} from '../../components/interface'
+import {wx_get_system_notifications} from '../../components/interface'
 const centerapp=getApp()
 Page({
 
@@ -7,9 +7,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    navList:['系统通知','用户互动'],
+    navList:['系统通知'],
     nav_type:0,//默认选中第一个
-    isFixed:false,//是否吸顶
+    // isFixed:false,//是否吸顶
     navTop:0,//nav菜单激励顶部距离
     center:[]
   },
@@ -30,7 +30,7 @@ Page({
 
   // 获取系统通知接口
   getSystem:function(){
-    get_system_notifications({}).then(res=>{
+    wx_get_system_notifications({}).then(res=>{
       console.log(res);
       this.setData({
         center:res.data

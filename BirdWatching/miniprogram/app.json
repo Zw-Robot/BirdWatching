@@ -14,7 +14,9 @@
     "pages/more/more",
     "pages/recordmessage/recordmessage",
     "pages/User_feedback/User_feedback",
-    "pages/logout/logout"
+    "pages/logout/logout",
+    "pages/management/management",
+    "pages/account_management/account_management"
   ],
   "requiredPrivateInfos": [
     "getLocation"

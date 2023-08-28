@@ -77,6 +77,7 @@ Page({
   //我的活动
   userGroup:function(){
     wx_user_group({user_id:mineapp.globalData.userid}).then(res=>{
+      console.log(res);
       this.setData({
         wx_user_group:res.data
       })

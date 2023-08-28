@@ -5,7 +5,7 @@
       <swiper-item  wx:for="{{swiperList}}">
         <image src="{{fronturl}}{{item}}"/>
       </swiper-item>
-</swiper>
+    </swiper>
   </view>
 <view class="times">
   <text>{{time}}</text>

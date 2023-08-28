@@ -1,7 +1,7 @@
 // pages/storehouse/storehouse.ts
 
 import { get_all_birds, get_all_orders, wx_get_all_birds } from "../../components/interface";
-
+const storeapp=getApp()
 Page({
 
   /**
@@ -80,31 +80,16 @@ clearTap:function(){
 
 },
 
-getAllBirds:function(){
-  wx_get_all_birds().then(res=>{
-    this.setData({
-      leftMenuList:res
-    })
-    console.log(res);
-    
-  })
-},
-
-getOrder:function(){
-  get_all_orders().then(res=>{
-    this.setData({
-      rightMenuList:res
-    })
-  })
-},
-
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    // this.getcates();
-    this.getAllBirds();
-    this.getOrder()
+    this.setData({
+      leftMenuList:storeapp.globalData.left
+    })
+    this.setData({
+      rightMenuList:storeapp.globalData.right
+    })
   },
 
   /**
@@ -118,7 +103,12 @@ getOrder:function(){
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.setData({
+      leftMenuList:storeapp.globalData.left
+    })
+    this.setData({
+      rightMenuList:storeapp.globalData.right
+    })
   },
 
   /**

@@ -105,7 +105,6 @@ HandelItemChange(e:any){
       id: id
     };
   });
-  console.log(checkedList);
   //获取被选中的复选框的值
   const user_id = app.globalData.userid
   const longitude = app.globalData.longitude
@@ -118,51 +117,46 @@ HandelItemChange(e:any){
   for(const val of checkedList){
     const id = val.id 
     const br:BirdRecord = new BirdRecord(user_id,id,val.species,currentDateString,currentTime,longitude,latitude,address,temperature,weather)
-    console.log(br);
+    
     app.globalData.messageList.push(br)
     app.globalData.checkedList.push(val.species)
   }
-  console.log(app.globalData.messageList);
-},
-
-getAllBirds:function(){
-  wx_get_all_birds().then(res=>{
-    this.setData({
-      leftMenuList:res
-    })
-    console.log(res);
-    
-  })
-},
-
-getOrder:function(){
-  get_all_orders().then(res=>{
-    this.setData({
-      rightMenuList:res
-    })
-  })
 },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad() {
-    this.getAllBirds();
-    this.getOrder()
+    this.setData({
+      leftMenuList:app.globalData.left
+    })
+    this.setData({
+      rightMenuList:app.globalData.right
+    })
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
-
+    this.setData({
+      leftMenuList:app.globalData.left
+    })
+    this.setData({
+      rightMenuList:app.globalData.right
+    })
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    
+    this.setData({
+      leftMenuList:app.globalData.left
+    })
+    this.setData({
+      rightMenuList:app.globalData.right
+    })
   },
 
   /**

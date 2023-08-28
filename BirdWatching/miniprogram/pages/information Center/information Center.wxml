@@ -9,13 +9,9 @@
 <view 
 wx:if="{{nav_type==0}}"
 wx:for="{{center}}"
+wx:key="{{index}}"
 class="item"
 >
   <text class="name">{{item.title}}</text>
-  <text class="location">{{item.create_at}}</text>
-</view>
-
-<!-- 用户互动 -->
-<view wx:if="{{nav_type==1}}">
-互动
+  <text class="location">{{item.content}}</text>
 </view>

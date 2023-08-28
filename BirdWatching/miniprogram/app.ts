@@ -1,5 +1,5 @@
 import { poskey, weatherkey } from "./components/config";
-import { sgin } from "./components/interface"
+import { sgin, wx_get_all_birds,get_all_orders, check_info } from "./components/interface"
 var amapFile = require('./utils/amap-wx.js');
 
 var QQMapWX = require('./utils/qqmap-wx-jssdk.min.js');
@@ -23,6 +23,22 @@ App({
     address:'',
     temperature:0,
     weather:'',
+    left:[],
+    right:[],
+    islogin:false,
+    code:-1
+  },
+  getAllBird(){
+    wx_get_all_birds().then(res=>{
+      console.log(res);
+      this.globalData.left=res
+    })
+  },
+  getOrder:function(){
+    get_all_orders().then(res=>{
+        console.log(res);
+        this.globalData.right=res
+    })
   },
 
   getWeather(){
@@ -59,6 +75,9 @@ App({
      })
   },
   onLaunch() {
+    //获取鸟库数据
+    this.getOrder()
+    this.getAllBird()
     // 展示本地存储能力
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -67,6 +86,7 @@ App({
     this.globalLongin()
     this.getAddressInfo()
     this.getWeather()
+   
   },
   globalLongin(){
     const _this = this
@@ -88,6 +108,8 @@ App({
       }
     })
   },
+  // 判断登录状态
+
   globalCheck(){
     const _this = this
     wx.checkSession({

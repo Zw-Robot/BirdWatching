@@ -75,12 +75,22 @@ def get_info(request):
         user.name = name
         user.phone = phone
         user.email = email
+        user.is_lock = False
         user.update()
     else:
         user = Userdata(openid=openid, username=username, avatar=avatar, gender=gender, country=country,
                         province=province, city=city, name=name, phone=phone, email=email)
     return Responser.response_success(data={"id": user.id, "level": calculate_level(user.score)}, msg="success")
 
+@auth.route('/delete_info',methods=["POST"])
+@requestPOST
+@SingAuth
+def delete_info(request):
+    openid = request.json.get("openid")  # openid
+    user = Userdata.query.filter_by(openid=openid).first()
+    user.is_lock = True
+    user.update()
+    return Responser.response_success(msg='退出成功！')
 
 @auth.route('/check_info', methods=["POST"])
 @requestPOST
@@ -92,6 +102,8 @@ def check_info(request):
     if not user:
         return Responser.response_error('尚未登陆')
     if not (user.name and user.phone and user.email):
+        return Responser.response_error('尚未完善信息，请先完善信息')
+    if user.is_lock == True:
         return Responser.response_error('尚未完善信息，请先完善信息')
     return Responser.response_success('检查通过')
 
@@ -320,7 +332,7 @@ def get_simple_users(request):
 @login_required(['sysadmin', 'admin', 'others'])
 def get_user_list(request):
     # 获取单个用户信息
-    users = Userdata.query.all()
+    users = Userdata.query.filter_by(is_lock=False).all()
     res = []
     for user in users:
         if user.name:

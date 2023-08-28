@@ -64,8 +64,8 @@ export async function create_feedbacks(params: any) {
   const res = await request.post("/notice/create_feedbacks", params);
   return res;
 };
-export async function get_system_notifications(params: any) {
-  const res = await request.get("/notice/get_system_notifications", params);
+export async function wx_get_system_notifications(params: any) {
+  const res = await request.get("/notice/wx_get_system_notifications", params);
   return res;
 };
 export async function create_bird_record(params: any) {
@@ -159,6 +159,19 @@ export async function sgin(params: any) {
 export async function info(params: any) {
   const res = await request.post("/auth/info", params);
   return res.data;
+};
+
+export async function check_info(params: any) {
+  const res = await request.post("/auth/check_info", params);
+  return res;
+};
+export async function wx_get_single_wxusers(params: any) {
+  const res = await request.post("/auth/wx_get_single_wxusers", params);
+  return res;
+};
+export async function delete_info(params: any) {
+  const res = await request.post("/auth/delete_info", params);
+  return res;
 };
 
 export async function get_show_images(params={}) {

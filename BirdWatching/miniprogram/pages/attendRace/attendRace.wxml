@@ -2,14 +2,11 @@
 <view class="Box">
   <!-- 轮播图区域 -->
   <view class="swiperBox">
-  <swiper indicator-dots circular autoplay="true">
-    <swiper-item>
-      <image src="/pages/images/find-chose.png" mode=""/>
-    </swiper-item>
-    <swiper-item >
-      <image src="/pages/images/find-chose.png" mode=""/>
-    </swiper-item>
-  </swiper>
+    <swiper indicator-dots circular autoplay="true">
+      <swiper-item  wx:for="{{swiperList}}">
+        <image src="{{fronturl}}{{item}}"/>
+      </swiper-item>
+    </swiper>
   </view>
   <!-- 简介区域 -->
   <view class="messageBox">

@@ -33,12 +33,13 @@
     </view>
   </picker>
   <!--选择时间 -->
-  <picker mode="time" header-text="选择时间"  value="{{time}}" bindchange="bindTimeChange">
+ <picker mode="time" header-text="选择时间"  value="{{time}}" bindchange="bindTimeChange">
     <view class="pickerBox">
       <text class="mainName">时间 *</text>
       <text class="result">{{time}}</text>
     </view>
-  </picker>
+ </picker>
+
 <!-- 选择地点 -->
 <view class="AddressBox"  bindtap="ChoosePoint">
       <text class="mainName">地点 *</text>
@@ -46,6 +47,7 @@
         <text class="resultaddressitem">{{address}} </text>
       </view>
 </view>
+
 <!-- 数量 -->
 <view class="numberBox">
       <text class="mainName">数量 *</text>
