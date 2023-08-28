@@ -148,7 +148,7 @@ def wx_get_matches(request):
         'match_desc': bird_match.match_desc,
         'match_location': bird_match.match_location,
         'referee': bird_match.referee,
-        'match_image': bird_match.match_image,
+        'match_image': bird_match.match_image.split(','),
         'start_time': bird_match.start_time,
         'end_time': bird_match.end_time,
         'create_at': bird_match.create_at,
