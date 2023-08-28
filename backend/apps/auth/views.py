@@ -50,10 +50,10 @@ def get_info(request):
     log = LoginSessionCache.query.filter_by(openid=openid).first()
     if not log:
         return Responser.response_error(msg="未登录")
-    try:
-        params = getWXInfo(sessionKey=secession, encryptedData=encryptedData, iv=iv)
-    except:
-        params = tmp.get("userInfo")
+    # try:
+    #     params = getWXInfo(sessionKey=secession, encryptedData=encryptedData, iv=iv)
+    # except:
+    params = tmp.get("userInfo")
     username = params.get("nickName")  # username
     avatar = params.get("avatarUrl")  # avatarUrl
     gender = params.get("gender")  # gender
@@ -270,12 +270,12 @@ def get_all_wxusers(request):
         user_list.append(user_dict)
     return Responser.response_page(data=user_list, page=page, page_size=per_page, count=total_pages)
 
-@auth.route('/wx_get_single_wxusers', methods=["GET"])
-@requestGET
-# @SingAuth
+@auth.route('/wx_get_single_wxusers', methods=["POST"])
+@requestPOST
+@SingAuth
 def wx_get_single_wxusers(request):
     # 获取所有用户信息
-    user_id = int(request.args.get('user_id'))
+    user_id = int(request.json.get('user_id'))
 
     user = Userdata.query.filter_by(id=user_id).first()
 

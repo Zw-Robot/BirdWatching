@@ -281,9 +281,10 @@ def wx_user_group(request):
         names = users.split(',')
         print(names)
         for name in names:
-            gtemp = Userdata.query.filter_by(id=int(name)).first()
-            if gtemp:
-                gnames.append(gtemp.username)
+            if name:
+                gtemp = Userdata.query.filter_by(id=int(name)).first()
+                if gtemp:
+                    gnames.append(gtemp.username)
         dic = {
             'group_id': group.id,
             'match_id': match.id,
