@@ -108,6 +108,10 @@ class FileResponser:
         uuid_string = str(uuid.uuid4())
         filename = uuid_string.replace('-', '')
         if image:
+            try:
+                image = image.split(',')[1]
+            except:
+                image = image
             image = base64.b64decode(image)
             savepath = '/robot/birdwatching/var/{}.png'.format(filename)
             try:

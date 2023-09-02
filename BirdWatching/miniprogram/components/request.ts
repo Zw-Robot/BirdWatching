@@ -1,5 +1,5 @@
 class Request{
-  public URL:string = "http://43.138.33.82:5500"
+  public URL:string = "https://www.yanchengbirding.top/api"
   get(url: string, params: any): Promise<any> {
     const join_url = this.URL + url;
     return new Promise((resolve, reject) => {

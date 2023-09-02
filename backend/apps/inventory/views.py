@@ -845,7 +845,7 @@ def download_example_bird(request):
 
     results = open('./example_bird.xlsx', 'rb').read()
     return Response(results, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    headers={"Content-Disposition": 'attachment; filename=bird_records.xlsx'})
+                    headers={"Content-Disposition": 'attachment; filename=example_bird.xlsx'})
 
 @inventory.route("/upload_bird", methods=["POST"])
 @requestPOST
