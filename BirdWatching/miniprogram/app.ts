@@ -1,5 +1,5 @@
 import { poskey, weatherkey } from "./components/config";
-import { sgin, wx_get_all_birds,get_all_orders, check_info } from "./components/interface"
+import { sgin, wx_get_all_birds,get_all_orders } from "./components/interface"
 var amapFile = require('./utils/amap-wx.js');
 
 var QQMapWX = require('./utils/qqmap-wx-jssdk.min.js');
@@ -21,6 +21,7 @@ App({
     latitude:0,
     longitude:0,
     address:'',
+    address_component:{},
     temperature:0,
     weather:'',
     left:[],
@@ -68,6 +69,7 @@ App({
             longitude: res.longitude
           },
           success: (res: { result: any; address: string; }) => {
+            _this.globalData.address_component=res.result.address_component
             _this.globalData.address = res.result.address
           },
         })
@@ -91,13 +93,14 @@ App({
   globalLongin(){
     const _this = this
     wx.login({
-      success (res) {
+      success (res) {        
         if (res.code) {
           //发起网络请求
           const data= {
             code: res.code
           }
           sgin(data).then(res => {
+            
             _this.globalData.openid = res.openid,
             _this.globalData.token = res.session_key
             _this.globalData.userid = res.log

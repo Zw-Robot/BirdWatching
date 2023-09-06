@@ -68,9 +68,15 @@ Page({
       token:mineapp.globalData.token
     }
     get_score(date).then(res=>{
-      this.setData({
-        level:res.data.level
-      })
+      if (res.code===500 || res.code===403) {
+        wx.navigateTo({
+          url:'../management/management'
+        })
+      }else{
+        this.setData({
+          level:res.data.level
+        })
+      }
     })
   },
 

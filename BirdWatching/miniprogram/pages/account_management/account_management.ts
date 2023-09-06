@@ -55,7 +55,7 @@ Page({
       console.log(res);
       this.setData({
         usermessage:res.data,
-        nickname:res.data.avataer,
+        nickname:res.data.avatar,
         name:res.data.name,
         phone:res.data.phone,
         email:res.data.email,
@@ -173,8 +173,18 @@ Page({
 
   // 提交
   onloud:function(){
-    const loc = chooseLocation.getLocation();
+    if(!this.data.nickname || !this.data.name || !this.data.geneder || !this.data.phone || !this.data.email){
+      wx.showModal({
+        title:'提示',
+        content:'信息尚未填写！'
+      })
+      return
+    }
+    let loc = chooseLocation.getLocation();
     console.log(loc);
+    if (!loc){
+      loc=accountapp.globalData.address_component
+    }
     var data={
       userInfo:{
         username:this.data.nickname,
@@ -218,7 +228,7 @@ Page({
   goout:function(){
     var date={
       openid:accountapp.globalData.openid,
-      token:accountapp.globalData.token
+      token:accountapp.globalData.token,
     }
     delete_info(date).then(res=>{
       console.log(res);

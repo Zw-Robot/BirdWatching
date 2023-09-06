@@ -1,4 +1,4 @@
-import { create_bird_record, wx_create_bird_record, wx_post_base64 } from "../components/interface"
+import { wx_create_bird_record, wx_post_base64 } from "../components/interface"
 const birdRec = getApp()
 
 export class BirdRecord{

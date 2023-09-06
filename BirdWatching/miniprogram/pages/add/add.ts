@@ -323,7 +323,7 @@ getlogin:function(){
   check_info(date).then(res=>{
     console.log(res);
     checkapp.globalData.code=res.code
-    if (res.code===500) {
+    if (res.code===500 || res.code===403) {
       wx.navigateTo({
         url:'../management/management'
       })
@@ -354,8 +354,7 @@ getlogin:function(){
         tmp.push(this.data.audio)
         checkapp.globalData.messageList[this.data.nav_type].audios = tmp;
         console.log(checkapp.globalData.messageList);
-        
-});
+  });
     this.setData({
       checkedList:checkapp.globalData.checkedList
     })
@@ -429,7 +428,6 @@ deletebird(e:any) {
       checkapp.globalData.messageList[this.data.nav_type].Address = this.data.address
       checkapp.globalData.messageList[this.data.nav_type].Latitude = this.data.latitude
       checkapp.globalData.messageList[this.data.nav_type].Longitude = this.data.longitude
-      
     }
     catch{
       this.setData({

@@ -2,7 +2,7 @@ import requests
 
 # 微信SDK 密匙 和 id
 class Choices:
-    AppID, AppSecret = 'wx34396991c4ea8e2c', '843092735a9268a4bbf66ae5a93c2de1'
+    AppID, AppSecret = 'wxbee80c3c4c5036d4', 'd7d8738ad5d998720620412f6e5b9936'
 
 # 微信SDK auth.code2Session
 def WXSDK_jscode2session(code):

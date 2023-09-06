@@ -105,7 +105,7 @@ Page({
     const category = '';
     const location = JSON.stringify({
       latitude: managementapp.globalData.latitude,
-      longitude:managementapp.globalData.longitude
+      longitude:managementapp.globalData.longitude,
     });
     wx.navigateTo({
       url: 'plugin://chooseLocation/index?key=' + key + '&referer=' + referer + '&location=' + location + '&category=' + category
@@ -136,8 +136,18 @@ Page({
 
   // 提交
   onloud:function(){
-    const loc = chooseLocation.getLocation();
+    if(!this.data.nickname || !this.data.name || !this.data.geneder || !this.data.phone || !this.data.email){
+      wx.showModal({
+        title:'提示',
+        content:'信息尚未填写！'
+      })
+      return
+    }
+    let loc = chooseLocation.getLocation();
     console.log(loc);
+    if (!loc){
+      loc=managementapp.globalData.address_component
+    }
     var data={
       userInfo:{
         username:this.data.nickname,
@@ -161,11 +171,13 @@ Page({
         title: '提示',
         content: '电话填写错误！',
       })
+      return
     }else if (this.data.avatarUrl='') {
       wx.showModal({
         title: '提示',
         content: '请获取头像！',
       })
+      return
     }else{
       wx.showModal({
         title: '提示',
