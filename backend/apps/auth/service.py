@@ -48,10 +48,13 @@ def login(request):
 
             '''登录逻辑(更新和新建)'''
             log = LoginSessionCache.query.filter_by(openid=openid).first()
+            id = 0
             if log:
                 '''存在就更新session_key'''
                 log.session_key = session_key
                 log.update()
+                user = Userdata.query.filter_by(openid=openid).first()
+                id = user.id
                 '''更新用户数据'''
                 # db.session.query(Userdata).filter(Userdata.openid == openid).update({
                 #     Userdata.username: wechet_userdata['nickName'],
@@ -73,7 +76,7 @@ def login(request):
                 #          province=wechet_userdata['province'],
                 #          city=wechet_userdata['city'])
 
-            return 200, '成功', {"openid": openid,"session_key":session_key,"log":log.id}
+            return 200, '成功', {"openid": openid,"session_key":session_key,"log":id}
 
         except:
                 return 500, '内部错误', ''

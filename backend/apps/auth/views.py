@@ -2,7 +2,6 @@ import math
 
 from apps.auth import service, auth
 from apps.components.common import required_attrs_validator
-from apps.components.wxinfo import getWXInfo
 from apps.models import LogonUser, Userdata, LoginSessionCache
 from apps.components.middleware import requestPOST, SingAuth, login_required, requestGET
 from apps.components.responser import Responser, FileResponser
@@ -44,12 +43,6 @@ def get_score(request):
 def get_info(request):
     tmp = request.json
     openid = tmp.get("openid")  # openid
-    secession = tmp.get("token")
-    encryptedData = tmp.get("encryptedData")
-    iv = tmp.get("iv")
-    log = LoginSessionCache.query.filter_by(openid=openid).first()
-    if not log:
-        return Responser.response_error(msg="未登录")
     # try:
     #     params = getWXInfo(sessionKey=secession, encryptedData=encryptedData, iv=iv)
     # except:
@@ -277,9 +270,11 @@ def get_all_wxusers(request):
             'phone': user.phone,
             'email': user.email,
             'update_at': user.update_at,
-            'score': user.score
+            'score': user.score,
+            'limit': user.limit
         }
         user_list.append(user_dict)
+    print(user_dict)
     return Responser.response_page(data=user_list, page=page, page_size=per_page, count=total_pages)
 
 @auth.route('/wx_get_single_wxusers', methods=["POST"])
@@ -287,9 +282,9 @@ def get_all_wxusers(request):
 @SingAuth
 def wx_get_single_wxusers(request):
     # 获取所有用户信息
-    user_id = int(request.json.get('user_id'))
+    openid = request.json.get('openid')
 
-    user = Userdata.query.filter_by(id=user_id).first()
+    user = Userdata.query.filter_by(openid=openid).first()
 
     user_dict = {
         'id': user.id,
@@ -343,3 +338,16 @@ def get_user_list(request):
             }
             res.append(dic)
     return Responser.response_success(data=res)
+
+@auth.route('/change_limit', methods=["POST"])
+@requestPOST
+@login_required(['sysadmin', 'admin', 'others'])
+def change_limit(request):
+    userid = request.json.get("id")
+    user = Userdata.query.filter_by(id=userid).first()
+    if user.limit == 0:
+        user.limit = 1
+    else:
+        user.limit = 0
+    user.update()
+    return Responser.response_success(msg='修改成功！')

@@ -131,12 +131,14 @@ class Userdata(db.Model):
     phone = Column(String(255))
     email = Column(String(255))
     score = Column(Integer, comment="积分")
+    limit = Column(Integer,default=0,comment='权限')
     update_at = Column(DateTime, default=datetime.now())
     is_lock = Column(Boolean, default=False)
 
+
     # 定义对象
     def __init__(self, openid=None, username=None, avatar=None, gender=None, country=None, province=None, city=None,name='',phone='',email='',
-                 score=0):
+                 score=0,limit=0):
         self.openid = openid
         self.username = username
         self.avatar = avatar
@@ -148,6 +150,7 @@ class Userdata(db.Model):
         self.phone = phone
         self.email = email
         self.score = score
+        self.limit = limit
         self.update()  # 提交数据
 
     # 提交数据函数
@@ -282,7 +285,7 @@ class BirdSurvey(db.Model):
     __tablename__ = 'bird_survey'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=False, comment='调查人id')
+    user_id = Column(Integer, nullable=False, comment='调查人id') # 如果是 99 则为调查组
     survey_name = Column(String(40), nullable=False, comment='调查名称')
     survey_desc = Column(String(200), nullable=True, comment='调查描述')
     survey_time = Column(DateTime, nullable=False, comment='调查时间')

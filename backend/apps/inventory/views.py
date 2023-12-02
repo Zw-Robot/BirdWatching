@@ -354,7 +354,7 @@ def wx_update_bird_survey(request):
     habitat = request.json.get("habitat", "")
     behavior = request.json.get("behavior", "")
     bird_infos = request.json.get("bird_info", [])
-
+    bird_infos.appen({"user_id:user_id"})
     lost_attrs = required_attrs_validator([bird_survey_id])
     if lost_attrs:
         return Responser.response_error('缺少参数')
@@ -362,13 +362,12 @@ def wx_update_bird_survey(request):
     bird_survey = BirdSurvey.query.filter_by(id=bird_survey_id).first()
     if bird_survey is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
-    if bird_survey.user_id != user_id:
-        return Responser.response_error('没有权限修改该鸟类调查')
-
-    bird_survey.describe = describe if describe else bird_survey.describe
-    bird_survey.habitat = habitat if habitat else bird_survey.habitat
-    bird_survey.behavior = behavior if behavior else bird_survey.behavior
-    bird_survey.bird_info = json.dumps(bird_infos)
+    existing_bird_info = json.loads(bird_survey.bird_info)
+    updated_bird_info = existing_bird_info + bird_infos
+    bird_survey.describe = bird_survey.describe +'-'+ describe if describe else bird_survey.describe
+    bird_survey.habitat = bird_survey.habitat +'-'+ habitat if habitat else bird_survey.habitat
+    bird_survey.behavior = bird_survey.behavior +'-'+ behavior if behavior else bird_survey.behavior
+    bird_survey.bird_info = json.dumps(updated_bird_info)
     bird_survey.is_lock = True
     bird_survey.update()
     return Responser.response_success(msg="修改鸟类调查成功")
@@ -434,7 +433,7 @@ def get_all_bird_surveys(request):
     # 鸟类调查查询所有接口
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
-    bird_surveys_query = BirdSurvey.query.filter_by(is_lock=False)
+    bird_surveys_query = BirdSurvey.query.filter_by()
 
     total_pages = ceil(bird_surveys_query.count() / per_page)
 
@@ -470,11 +469,26 @@ def get_all_bird_surveys(request):
 def wx_get_bird_surveys(request):
     # 鸟类调查查询单个接口
     user_id = int(request.args.get("user_id", -1))
-    bird_surveys = BirdSurvey.query.filter_by(user_id=user_id, is_lock=False).all()
+    bird_surveys = BirdSurvey.query.filter_by(user_id=user_id,is_lock=False).all()
+    user = Userdata.query.filter_by(id=user_id).first()
+    other = []
+    if user.limit == 1:
+        other = BirdSurvey.query.filter_by(user_id=8).all()
+
     if bird_surveys is None:
         return Responser.response_error('找不到指定的鸟类调查信息')
     data = []
     for bird_survey in bird_surveys:
+        bird_survey_list = {
+            'bird_survey_id': bird_survey.id,
+            'survey_name': bird_survey.survey_name,
+            'survey_desc': bird_survey.survey_desc,
+            'survey_time': bird_survey.survey_time,
+            'survey_location': bird_survey.survey_location,
+            'is_lock': bird_survey.is_lock
+        }
+        data.append(bird_survey_list)
+    for bird_survey in other:
         bird_survey_list = {
             'bird_survey_id': bird_survey.id,
             'survey_name': bird_survey.survey_name,

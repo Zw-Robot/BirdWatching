@@ -1,10 +1,9 @@
-import math
-
-def calculate_level(score):
-    level = math.floor(math.sqrt(score))
-    return level
-
-# 示例使用
-user_score = 400
-user_level = calculate_level(user_score)
-print(f"The user's level is: {user_level}")
+import pandas as pd
+df1 = pd.read_excel(r"C:\Users\Robot\Desktop\附件2.xlsx")
+df2 = pd.read_excel(r"C:\Users\Robot\Desktop\附件3.xlsx")
+df2.columns.values[0] = "data"
+df2.columns.values[1] = "id"
+df1.columns.values[0] = "data"
+df1.columns.values[2] = "id"
+merdf = pd.merge(df1,df2,on=['id','data'])
+merdf.to_excel("./1.xlsx")
