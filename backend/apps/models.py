@@ -208,6 +208,8 @@ class BirdInventory(db.Model):
     bird_info = Column(String(200), nullable=True, comment='鸟类声音图像信息id 逗号隔开添加')
     create_at = Column(DateTime, default=datetime.now())
     update_at = Column(DateTime, default=datetime.now())
+    pinying = Column(String(300))
+    simple_pinying = Column(String(300))
     is_check = Column(Boolean, default=False, nullable=False, comment='是否检查')
     is_lock = Column(Boolean, default=False, nullable=False, comment='是否删除该鸟')
 
