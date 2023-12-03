@@ -15,7 +15,7 @@ from math import ceil
 from urllib.parse import quote
 import pandas as pd
 from flask import make_response, send_file, Response
-from pypinyin import lazy_pinyin
+# from pypinyin import lazy_pinyin
 from sqlalchemy import or_, case, func
 
 from apps.components.common import required_attrs_validator
@@ -153,21 +153,21 @@ def get_all_orders(request):
         result.append(tmp)
     return Responser.response_success(data=result)
 
-@inventory.route("/set",methods=["GET"])
-@requestGET
-def setpinying(request):
-    birds = BirdInventory.query.all()
-    for info in birds:
-        res = lazy_pinyin(info.species)
-        py = ''.join(res)
-        spy = ''
-        for n in res:
-            spy+=n[0]
-        info.pinying = py
-        info.simple_pinying = spy
-        info.update()
-    print(res)
-    return Responser.response_success()
+# @inventory.route("/set",methods=["GET"])
+# @requestGET
+# def setpinying(request):
+#     birds = BirdInventory.query.all()
+#     for info in birds:
+#         res = lazy_pinyin(info.species)
+#         py = ''.join(res)
+#         spy = ''
+#         for n in res:
+#             spy+=n[0]
+#         info.pinying = py
+#         info.simple_pinying = spy
+#         info.update()
+#     print(res)
+#     return Responser.response_success()
 @inventory.route('/wx_get_all_birds', methods=["GET"])
 @requestGET
 def wx_get_all_birds(request):

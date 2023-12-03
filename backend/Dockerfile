@@ -7,4 +7,4 @@ COPY . .
 
 EXPOSE 5500
 
-CMD gunicorn -c gunicorn.conf run:app
+CMD gunicorn --preload -c gunicorn.conf run:app
